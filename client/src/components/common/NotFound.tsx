@@ -29,7 +29,7 @@ export const NotFound: React.FC<NotFoundProps> = ({
     </p>
     <Link
       to="/"
-      className="mt-1 border border-line-4 px-4 py-2 font-mono uppercase text-ink transition-colors hover:border-ink hover:bg-raised"
+      className="mt-1 border border-line-4 px-4 py-2 font-mono uppercase text-ink transition-colors hover:border-ink hover:bg-raised/60"
       style={{ fontSize: '12px', letterSpacing: '0.1em', transitionDuration: `${DURATION.fast}ms` }}
     >
       ← Back to the board

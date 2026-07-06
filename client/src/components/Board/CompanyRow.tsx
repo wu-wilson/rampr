@@ -24,7 +24,7 @@ interface CompanyRowProps {
 export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
   <Link
     to={`/company/${company.slug}`}
-    className="block border-b border-line-1 px-5 py-4 transition-colors hover:bg-raised md:px-10"
+    className="block border-b border-line-1 px-5 py-4 transition-colors hover:bg-raised/60 md:px-10"
     style={{ transitionDuration: `${DURATION.fast}ms`, transitionTimingFunction: EASING }}
   >
     {/* Mobile: stacked block */}

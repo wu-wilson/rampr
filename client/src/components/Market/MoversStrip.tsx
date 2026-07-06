@@ -67,12 +67,12 @@ const MoverColumn: React.FC<{
           unlocks with the index — {gatingLabel(daysTracked)} days
         </p>
       ) : (
-        <ul className="mt-3 flex flex-col md:mt-3.5">
+        <ul className="mt-3 flex flex-col border-t border-line-1 md:mt-3.5">
           {movers.map((mover) => (
             <li key={mover.slug} className="border-b border-line-1">
               <Link
                 to={`/company/${mover.slug}`}
-                className="flex items-center justify-between gap-3 py-2 transition-colors hover:text-ink md:py-[9px]"
+                className="flex items-center justify-between gap-3 px-3 py-2 transition-colors hover:bg-raised/60 md:py-[9px]"
                 style={{ transitionDuration: `${DURATION.fast}ms` }}
               >
                 <span className="truncate font-display font-semibold text-ink" style={{ fontSize: '12px' }}>
@@ -88,7 +88,7 @@ const MoverColumn: React.FC<{
             </li>
           ))}
           {movers.length === 0 && (
-            <li className="py-2 font-display text-muted-3 md:py-[9px]" style={{ fontSize: '12px' }}>
+            <li className="border-b border-line-1 px-3 py-2 font-display text-muted-3 md:py-[9px]" style={{ fontSize: '12px' }}>
               No movers in this direction.
             </li>
           )}

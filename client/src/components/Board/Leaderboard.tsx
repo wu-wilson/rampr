@@ -20,7 +20,7 @@ const HEADERS: Array<{ label: string; align?: 'right' }> = [
 
 /** Desktop-only column header aligned to the row grid; hidden on mobile. */
 const ColumnHeader: React.FC = () => (
-  <div className="hidden border-b border-line-3 px-5 py-3.5 md:grid md:grid-cols-[48px_minmax(0,1fr)_150px_120px_100px_170px] md:items-center md:gap-4 md:px-10">
+  <div className="hidden border-b border-line-1 px-5 py-3.5 md:grid md:grid-cols-[48px_minmax(0,1fr)_150px_120px_100px_170px] md:items-center md:gap-4 md:px-10">
     {HEADERS.map((header) => (
       <span
         key={header.label}

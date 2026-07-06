@@ -33,7 +33,7 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 
 ## Interactive States
 
-- Every clickable element has a hover state via a smooth `transition-colors` / `transition-[filter]` and a visible focus ring (`:focus-visible` box-shadow from the ink token). Leaderboard rows highlight to `bg-raised` on hover. No instant visual changes — all in-flow motion ≤300ms.
+- Every clickable element has a hover state via a smooth `transition-colors` / `transition-[filter]` and a visible focus ring (`:focus-visible` box-shadow from the ink token). Row/link hovers use a translucent `bg-raised/60` (not opaque `bg-raised`) so the paper grain still shows through — leaderboard rows and market-mover links (each the width of its divider rules, so the highlight never overhangs the borders); the Board's market stat card uses the same translucent raised for the same reason. No instant visual changes — all in-flow motion ≤300ms.
 
 ## Animation
 

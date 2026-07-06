@@ -46,7 +46,7 @@ export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
 
 /** The bordered market stat card: label, big total, counts, and the trend line. */
 const StatCard: React.FC<{ market: MarketSummary }> = ({ market }) => (
-  <div className="border border-line-3 bg-raised px-5 py-[18px] md:px-[26px] md:py-6">
+  <div className="border border-line-3 bg-raised/60 px-5 py-[18px] md:px-[26px] md:py-6">
     <MonoLabel>Market · open roles now</MonoLabel>
     <div
       className="mt-1 font-display font-extrabold tabular-nums text-ink md:mt-1.5"
