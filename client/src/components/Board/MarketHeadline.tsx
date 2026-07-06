@@ -14,32 +14,33 @@ interface MarketHeadlineProps {
 }
 
 /**
- * The Board hero: a full-width editorial headline and lede, then a row of post-it-style stat
- * notes — open roles now, companies, sectors, and the (gated) 7-day change — each a big Archivo
- * number over an uppercase mono label, tilted and taped to the board (2-up mobile / 4-up desktop).
+ * The Board hero: an editorial headline and lede on the left, with the market stat post-its — open
+ * roles now, companies, sectors, and the (gated) 7-day change — clustered 2×2 on the right, each a
+ * big Archivo number over an uppercase mono label, tilted and taped to the board. Stacks on mobile.
  * @param props - The market summary driving the stat notes
- * @returns The headline band followed by the stat-notes band
+ * @returns The hero band
  */
 export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
-  <>
-    <Band className="pb-[22px] pt-[26px] md:pb-9 md:pt-11">
-      <h1
-        className="font-display font-extrabold text-ink"
-        style={{ fontSize: 'clamp(29px, 5vw, 46px)', letterSpacing: '-0.03em', lineHeight: 1.08 }}
-      >
-        Who&apos;s ramping up?
-      </h1>
-      <p
-        className="mt-4 hidden font-medium text-muted-1 md:block"
-        style={{ fontSize: '15px', lineHeight: 1.65, maxWidth: '520px' }}
-      >
-        Open-role counts straight from companies&apos; own job boards, updated daily. No spin —
-        just the count, and where it&apos;s headed.
-      </p>
-    </Band>
+  <Band className="py-9 md:py-12">
+    <div className="grid gap-9 min-[1024px]:grid-cols-[1fr_460px] min-[1024px]:items-center min-[1024px]:gap-14">
+      <div>
+        <h1
+          className="font-display font-extrabold text-ink"
+          style={{ fontSize: 'clamp(29px, 4.5vw, 46px)', letterSpacing: '-0.03em', lineHeight: 1.06 }}
+        >
+          Who&apos;s ramping up?
+        </h1>
+        <p
+          className="mt-4 font-medium text-muted-1"
+          style={{ fontSize: '16px', lineHeight: 1.65, maxWidth: '520px' }}
+        >
+          Open-role counts pulled straight from each company&apos;s own job board — Greenhouse,
+          Lever, Ashby — once a day. No aggregators, no spin — just the count, and where it&apos;s
+          headed.
+        </p>
+      </div>
 
-    <Band className="py-7 md:py-9">
-      <div className="grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-6">
+      <div className="grid grid-cols-2 gap-6 md:gap-8">
         <StatNote index={0} label="open roles now">
           {formatCount(market.totalOpen)}
         </StatNote>
@@ -53,12 +54,14 @@ export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
           <TrendValue gated={market.gated} delta7d={market.delta7d} />
         </StatNote>
       </div>
-    </Band>
-  </>
+    </div>
+  </Band>
 );
 
 /** Slight per-note tilt so they read as taped up by hand, not printed on a grid. */
 const NOTE_TILT = ['-2deg', '1.6deg', '-1.2deg', '2.1deg'];
+/** Per-note tape angle, varied so each strip looks torn and stuck on individually. */
+const TAPE_TILT = ['-6deg', '5deg', '7deg', '-3.5deg'];
 
 /**
  * One stat "post-it": a warm paper note lifted off the board with a soft shadow, a slight hand
@@ -81,7 +84,7 @@ const StatNote: React.FC<{ children: React.ReactNode; label: string; index: numb
       style={{
         left: '50%',
         top: '-8px',
-        transform: 'translateX(-50%) rotate(-4deg)',
+        transform: `translateX(-50%) rotate(${TAPE_TILT[index % TAPE_TILT.length]})`,
         // Torn ends: fine zigzag on the short (left/right) edges (shallow teeth), roll edges straight.
         clipPath:
           'polygon(0% 0%, 100% 0%, 95% 12.5%, 100% 25%, 95% 37.5%, 100% 50%, 95% 62.5%, 100% 75%, 95% 87.5%, 100% 100%, 0% 100%, 5% 87.5%, 0% 75%, 5% 62.5%, 0% 50%, 5% 37.5%, 0% 25%, 5% 12.5%)',

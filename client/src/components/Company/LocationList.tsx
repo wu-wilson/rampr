@@ -27,7 +27,7 @@ export const LocationList: React.FC<LocationListProps> = ({ locations }) => (
           className="flex items-baseline justify-between gap-3 border-b border-line-1 py-[9px] md:py-2.5"
           style={{ fontSize: '12px' }}
         >
-          <span className="truncate font-semibold text-ink">{location.name}</span>
+          <span className="min-w-0 truncate font-semibold text-ink">{location.name}</span>
           <span className="font-mono tabular-nums text-muted-1">{formatCount(location.count)}</span>
         </li>
       ))}

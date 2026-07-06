@@ -8,7 +8,7 @@ paths:
 
 ## Breakpoints
 
-Mobile-first, with a single primary breakpoint at **~760px** (define it as the Tailwind `md` boundary or a custom screen and use it consistently). Base styles target a phone-width column, then layer the desktop overrides above 760px.
+Mobile-first, with a single primary breakpoint at **~760px** (define it as the Tailwind `md` boundary or a custom screen and use it consistently). Base styles target a phone-width column, then layer the desktop overrides above 760px. (One exception: the Board hero splits headline-left / post-it-cluster-right only at **~1024px** (`min-[1024px]`), since the side-by-side needs more room than 760px; below that it stacks.)
 
 ## Ultra-wide rail
 

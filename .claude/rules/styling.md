@@ -19,7 +19,7 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 ## Visual Language
 
 - Display/headlines and **every count/number** use **Archivo** (weights 500–800, `font-display`, `tabular-nums`). Labels, metadata, table cells, and badges use **IBM Plex Mono** (400–600, `font-mono`). Base 14px, line-height 1.5.
-- The Board pairs an editorial headline (large Archivo) with a row of market stat post-its — big Archivo numbers over uppercase tracked-mono micro-labels.
+- The Board pairs an editorial headline (large Archivo) with a 2×2 cluster of market stat post-its (beside the headline on wide screens, stacked below on mobile) — big Archivo numbers over uppercase tracked-mono micro-labels.
 - Square-ish corners, hairline borders from the border ramp, surface-tier shifts (`bg-paper` vs `bg-raised`) for depth — **prefer hairlines over shadows**. Never lean on a drop shadow where a `--line-*` border reads the section. The one deliberate exception: the Board stat post-its (`MarketHeadline`), where a soft shadow + slight tilt + torn tape sell the taped-note effect.
 - Charts: the work-mix bar (Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown residual `--muted-3`) and sector bars (ramp `--brand-dark` → `--brand` → `--brand-soft` → `--line-4`, ordered by count) are hand-rolled CSS. The two daily time-series charts are d3-scaled SVG via `TrendBars` (latest bar `--brand`, the rest `--brand-soft`; axes/gridlines from the `--line-*` and `--muted-*` ramps). SVG `fill`/`stroke` take a token as `rgb(var(--token))` — never a hex.
 

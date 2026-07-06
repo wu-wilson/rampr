@@ -31,7 +31,7 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
 
   return (
     <Band>
-      <div className="-mx-5 md:-mx-10 md:grid md:grid-cols-[1fr_300px_300px]">
+      <div className="-mx-5 md:-mx-10 md:grid md:grid-cols-[minmax(0,1fr)_240px_240px]">
         {/* Identity cell — the full header on mobile, the left column on desktop. */}
         <div className="px-5 py-6 md:border-r md:border-line-2 md:px-10 md:py-10">
           <MonoLabel className="hidden md:inline">

@@ -55,7 +55,7 @@ export const MarketScreen: React.FC = () => {
       ) : (
         <>
           <Band>
-            <div className="-mx-5 grid md:-mx-10 md:grid-cols-2">
+            <div className="-mx-5 md:-mx-10 md:grid md:grid-cols-2">
               <div className="border-b border-line-2 px-5 py-[22px] md:border-b-0 md:border-r md:px-10 md:py-7">
                 <SectorBars sectors={market.sectors} />
               </div>

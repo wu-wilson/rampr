@@ -27,7 +27,7 @@ interface MoversStripProps {
  * @returns The two-column movers band
  */
 export const MoversStrip: React.FC<MoversStripProps> = ({ movers, daysTracked }) => (
-  <div className="-mx-5 grid md:-mx-10 md:grid-cols-2">
+  <div className="-mx-5 md:-mx-10 md:grid md:grid-cols-2">
     <div className="border-b border-line-2 px-5 py-[22px] md:border-b-0 md:border-r md:px-10 md:py-6">
       <MoverColumn
         title="Heating up · 7d"
@@ -75,7 +75,7 @@ const MoverColumn: React.FC<{
                 className="flex items-center justify-between gap-3 px-3 py-2 transition-colors hover:bg-raised/60 md:py-[9px]"
                 style={{ transitionDuration: `${DURATION.fast}ms` }}
               >
-                <span className="truncate font-display font-semibold text-ink" style={{ fontSize: '12px' }}>
+                <span className="min-w-0 truncate font-display font-semibold text-ink" style={{ fontSize: '12px' }}>
                   {mover.name}
                 </span>
                 <span

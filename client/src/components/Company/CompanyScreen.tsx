@@ -43,7 +43,7 @@ export const CompanyScreen: React.FC = () => {
       <TrajectoryChart trajectory={company.trajectory} />
 
       <Band>
-        <div className="-mx-5 grid md:-mx-10 md:grid-cols-3">
+        <div className="-mx-5 md:-mx-10 md:grid md:grid-cols-3">
           <div className="px-5 py-[22px] md:px-10 md:py-7">
             <DeptBreakdown departments={company.breakdowns.departments} />
           </div>

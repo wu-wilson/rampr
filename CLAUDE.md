@@ -2,7 +2,7 @@
 
 ## What This Is
 
-rampr is a public, read-only hiring-momentum board with a light, editorial visual language. It polls a curated set of companies' public ATS feeds (Greenhouse / Lever / Ashby) once a day, counts the open roles on each company's own board, and writes one open-count snapshot per company per day. Four routed screens: **Board** (an editorial headline, a row of market stat notes, and the ranked leaderboard), **Company** (current count, department / location / remote breakdown, and a trajectory chart), **Market** (open roles by sector + the market hiring index over time + heating/cooling movers), and **About** (methodology). The thesis: rampr never editorializes — it counts what's on the board and presents the number and its trend as facts. Snapshot data is full on day one; trend data is gated until enough daily history accrues.
+rampr is a public, read-only hiring-momentum board with a light, editorial visual language. It polls a curated set of companies' public ATS feeds (Greenhouse / Lever / Ashby) once a day, counts the open roles on each company's own board, and writes one open-count snapshot per company per day. Four routed screens: **Board** (an editorial headline paired with market stat notes, over the ranked leaderboard), **Company** (current count, department / location / remote breakdown, and a trajectory chart), **Market** (open roles by sector + the market hiring index over time + heating/cooling movers), and **About** (methodology). The thesis: rampr never editorializes — it counts what's on the board and presents the number and its trend as facts. Snapshot data is full on day one; trend data is gated until enough daily history accrues.
 
 ## Architecture
 

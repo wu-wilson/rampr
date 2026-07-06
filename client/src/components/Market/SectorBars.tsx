@@ -30,7 +30,7 @@ export const SectorBars: React.FC<SectorBarsProps> = ({ sectors }) => (
           key={sector.slug}
           className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 md:grid-cols-[110px_1fr_70px] md:gap-3.5"
         >
-          <span className="truncate font-mono text-muted-1 md:order-1" style={{ fontSize: '11px' }}>
+          <span className="min-w-0 truncate font-mono text-muted-1 md:order-1" style={{ fontSize: '11px' }}>
             {sector.label}
           </span>
           <span className="text-right font-mono text-[11px] font-semibold tabular-nums text-ink md:order-3 md:text-[12px]">

@@ -28,7 +28,7 @@ export const DeptBreakdown: React.FC<DeptBreakdownProps> = ({ departments }) => 
         {departments.map((dept) => (
           <div key={dept.name} className="flex flex-col gap-1.5">
             <div className="flex items-baseline justify-between gap-3" style={{ fontSize: '12px' }}>
-              <span className="truncate font-semibold text-ink">{dept.name}</span>
+              <span className="min-w-0 truncate font-semibold text-ink">{dept.name}</span>
               <span className="font-mono tabular-nums text-muted-1">{formatCount(dept.count)}</span>
             </div>
             <div className="h-[7px] bg-line-1 md:h-2">
