@@ -1,0 +1,13 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm run build",
+    "watchPatterns": ["cron-cleanup/**"]
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "cronSchedule": "43 4 * * 0",
+    "restartPolicyType": "NEVER"
+  }
+}

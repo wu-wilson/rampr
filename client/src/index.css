@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Color tokens stored as space-separated RGB channels (hex in comments) and consumed via
+     `rgb(var(--token) / <alpha-value>)` in tailwind.config.js, so opacity modifiers resolve. */
+
+  /* Surfaces */
+  --paper: 252 251 247; /* #FCFBF7  the app surface — fills the whole viewport */
+  --raised: 245 244 236; /* #F5F4EC  stat cards, gated panels, hover */
+
+  /* Ink */
+  --ink: 27 33 28; /* #1B211C  primary text */
+  --ink-strong: 35 40 31; /* #23281F  dark pills, rules, headers */
+
+  /* Brand green */
+  --brand: 31 157 91; /* #1F9D5B */
+  --brand-dark: 22 107 62; /* #166B3E */
+  --brand-soft: 143 203 168; /* #8FCBA8  hybrid slice, non-final chart bars */
+
+  /* Muted text ramp, lightest use to faintest */
+  --muted-1: 86 91 79; /* #565B4F  body-muted */
+  --muted-2: 117 120 108; /* #75786C  labels */
+  --muted-3: 155 158 144; /* #9B9E90  faint meta */
+
+  /* Borders, tightest to lightest */
+  --line-1: 234 232 221; /* #EAE8DD  row divider */
+  --line-2: 228 226 215; /* #E4E2D7  section rule */
+  --line-3: 216 214 203; /* #D8D6CB  card border / onsite slice */
+  --line-4: 201 199 187; /* #C9C7BB  control border */
+
+  /* Momentum status (always paired with a glyph + text, never color alone) */
+  --up: 31 122 72; /* #1F7A48  up ramping up */
+  --down: 160 91 34; /* #A05B22  down cooling down */
+  --flat: 155 158 144; /* #9B9E90  flat */
+}
+
+@layer base {
+  html {
+    /* Paper fills the whole canvas incl. the iOS safe-area insets and overscroll, so the
+       surface reads as one continuous sheet behind the centered content rail. */
+    @apply bg-paper;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    color-scheme: light;
+  }
+
+  body {
+    @apply text-ink font-display antialiased;
+    font-size: 14px;
+    line-height: 1.5;
+    overscroll-behavior: none;
+  }
+
+  ::selection {
+    background: rgb(var(--brand) / 0.22);
+    color: rgb(var(--ink));
+  }
+
+  *:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 1px rgb(var(--ink) / 0.6);
+  }
+}
+
+@layer components {
+  /* The app surface: warm paper carrying a faint grain layered once at low contrast, capped
+     to the centered rail. grain.png is a binary asset provided separately in public/assets/;
+     until it exists the surface simply renders as flat bg-paper. */
+  .app-surface {
+    @apply bg-paper;
+    background-image: url('/assets/grain.png');
+    background-repeat: repeat;
+    background-size: 180px 180px;
+  }
+}
+
+/* Rising bars grow from the baseline on first paint — kept under 300ms, transform-only. */
+@keyframes rampr-bar-rise {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.animate-bar-rise {
+  transform-origin: bottom;
+  animation: rampr-bar-rise 300ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bar-rise {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  * {
+    transition-duration: 100ms !important;
+  }
+}
