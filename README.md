@@ -36,6 +36,7 @@
 - Tailwind CSS v3
 - Zustand
 - React Router
+- d3-scale (chart geometry)
 - Vite 5
 
 #### Server

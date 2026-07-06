@@ -32,6 +32,8 @@ interface BoardMarket {
   sectorCount: number;
   /** Global gating — `true` while `< GATING_DAYS` distinct snapshot dates exist. */
   gated: boolean;
+  /** Distinct snapshot dates recorded so far; drives the "N of 14" gated caption without a second call. */
+  daysTracked: number;
   /** Live total open minus the market index 7 days ago; `null` when globally gated. */
   delta7d: number | null;
 }
@@ -132,7 +134,8 @@ function toBoardCompany(row: Record<string, unknown>): BoardCompany {
  */
 export async function getBoard(params: BoardQuery): Promise<BoardResponse> {
   const sector = params.sector ?? null;
-  const namePattern = params.q ? `%${params.q}%` : null;
+  // Escape ILIKE metacharacters so a literal `_`/`%` in the search matches itself, not any-char/any-run.
+  const namePattern = params.q ? `%${params.q.replace(/[!%_]/g, (ch) => `!${ch}`)}%` : null;
 
   const marketResult = await query(
     `SELECT
@@ -159,6 +162,7 @@ export async function getBoard(params: BoardQuery): Promise<BoardResponse> {
     companyCount: Number(marketRow.company_count),
     sectorCount: Number(marketRow.sector_count),
     gated: marketGated,
+    daysTracked: distinctDays,
     delta7d: marketGated || priorTotal === null ? null : totalOpen - priorTotal,
   };
   const updatedAt = marketRow.updated_at === null ? null : String(marketRow.updated_at);
@@ -167,7 +171,7 @@ export async function getBoard(params: BoardQuery): Promise<BoardResponse> {
     `SELECT COUNT(*)::int AS count
        FROM companies
       WHERE ($1::text IS NULL OR sector_slug = $1)
-        AND ($2::text IS NULL OR name ILIKE $2)`,
+        AND ($2::text IS NULL OR name ILIKE $2 ESCAPE '!')`,
     [sector, namePattern],
   );
   const total = Number((totalResult.rows[0] as Record<string, unknown>).count);
@@ -216,7 +220,7 @@ export async function getBoard(params: BoardQuery): Promise<BoardResponse> {
        END AS delta
      FROM enriched
      WHERE ($2::text IS NULL OR sector_slug = $2)
-       AND ($3::text IS NULL OR name ILIKE $3)
+       AND ($3::text IS NULL OR name ILIKE $3 ESCAPE '!')
      ORDER BY ${SORT_CLAUSES[params.sort]}
      LIMIT $4 OFFSET $5`,
     [GATING_DAYS, sector, namePattern, params.limit, params.offset],

@@ -42,7 +42,7 @@ All read-only JSON under `/api`. Money-free; counts are integers. `updatedAt` = 
 ```jsonc
 {
   "market":  { "totalOpen": 84317, "companyCount": 100, "sectorCount": 9,
-               "gated": true, "delta7d": null },
+               "gated": true, "daysTracked": 6, "delta7d": null },
   "companies": [
     { "rank": 1, "slug": "stripe", "name": "Stripe", "sector": "fintech",
       "sectorLabel": "Fintech", "open": 312, "remotePct": 41,

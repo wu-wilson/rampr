@@ -9,7 +9,7 @@ const greenhouseSchema = z.object({
   jobs: z.array(
     z.object({
       id: z.number(),
-      title: z.string(),
+      title: z.string().nullish(),
       location: z.object({ name: z.string().nullish() }).nullish(),
       departments: z.array(z.object({ name: z.string().nullish() })).nullish(),
     }),

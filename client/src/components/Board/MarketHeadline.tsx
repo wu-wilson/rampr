@@ -4,8 +4,6 @@ import { Band } from '../common/Band';
 import { MomentumArrow } from '../common/MomentumArrow';
 import { MonoLabel } from '../common/MonoLabel';
 
-import { useMarket } from '../../hooks/useMarket';
-
 import { formatCount, formatDelta } from '../../lib/format';
 import { gatingLabel } from '../../lib/gating';
 import { momentumView } from '../../lib/momentum';
@@ -68,7 +66,7 @@ const StatCard: React.FC<{ market: MarketSummary }> = ({ market }) => (
       </span>
     </div>
     <div className="mt-2 md:mt-3.5">
-      <TrendNote gated={market.gated} delta7d={market.delta7d} />
+      <TrendNote gated={market.gated} daysTracked={market.daysTracked} delta7d={market.delta7d} />
     </div>
   </div>
 );
@@ -76,12 +74,15 @@ const StatCard: React.FC<{ market: MarketSummary }> = ({ market }) => (
 /**
  * The market trend line beneath the total: a "trend building — N of 14 daily snapshots"
  * caption while globally gated, or the signed 7-day delta with a directional glyph and
- * color once the market unlocks. The gating count is read from the market rollup.
+ * color once the market unlocks. All values come from the board's own market summary.
+ * @param props - Global gating flag, distinct snapshot dates tracked, and the 7-day delta
+ * @returns The trend line
  */
-const TrendNote: React.FC<{ gated: boolean; delta7d: number | null }> = ({ gated, delta7d }) => {
-  const { market } = useMarket();
-  const daysTracked = market?.index.daysTracked ?? 0;
-
+const TrendNote: React.FC<{ gated: boolean; daysTracked: number; delta7d: number | null }> = ({
+  gated,
+  daysTracked,
+  delta7d,
+}) => {
   if (gated || delta7d === null) {
     return (
       <span className="font-mono text-muted-3" style={{ fontSize: '11px' }}>

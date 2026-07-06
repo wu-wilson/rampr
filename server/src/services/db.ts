@@ -42,7 +42,8 @@ function isConnectionError(err: unknown): boolean {
  * @returns Resolves after the probe completes, whether it succeeded or failed
  */
 export async function initDb(): Promise<void> {
-  pool = new Pool({ connectionString: config.databaseUrl, max: 10 });
+  // Pin the session to UTC so CURRENT_DATE (momentum window, gating, retention) is timezone-independent.
+  pool = new Pool({ connectionString: config.databaseUrl, max: 10, options: '-c timezone=UTC' });
 
   pool.on('error', (err) => {
     console.error('Unexpected database pool error:', err.message);
@@ -50,7 +51,11 @@ export async function initDb(): Promise<void> {
 
   try {
     const client = await pool.connect();
-    client.release();
+    try {
+      await client.query('SELECT 1');
+    } finally {
+      client.release();
+    }
     console.log('Connected to Postgres');
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

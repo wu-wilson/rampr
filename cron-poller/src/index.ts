@@ -4,11 +4,11 @@ import { runPoll } from './poll';
 /**
  * Run one full poll and exit.
  *
- * Boots, polls every curated company (per-company feed-fetch failures are isolated and
- * counted as skipped — never fatal), logs the run totals, and
- * exits. A one-shot: exits 1 only on a fatal failure (loading companies / the DB
- * connection), 0 otherwise. `DATABASE_URL` defaults to the local dev URL so a
- * misconfigured production env surfaces as a connection error rather than a silent no-op.
+ * Boots, polls every curated company (per-company failures are isolated and counted —
+ * `skipped` on a feed-fetch failure, `errored` on a reconcile failure — never fatal), logs the
+ * run totals, and exits. A one-shot: exits 1 only on a fatal failure (loading companies / the DB
+ * connection), 0 otherwise. `DATABASE_URL` defaults to the local dev URL so a misconfigured
+ * production env surfaces as a connection error rather than a silent no-op.
  */
 async function main(): Promise<void> {
   let exitCode = 0;
@@ -17,7 +17,7 @@ async function main(): Promise<void> {
     const totals = await runPoll();
     console.log(
       `Poll complete: ${totals.companiesPolled} polled, ` +
-        `${totals.listingsSeen} listings seen, ${totals.skipped} skipped`,
+        `${totals.listingsSeen} listings seen, ${totals.skipped} skipped, ${totals.errored} errored`,
     );
   } catch (err) {
     console.error('Poll failed:', err);

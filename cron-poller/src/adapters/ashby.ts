@@ -9,7 +9,7 @@ const ashbySchema = z.object({
   jobs: z.array(
     z.object({
       id: z.string(),
-      title: z.string(),
+      title: z.string().nullish(),
       department: z.string().nullish(),
       team: z.string().nullish(),
       location: z.string().nullish(),

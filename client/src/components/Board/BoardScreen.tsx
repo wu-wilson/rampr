@@ -8,6 +8,7 @@ import { LoadMore } from './LoadMore';
 import { MarketHeadline } from './MarketHeadline';
 
 import { useBoard } from '../../hooks/useBoard';
+import { useFilterUrlSync } from '../../hooks/useFilterUrlSync';
 import { useFilterStore } from '../../store/filterStore';
 
 import { formatCount, formatPollSchedule } from '../../lib/format';
@@ -17,10 +18,13 @@ import { PAGE_SIZE } from '../../constants/config';
 /**
  * The Board screen: an editorial hero with the market total, the controls band, and the
  * ranked leaderboard with load-more pagination. Renders designed loading, error, day-zero
- * ("tracking just started"), and no-match empty states — never a blank screen.
+ * ("tracking just started"), and no-match empty states — never a blank screen. A failed
+ * refetch (after a board is already shown) surfaces a non-blocking notice over the last result.
  * @returns The Board screen
  */
 export const BoardScreen: React.FC = () => {
+  useFilterUrlSync();
+
   const sector = useFilterStore((s) => s.sector);
   const sort = useFilterStore((s) => s.sort);
   const search = useFilterStore((s) => s.search);
@@ -59,6 +63,16 @@ export const BoardScreen: React.FC = () => {
       ) : (
         <>
           <FilterBar companyCount={board.total} />
+
+          {error && (
+            <p
+              className="px-5 pt-3 font-mono text-down md:px-10"
+              style={{ fontSize: '11px' }}
+              role="status"
+            >
+              Couldn’t refresh — showing the last result.
+            </p>
+          )}
 
           {shown === 0 ? (
             <EmptyState

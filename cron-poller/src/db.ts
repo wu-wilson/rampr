@@ -10,6 +10,8 @@ import type { AtsProvider, NormalizedListing } from './adapters';
 const pool = new Pool({
   connectionString: config.databaseUrl,
   max: Math.max(1, config.pollConcurrency),
+  // Pin the session to UTC so the snapshot's CURRENT_DATE matches the DB's day boundary everywhere.
+  options: '-c timezone=UTC',
 });
 
 /** A curated company row to poll. */
@@ -30,7 +32,7 @@ export interface CompanyRow {
  * @param params - Values bound to the placeholders, in order
  * @returns The unwrapped driver result; read `.rows` for the selected records
  */
-export async function query(text: string, params?: unknown[]): Promise<QueryResult> {
+async function query(text: string, params?: unknown[]): Promise<QueryResult> {
   return pool.query(text, params);
 }
 
@@ -107,7 +109,12 @@ export async function reconcileCompany(
 
     await client.query('COMMIT');
   } catch (err) {
-    await client.query('ROLLBACK');
+    // Roll back best-effort; never let a failed ROLLBACK (e.g. a dead connection) mask the real cause.
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      /* ignore — the original error below is the meaningful one */
+    }
     throw err;
   } finally {
     client.release();

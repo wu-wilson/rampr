@@ -7,7 +7,7 @@ import type { Adapter, NormalizedListing } from './types';
 /** Defensive schema for a single Lever posting (`mode=json`). */
 const leverPostingSchema = z.object({
   id: z.string(),
-  text: z.string(),
+  text: z.string().nullish(),
   categories: z
     .object({
       department: z.string().nullish(),

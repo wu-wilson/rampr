@@ -16,11 +16,10 @@ export class ApiError extends Error {
  * carrying the HTTP status on any non-2xx response so callers can distinguish a 404
  * (unknown company slug) from a transport failure.
  * @param path - API path beginning with `/api`, e.g. `/api/board?sort=open`
- * @param signal - Optional abort signal to cancel an in-flight request
  * @returns The parsed JSON body typed as `T`
  */
-export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, { signal });
+export async function apiGet<T>(path: string): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`);
   if (!response.ok) {
     throw new ApiError(response.status, `Request to ${path} failed (${response.status})`);
   }

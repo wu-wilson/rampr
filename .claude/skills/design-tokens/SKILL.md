@@ -69,7 +69,7 @@ The app surface carries a faint grain: `background-image: url('/assets/grain.png
 - `↘ Cooling down` → `text-down`
 - `→ flat` → `text-flat`
 
-The glyph and the word carry the meaning; color only reinforces.
+The arrow is rendered by the `MomentumArrow` SVG component (rotated per direction) — the `↗ ↘ →` here are illustrative shorthand. The glyph and the word carry the meaning; color only reinforces.
 
 ## Work-mix + sector colors
 

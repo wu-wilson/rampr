@@ -3,7 +3,8 @@ import { Pool, QueryResult } from 'pg';
 import { config } from './config';
 
 /** Single shared connection pool. The cron is a short-lived one-shot, so `max: 1` suffices. */
-const pool = new Pool({ connectionString: config.databaseUrl, max: 1 });
+// Pin the session to UTC so the CURRENT_DATE retention boundary matches the poller's snapshot dates.
+const pool = new Pool({ connectionString: config.databaseUrl, max: 1, options: '-c timezone=UTC' });
 
 /**
  * Run a parameterized query against the pool.
@@ -11,7 +12,7 @@ const pool = new Pool({ connectionString: config.databaseUrl, max: 1 });
  * @param params - Values bound to the placeholders, in order
  * @returns The unwrapped driver result; read `.rows` for the selected records
  */
-export async function query(text: string, params?: unknown[]): Promise<QueryResult> {
+async function query(text: string, params?: unknown[]): Promise<QueryResult> {
   return pool.query(text, params);
 }
 

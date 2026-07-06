@@ -13,6 +13,8 @@ export interface PollTotals {
   listingsSeen: number;
   /** Companies skipped because their feed fetch failed (network / non-2xx / parse error). */
   skipped: number;
+  /** Companies whose feed fetched but the reconcile transaction errored (rolled back, no snapshot). */
+  errored: number;
 }
 
 /** Pause for the given number of milliseconds. */
@@ -88,16 +90,16 @@ async function pollCompany(company: CompanyRow): Promise<CompanyOutcome> {
 /**
  * Run one full poll across all curated companies.
  *
- * Companies run with bounded concurrency and a small per-host delay. Each company is
- * isolated in its own try/catch — a feed 404/timeout/parse failure is counted as skipped
- * and never reconciles or snapshots, and never aborts the run. A
- * failure to load companies still throws (fatal).
+ * Companies run with bounded concurrency and a small per-host delay. Each company is isolated
+ * in its own try/catch — a feed 404/timeout/parse failure is counted as `skipped` (no reconcile,
+ * no snapshot), and a reconcile transaction that fails after a successful fetch is rolled back and
+ * counted as `errored`; neither aborts the run. A failure to load companies still throws (fatal).
  * @returns The recorded run totals
  */
 export async function runPoll(): Promise<PollTotals> {
   const companies = await loadCompanies();
 
-  const totals: PollTotals = { companiesPolled: 0, listingsSeen: 0, skipped: 0 };
+  const totals: PollTotals = { companiesPolled: 0, listingsSeen: 0, skipped: 0, errored: 0 };
 
   const tasks = companies.map((company) => async (): Promise<void> => {
     try {
@@ -110,7 +112,7 @@ export async function runPoll(): Promise<PollTotals> {
       }
     } catch (err) {
       // A DB failure while reconciling one company is isolated and counted, not fatal.
-      totals.skipped += 1;
+      totals.errored += 1;
       const message = err instanceof Error ? err.message : String(err);
       console.error(`Poll failed for ${company.name} (${company.provider}): ${message}`);
     }
