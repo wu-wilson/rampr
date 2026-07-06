@@ -71,10 +71,33 @@ const DrawerLink: React.FC<{ to: string; label: string; onClick: () => void }> =
 );
 
 /**
+ * The mobile menu toggle glyph: a hamburger when the drawer is closed, an X when open.
+ */
+const ToggleGlyph: React.FC<{ open: boolean }> = ({ open }) => (
+  <svg
+    viewBox="0 0 16 16"
+    width="18"
+    height="18"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    aria-hidden="true"
+    className="shrink-0"
+  >
+    {open ? (
+      <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" />
+    ) : (
+      <path d="M2.5 3.5h11M2.5 8h11M2.5 12.5h11" />
+    )}
+  </svg>
+);
+
+/**
  * The persistent top navigation: the rampr mark + wordmark and the three route links
  * grouped at the left, with a desktop-only "updated daily · 06:00 UTC" cadence stamp at the
- * right. Below 760px the links collapse behind a `☰ menu` toggle that becomes `✕ close` and
- * drops a compact drawer of the three routes.
+ * right. Below 760px the links collapse behind a hamburger-icon toggle (an X when open)
+ * that drops a compact drawer of the three routes.
  * @returns The top nav header
  */
 export const AppNav: React.FC = () => {
@@ -111,10 +134,10 @@ export const AppNav: React.FC = () => {
           onClick={() => setOpen((prev) => !prev)}
           aria-expanded={open}
           aria-label={open ? 'Close navigation' : 'Open navigation'}
-          className="font-mono text-muted-1 transition-colors hover:text-ink md:hidden"
-          style={{ fontSize: '12px', transitionDuration: `${DURATION.fast}ms` }}
+          className="text-muted-1 transition-colors hover:text-ink md:hidden"
+          style={{ transitionDuration: `${DURATION.fast}ms` }}
         >
-          {open ? '✕ close' : '☰ menu'}
+          <ToggleGlyph open={open} />
         </button>
       </div>
 
