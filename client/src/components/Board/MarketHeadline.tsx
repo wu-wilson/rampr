@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Band } from '../common/Band';
+import { MomentumArrow } from '../common/MomentumArrow';
 import { MonoLabel } from '../common/MonoLabel';
 
 import { useMarket } from '../../hooks/useMarket';
@@ -93,8 +94,9 @@ const TrendNote: React.FC<{ gated: boolean; delta7d: number | null }> = ({ gated
   const view = momentumView(direction);
 
   return (
-    <span className={`font-mono ${view.className}`} style={{ fontSize: '11px' }}>
-      <span aria-hidden="true">{view.glyph}</span> {formatDelta(delta7d)} roles vs 7 days ago
+    <span className={`inline-flex items-center gap-1.5 font-mono ${view.className}`} style={{ fontSize: '11px' }}>
+      <MomentumArrow direction={direction} size={14} />
+      <span>{formatDelta(delta7d)} roles vs 7 days ago</span>
     </span>
   );
 };

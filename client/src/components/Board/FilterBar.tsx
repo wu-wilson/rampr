@@ -59,18 +59,24 @@ export const FilterBar: React.FC<FilterBarProps> = ({ companyCount }) => {
   );
 };
 
-/** The company search field with a leading search glyph. */
+/** The company search field with a leading magnifier icon. */
 const SearchInput: React.FC<{ value: string; onChange: (value: string) => void }> = ({
   value,
   onChange,
 }) => (
   <div className="relative w-full md:w-[340px]">
-    <span
-      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-muted-3"
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
       aria-hidden="true"
+      className="pointer-events-none absolute left-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted-3"
     >
-      ⌕
-    </span>
+      <circle cx="7" cy="7" r="4.5" />
+      <line x1="10.5" y1="10.5" x2="14" y2="14" />
+    </svg>
     <input
       type="text"
       value={value}

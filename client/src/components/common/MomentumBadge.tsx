@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { MomentumArrow } from './MomentumArrow';
+
 import { formatDelta } from '../../lib/format';
 import { momentumView } from '../../lib/momentum';
 
@@ -9,8 +11,10 @@ interface MomentumBadgeProps {
   momentum: Momentum;
   /** When true, append the "Ramping up" / "Cooling down" / "Flat" word after the delta. */
   showLabel?: boolean;
-  /** Font size of the glyph + delta in pixels. */
+  /** Font size of the delta in pixels. */
   size?: number;
+  /** Arrow size as a multiple of the delta font size (default 1.3); lower it where a smaller arrow reads better. */
+  arrowScale?: number;
   /** When true, render the delta at display weight (800) for the company header tile. */
   strong?: boolean;
 }
@@ -22,7 +26,7 @@ interface MomentumBadgeProps {
  * @param props - The momentum, whether to show the word label, the glyph size, and weight
  * @returns The momentum badge
  */
-export const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, showLabel, size = 14, strong }) => {
+export const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, showLabel, size = 14, arrowScale = 1.3, strong }) => {
   if (momentum.gated || momentum.delta === null) {
     return (
       <span className="inline-flex items-center gap-1 text-muted-3" style={{ fontSize: `${size}px` }}>
@@ -42,7 +46,7 @@ export const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, showLabe
       title={view.label}
       style={{ fontSize: `${size}px` }}
     >
-      <span aria-hidden="true">{view.glyph}</span>
+      <MomentumArrow direction={momentum.direction} size={Math.round(size * arrowScale)} />
       <span className={`tabular-nums ${strong ? 'font-extrabold' : 'font-semibold'}`}>
         {formatDelta(momentum.delta)}
       </span>

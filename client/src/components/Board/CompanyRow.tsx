@@ -41,7 +41,7 @@ export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
         <span className="font-mono font-semibold tabular-nums text-ink" style={{ fontSize: '17px' }}>
           {formatCount(company.open)}
         </span>
-        <MomentumBadge momentum={company.momentum} size={10} />
+        <MomentumBadge momentum={company.momentum} size={12} arrowScale={1.15} />
       </div>
     </div>
 
@@ -66,7 +66,7 @@ export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
         {formatPercent(company.remotePct)}
       </span>
       <span className="flex justify-end">
-        <MomentumBadge momentum={company.momentum} size={11} />
+        <MomentumBadge momentum={company.momentum} size={13} arrowScale={1.15} />
       </span>
     </div>
   </Link>
