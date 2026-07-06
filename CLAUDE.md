@@ -6,7 +6,7 @@ rampr is a public, read-only hiring-momentum board with a light, editorial visua
 
 ## Architecture
 
-- **client/** — React 18 + Vite + TypeScript (strict). Tailwind CSS v3. Zustand for filter state (sector / sort / search, URL-synced). React Router for the four screens. All momentum glyphs, gating states, and chart geometry are derived client-side from what the API returns. Hand-rolled CSS bar charts; no charting library; no UI component libraries.
+- **client/** — React 18 + Vite + TypeScript (strict). Tailwind CSS v3. Zustand for filter state (sector / sort / search, URL-synced). React Router for the four screens. All momentum glyphs, gating states, and chart geometry are derived client-side from what the API returns. The two daily time-series charts (company trajectory, market index) use `d3-scale` for geometry (`scaleBand` / `scaleLinear` / `scaleTime` + axes) with React rendering the SVG; the work-mix and sector bars stay hand-rolled CSS. No charting/rendering library (Recharts, Chart.js, full d3) and no UI component libraries.
 - **server/** — Express + TypeScript (strict). pg + pg-pool for Postgres. Zod validation at every boundary. Thin route files (`/api/board`, `/api/companies/:slug`, `/api/market`, `/api/meta`, `/api/health`) over `listings` (live open set) and `daily_snapshots` (the time series). Parameterized queries only; per-IP rate limiting on reads; CORS allowlist via env. Serves nothing but JSON — the client is a separate static build.
 - **cron-poller/** — TypeScript Node worker. One adapter per ATS, a per-run orchestrator with an inline concurrency limiter, and normalization. Runs as a one-shot `npm start`, reconciles each company's feed into `listings` and writes its `daily_snapshots` row in a single transaction per company, and `process.exit(0/1)`. No HTTP surface. Deployed as a Railway daily cron.
 - **cron-cleanup/** — TypeScript Node worker. Deletes `daily_snapshots` older than `RETENTION_DAYS` (90), then exits. Deployed as a Railway weekly cron.
@@ -31,7 +31,7 @@ rampr is a public, read-only hiring-momentum board with a light, editorial visua
 - Let a *failed* feed fetch reconcile or snapshot — an outage must never wipe `listings` or write a bogus count (a successful feed of zero roles, though, is a genuine `0` and is recorded).
 - Write test files or install testing libraries (TypeScript `strict` is the only linter).
 - Use `any`, `as` casts (unless unavoidable), or default exports (exception: lazy-loaded route components).
-- Use UI component libraries (MUI, Chakra, Radix, shadcn) or a charting library. Build from scratch with Tailwind and CSS.
+- Use UI component libraries (MUI, Chakra, Radix, shadcn) or a charting/rendering library (Recharts, Chart.js, full d3). `d3-scale` is allowed for chart math only — React always renders the SVG. Otherwise build from scratch with Tailwind and CSS.
 - Hardcode hex colors in component files — use Tailwind semantic tokens mapped from CSS custom properties. Light, warm-paper theme; no dark mode, no theme toggle.
 - Allow horizontal overflow on any screen, or use `h-screen` / `min-h-screen` — use `min-h-dvh`.
 - Show blank screens — every state (loading, empty, day-zero before the first poll, not-found, gated trend) must have designed UI.

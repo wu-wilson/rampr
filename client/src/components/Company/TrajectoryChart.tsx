@@ -2,9 +2,10 @@ import React, { useMemo, useState } from 'react';
 
 import { Band } from '../common/Band';
 import { GatedTrend } from '../common/GatedTrend';
+import { TrendBars } from '../common/TrendBars';
 import { RangePicker } from './RangePicker';
 
-import { formatCount, formatDate, formatDayMonth } from '../../lib/format';
+import { formatCount, formatDate } from '../../lib/format';
 
 import type { TrajectoryRange } from './RangePicker';
 import type { Trajectory, TrajectoryPoint } from '../../types/company';
@@ -16,8 +17,8 @@ interface TrajectoryChartProps {
 
 /**
  * The company's open-role trajectory band. When gated it shows the shared "trend building"
- * panel; once live it draws hand-rolled CSS bars over the chosen 14 / 30 / 90-day window
- * (sliced client-side), the most recent bar in full brand and the rest in the soft ramp.
+ * panel; once live it renders the d3-scaled {@link TrendBars} chart over the chosen 14 / 30 /
+ * 90-day window (sliced client-side), with value + time axes and the most recent bar in full brand.
  * @param props - The trajectory series (gated flag + daily points)
  * @returns The trajectory band
  */
@@ -28,7 +29,6 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ trajectory }) 
     () => trajectory.points.slice(-range),
     [trajectory.points, range],
   );
-  const max = useMemo(() => Math.max(1, ...points.map((p) => p.count)), [points]);
 
   return (
     <Band className="py-[22px] md:py-[30px]">
@@ -59,39 +59,28 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ trajectory }) 
           />
         </div>
       ) : (
-        <Bars points={points} max={max} />
+        <Bars points={points} />
       )}
     </Band>
   );
 };
 
-/** The bar plot with first-date and today labels beneath it. */
-const Bars: React.FC<{ points: TrajectoryPoint[]; max: number }> = ({ points, max }) => {
+/** The trajectory plot: a d3-scaled bar chart with value + time axes and a hover tooltip. */
+const Bars: React.FC<{ points: TrajectoryPoint[] }> = ({ points }) => {
+  const first = points[0];
   const latest = points[points.length - 1];
+  const summary =
+    first && latest
+      ? `Open roles per day over ${points.length} days: ${formatCount(first.count)} on ${formatDate(first.date)}, ${formatCount(latest.count)} today.`
+      : 'Open roles per day.';
 
   return (
     <div className="mt-4 md:mt-[22px]">
-      <div className="flex h-[90px] items-end gap-[3px] md:h-[140px]">
-        {points.map((point, index) => {
-          const isLatest = index === points.length - 1;
-          const heightPct = Math.max(3, (point.count / max) * 100);
-          return (
-            <div
-              key={point.date}
-              className={`animate-bar-rise flex-1 ${isLatest ? 'bg-brand' : 'bg-brand-soft'}`}
-              style={{ height: `${heightPct}%` }}
-              title={`${formatDate(point.date)} · ${formatCount(point.count)} open`}
-            />
-          );
-        })}
-      </div>
-      <div
-        className="mt-2 flex justify-between font-mono uppercase text-muted-3"
-        style={{ fontSize: '10px', letterSpacing: '0.04em' }}
-      >
-        <span>{points.length > 0 ? formatDayMonth(points[0].date) : ''}</span>
-        <span>{latest ? `Today · ${formatCount(latest.count)}` : ''}</span>
-      </div>
+      <TrendBars
+        points={points.map((p) => ({ date: p.date, value: p.count }))}
+        heightClass="h-[160px] md:h-[200px]"
+        ariaLabel={summary}
+      />
     </div>
   );
 };

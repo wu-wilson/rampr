@@ -7,7 +7,7 @@ paths:
 
 # Styling
 
-Light, warm-paper editorial aesthetic. No UI component libraries and no charting library — build every component and chart from scratch with Tailwind and CSS.
+Light, warm-paper editorial aesthetic. No UI component libraries and no charting/rendering library (Recharts, Chart.js, full d3) — build every component from scratch with Tailwind and CSS. The one exception: the daily time-series charts (company trajectory, market index) use `d3-scale` for geometry only (`scaleBand` / `scaleLinear` / `scaleTime`, ticks, tick-formatting) while React renders the SVG; see `components/common/TrendBars.tsx`.
 
 ## Theming
 
@@ -21,7 +21,7 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 - Display/headlines and **every count/number** use **Archivo** (weights 500–800, `font-display`, `tabular-nums`). Labels, metadata, table cells, and badges use **IBM Plex Mono** (400–600, `font-mono`). Base 14px, line-height 1.5.
 - The market total is the Board headline — a large Archivo number. Micro-labels are uppercase tracked mono.
 - Square-ish corners, hairline borders from the border ramp, surface-tier shifts (`bg-paper` vs `bg-raised`) for depth — **prefer hairlines over shadows**. Never lean on a drop shadow where a `--line-*` border reads the section.
-- Hand-rolled CSS charts only: work-mix bar (Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown residual `--muted-3`); sector bars ramp `--brand-dark` → `--brand` → `--brand-soft` → `--line-4`, ordered by count.
+- Charts: the work-mix bar (Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown residual `--muted-3`) and sector bars (ramp `--brand-dark` → `--brand` → `--brand-soft` → `--line-4`, ordered by count) are hand-rolled CSS. The two daily time-series charts are d3-scaled SVG via `TrendBars` (latest bar `--brand`, the rest `--brand-soft`; axes/gridlines from the `--line-*` and `--muted-*` ramps). SVG `fill`/`stroke` take a token as `rgb(var(--token))` — never a hex.
 
 ## Momentum status
 

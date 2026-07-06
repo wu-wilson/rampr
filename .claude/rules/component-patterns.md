@@ -17,7 +17,7 @@ paths:
 
 - `useState` for local UI state (row hover, breakdown tab selection, load-more offset, control inputs before they're committed to the URL).
 - Zustand for shared filter state — sector, sort, and search — kept URL-synced so a filtered Board is linkable. Anything spanning components lives in the store, not prop-drilled. React Router owns the four screens (Board / Company / Market / About); scroll to top on navigation.
-- `useMemo` for derived values computed client-side from what the API returns: momentum glyph + label from `direction`, chart bar geometry (trajectory, market index, sector and work-mix bars), remote-share percent, and the "N of 14" gating copy. Never request extra columns or endpoints for values you can derive.
+- `useMemo` for derived values computed client-side from what the API returns: momentum glyph + label from `direction`, sector and work-mix bar geometry, remote-share percent, and the "N of 14" gating copy. (The trajectory and market-index charts derive their scales via `d3-scale` inside `TrendBars`, off the measured container size.) Never request extra columns or endpoints for values you can derive.
 
 ## Data Fetching
 

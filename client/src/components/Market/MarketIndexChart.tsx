@@ -2,8 +2,9 @@ import React from 'react';
 
 import { GatedTrend } from '../common/GatedTrend';
 import { MonoLabel } from '../common/MonoLabel';
+import { TrendBars } from '../common/TrendBars';
 
-import { formatCount, formatDate, formatDayMonth } from '../../lib/format';
+import { formatCount, formatDate } from '../../lib/format';
 
 import type { IndexPoint, MarketIndex } from '../../types/market';
 
@@ -14,8 +15,8 @@ interface MarketIndexChartProps {
 
 /**
  * The market hiring index: total open roles across every tracked company per day. Renders
- * the shared "trend building" panel while globally gated; once live, hand-rolled CSS bars
- * with the most recent day in full brand and the rest in the soft ramp.
+ * the shared "trend building" panel while globally gated; once live, the d3-scaled
+ * {@link TrendBars} chart with value + time axes and the most recent day in full brand.
  * @param props - The index series (gated flag + daily totals)
  * @returns The market-index column
  */
@@ -39,29 +40,22 @@ export const MarketIndexChart: React.FC<MarketIndexChartProps> = ({ index }) => 
   </div>
 );
 
-/** The live index: one CSS bar per day, latest in full brand and the rest in the soft ramp. */
+/** The live index: a d3-scaled bar chart of daily market totals with value + time axes and a tooltip. */
 const IndexBars: React.FC<{ points: IndexPoint[] }> = ({ points }) => {
-  const max = Math.max(1, ...points.map((p) => p.totalOpen));
+  const first = points[0];
+  const latest = points[points.length - 1];
+  const summary =
+    first && latest
+      ? `Total open roles per day over ${points.length} days: ${formatCount(first.totalOpen)} on ${formatDate(first.date)}, ${formatCount(latest.totalOpen)} today.`
+      : 'Total open roles per day.';
 
   return (
     <div>
-      <div className="flex h-[100px] items-end gap-[3px] md:h-[180px]">
-        {points.map((point, i) => {
-          const isLatest = i === points.length - 1;
-          return (
-            <div
-              key={point.date}
-              className={`animate-bar-rise flex-1 rounded-t-sm ${isLatest ? 'bg-brand' : 'bg-brand-soft'}`}
-              style={{ height: `${Math.max(3, (point.totalOpen / max) * 100)}%` }}
-              title={`${formatDate(point.date)} · ${formatCount(point.totalOpen)} open`}
-            />
-          );
-        })}
-      </div>
-      <div className="mt-2 hidden justify-between font-mono uppercase text-muted-3 md:flex" style={{ fontSize: '10px', letterSpacing: '0.04em' }}>
-        <span>{points.length > 0 ? formatDayMonth(points[0].date) : ''}</span>
-        <span>{points.length > 0 ? `Today · ${formatCount(points[points.length - 1].totalOpen)}` : ''}</span>
-      </div>
+      <TrendBars
+        points={points.map((p) => ({ date: p.date, value: p.totalOpen }))}
+        heightClass="h-[180px] md:h-[240px]"
+        ariaLabel={summary}
+      />
     </div>
   );
 };
