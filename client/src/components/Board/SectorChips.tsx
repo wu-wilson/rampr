@@ -44,7 +44,7 @@ export const SectorChips: React.FC = () => {
   const sectors: SectorTotal[] = market.sectors;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-x-2 gap-y-1.5">
       <Chip label="All" active={sector === null} onClick={() => setSector(null)} />
       {sectors.map((entry) => (
         <Chip

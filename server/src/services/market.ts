@@ -135,7 +135,7 @@ export async function getMarket(): Promise<MarketResponse> {
     const indexResult = await query(
       `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, SUM(open_count)::int AS total_open
          FROM daily_snapshots
-        WHERE snapshot_date >= CURRENT_DATE - $1
+        WHERE snapshot_date >= CURRENT_DATE - $1::int
         GROUP BY snapshot_date
         ORDER BY snapshot_date ASC`,
       [INDEX_WINDOW_DAYS],

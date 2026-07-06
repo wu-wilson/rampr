@@ -188,7 +188,7 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
     query(
       `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, open_count AS count
          FROM daily_snapshots
-        WHERE company_id = $1 AND snapshot_date >= CURRENT_DATE - $2
+        WHERE company_id = $1 AND snapshot_date >= CURRENT_DATE - $2::int
         ORDER BY snapshot_date ASC`,
       [companyId, TRAJECTORY_WINDOW_DAYS],
     ),

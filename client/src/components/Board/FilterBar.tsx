@@ -23,9 +23,9 @@ interface FilterBarProps {
 
 /**
  * The Board controls band: a company search, the inline sector pills, and a sort control.
- * Above 760px the three sit on one row with the bordered sort facade pinned right; on mobile
- * the search is full-width, the pills wrap, and a final row pairs the company count (left)
- * with a plain-mono "Sort: {label} ▾" tap target (right).
+ * Above 760px the search sits left with the bordered sort facade pinned right and the sector
+ * pills on a full-width row beneath; on mobile the search is full-width, the pills wrap, and a
+ * final row pairs the company count (left) with a plain-mono "Sort: {label} ▾" tap target (right).
  * @param props - The filtered company count for the mobile controls row
  * @returns The controls band
  */
@@ -38,15 +38,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({ companyCount }) => {
   const activeLabel = SORTS.find((option) => option.value === sort)?.label ?? SORTS[0].label;
 
   return (
-    <Band className="flex flex-col gap-2.5 py-4 md:flex-row md:items-center md:gap-3">
-      <SearchInput value={search} onChange={setSearch} />
+    <Band className="flex flex-col gap-2.5 py-4 md:gap-3">
+      <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:gap-3">
+        <SearchInput value={search} onChange={setSearch} />
+        <SortFacade
+          value={sort}
+          label={activeLabel}
+          onChange={setSort}
+          className="relative hidden md:ml-auto md:block"
+        />
+      </div>
       <SectorChips />
-      <SortFacade
-        value={sort}
-        label={activeLabel}
-        onChange={setSort}
-        className="relative hidden md:ml-auto md:block"
-      />
       <div className="flex items-center justify-between md:hidden">
         <span className="font-mono text-muted-1" style={{ fontSize: '11px' }}>
           {formatCount(companyCount)} companies

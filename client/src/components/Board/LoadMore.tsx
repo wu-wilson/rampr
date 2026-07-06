@@ -21,7 +21,7 @@ export const LoadMore: React.FC<LoadMoreProps> = ({ remaining, onClick }) => {
   const next = Math.min(PAGE_SIZE, remaining);
 
   return (
-    <div className="flex justify-center px-5 py-5 md:px-10">
+    <div className="flex justify-center px-5 pt-5 md:px-10">
       <button
         type="button"
         onClick={onClick}

@@ -69,7 +69,7 @@ export const BoardScreen: React.FC = () => {
             <>
               <Leaderboard companies={board.companies} />
               {remaining > 0 && <LoadMore remaining={remaining} onClick={() => setPages((p) => p + 1)} />}
-              <p className="px-5 pb-6 text-center font-mono text-muted-3 md:px-10" style={{ fontSize: '11px' }}>
+              <p className="px-5 pb-6 pt-5 text-center font-mono text-muted-3 md:px-10" style={{ fontSize: '11px' }}>
                 showing {formatCount(shown)} of {formatCount(board.total)} companies
               </p>
             </>
