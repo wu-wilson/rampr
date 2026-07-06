@@ -13,6 +13,7 @@ Mobile-first, with a single primary breakpoint at **~760px** (define it as the T
 ## Ultra-wide rail
 
 - The paper surface (`bg-paper` + grain) fills the viewport; **content and the sectioning hairlines stay in a centered 1280px rail** (`max-w-rail mx-auto`, `rail` = `1280px`). The paper extends past the rail — don't add a border, shadow, or background band to mark its edges.
+- Inside the rail, bands and screens carry a consistent horizontal gutter: `px-5` (20px) on mobile, `md:px-10` (40px) on desktop.
 
 ## Typography
 
