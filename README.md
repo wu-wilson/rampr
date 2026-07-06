@@ -1,6 +1,6 @@
 ## ⚡ Overview
 
-[**rampr**](https://rampr.dev) shows which companies are actually ramping up hiring. It polls public ATS feeds once a day, counts the open roles on each company's own job board, and tracks how that count moves over time — the current count on day one, the trend as daily snapshots accrue.
+[**Rampr**](https://rampr.dev) shows which companies are actually ramping up hiring — it polls public ATS feeds daily, counts the open roles on each company's job board, and tracks how that count moves over time.
 
 ## 🔭 Architecture
 
@@ -46,14 +46,14 @@
 
 #### Cron Poller
 
-- Node.js worker (TS)
+- Node.js script
 - Native `fetch` + Zod
 - Inline concurrency limiter
 - pg driver
 
 #### Cron Cleanup
 
-- Node.js worker (TS)
+- Node.js script
 - pg driver
 
 ## 🛠️ Local Setup
@@ -88,7 +88,7 @@ The crons are not started by `launch.sh` — they're scheduled jobs that run on 
 
 ## ☁️ Deployment
 
-Deployed on [Railway](https://railway.app) as four services: the client ships as a static build (`rampr.dev`), the server runs as a separate API (`api.rampr.dev`), the poller runs daily to fetch the ATS feeds, and the cleanup runs weekly to prune snapshots past the 90-day window. DNS via [Cloudflare](https://www.cloudflare.com).
+Deployed on [Railway](https://railway.app) as four services: the client ships as a static build (`rampr.dev`), the server runs as a separate API (`api.rampr.dev`), the poller runs daily to fetch the ATS feeds, and the cleanup runs weekly to prune old snapshots. DNS via [Cloudflare](https://www.cloudflare.com).
 
 ## ⚙️ Configuration
 
