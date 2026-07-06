@@ -56,3 +56,19 @@ export function formatDayMonth(iso: string): string {
     day: 'numeric',
   });
 }
+
+/**
+ * Format the daily poll — scheduled at 06:00 UTC — as a label in the viewer's local timezone,
+ * so a day-zero visitor sees when the first counts will land on their own clock.
+ * @returns A label like `Poll scheduled · 11:00 PM PDT`
+ */
+export function formatPollSchedule(): string {
+  const scheduled = new Date();
+  scheduled.setUTCHours(6, 0, 0, 0);
+  const time = scheduled.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  });
+  return `Poll scheduled · ${time}`;
+}

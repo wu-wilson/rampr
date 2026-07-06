@@ -9,7 +9,7 @@ import { SectorBars } from './SectorBars';
 
 import { useMarket } from '../../hooks/useMarket';
 
-import { formatCount } from '../../lib/format';
+import { formatCount, formatPollSchedule } from '../../lib/format';
 
 /**
  * The Market screen: a by-sector hero, then open roles by sector beside the market hiring
@@ -31,7 +31,8 @@ export const MarketScreen: React.FC = () => {
     return (
       <EmptyState
         title="Tracking just started"
-        body="rampr hasn't completed its first daily poll yet. Once it counts the boards, the sector totals, market index, and movers will appear here."
+        body="rampr hasn't run its first poll yet — open-role counts land here once it does."
+        note={formatPollSchedule()}
       />
     );
   }

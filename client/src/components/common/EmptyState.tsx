@@ -7,17 +7,19 @@ interface EmptyStateProps {
   title: string;
   /** Supporting sentence beneath the headline. */
   body: string;
+  /** Optional mono footnote beneath the body (e.g. the next-poll cadence on day zero). */
+  note?: string;
 }
 
 /**
  * A centered empty state built around the rampr mark. Used for the day-zero
  * "tracking just started" screen (before the first poll) and for zero-match filter
  * results — a designed panel, never a blank screen.
- * @param props - Headline and supporting body copy
+ * @param props - Headline, supporting body copy, and an optional mono footnote
  * @returns The empty state
  */
-export const EmptyState: React.FC<EmptyStateProps> = ({ title, body }) => (
-  <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
+export const EmptyState: React.FC<EmptyStateProps> = ({ title, body, note }) => (
+  <div className="flex flex-col items-center justify-center gap-4 px-5 py-24 text-center md:px-10">
     <RamprMark size={44} className="opacity-70" />
     <h2 className="font-display font-bold text-ink" style={{ fontSize: '20px' }}>
       {title}
@@ -25,5 +27,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ title, body }) => (
     <p className="max-w-sm text-muted-1" style={{ fontSize: '13px', lineHeight: 1.6 }}>
       {body}
     </p>
+    {note && (
+      <p className="font-mono text-muted-2" style={{ fontSize: '11px' }}>
+        {note}
+      </p>
+    )}
   </div>
 );

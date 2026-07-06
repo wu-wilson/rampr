@@ -10,7 +10,7 @@ import { MarketHeadline } from './MarketHeadline';
 import { useBoard } from '../../hooks/useBoard';
 import { useFilterStore } from '../../store/filterStore';
 
-import { formatCount } from '../../lib/format';
+import { formatCount, formatPollSchedule } from '../../lib/format';
 
 import { PAGE_SIZE } from '../../constants/config';
 
@@ -53,7 +53,8 @@ export const BoardScreen: React.FC = () => {
       {isDayZero ? (
         <EmptyState
           title="Tracking just started"
-          body="rampr hasn't completed its first daily poll yet. Once it reads the companies' public hiring boards, every open-role count will appear here."
+          body="rampr hasn't run its first poll yet — open-role counts land here once it does."
+          note={formatPollSchedule()}
         />
       ) : (
         <>
