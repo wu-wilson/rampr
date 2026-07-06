@@ -89,16 +89,16 @@ const SearchInput: React.FC<{ value: string; onChange: (value: string) => void }
   </div>
 );
 
-/** The desktop "Sort: {label} ▾" bordered facade over a transparent native select. */
+/** The desktop "Sort: {label} ▾" bordered facade over a transparent native select; because the select is invisible, the facade surfaces its keyboard focus ring. */
 const SortFacade: React.FC<{
   value: BoardSort;
   label: string;
   onChange: (value: BoardSort) => void;
   className?: string;
 }> = ({ value, label, onChange, className }) => (
-  <div className={className}>
+  <div className={`group ${className ?? ''}`}>
     <div
-      className="flex items-center gap-2 border border-line-4 bg-paper px-3.5 py-2.5 font-mono text-muted-1"
+      className="flex items-center gap-2 border border-line-4 bg-paper px-3.5 py-2.5 font-mono text-muted-1 transition-shadow group-has-[:focus-visible]:ring-1 group-has-[:focus-visible]:ring-ink/60"
       style={{ fontSize: '11px' }}
       aria-hidden="true"
     >
@@ -111,14 +111,18 @@ const SortFacade: React.FC<{
   </div>
 );
 
-/** The mobile "Sort: {label} ▾" plain-mono tap target over a transparent native select. */
+/** The mobile "Sort: {label} ▾" plain-mono tap target over a transparent native select; the label underlines while the select is keyboard-focused. */
 const SortText: React.FC<{
   value: BoardSort;
   label: string;
   onChange: (value: BoardSort) => void;
 }> = ({ value, label, onChange }) => (
-  <div className="relative">
-    <span className="font-mono text-muted-1" style={{ fontSize: '11px' }} aria-hidden="true">
+  <div className="group relative">
+    <span
+      className="font-mono text-muted-1 underline-offset-4 group-has-[:focus-visible]:underline"
+      style={{ fontSize: '11px' }}
+      aria-hidden="true"
+    >
       Sort: <b className="font-semibold text-ink">{label}</b> ▾
     </span>
     <SortSelect value={value} onChange={onChange} />
