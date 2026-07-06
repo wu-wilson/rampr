@@ -25,11 +25,11 @@ const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
     to={to}
     end={to === '/'}
     className={({ isActive }) =>
-      `inline-flex items-center gap-1.5 font-display transition-colors hover:text-ink ${
+      `inline-flex items-center gap-1.5 font-display transition-colors hover:text-ink text-[13px] ${
         isActive ? 'font-extrabold text-ink' : 'font-medium text-muted-2'
       }`
     }
-    style={{ fontSize: '13px', transitionDuration: `${DURATION.fast}ms` }}
+    style={{ transitionDuration: `${DURATION.fast}ms` }}
   >
     {({ isActive }: { isActive: boolean }) => (
       <>
@@ -58,12 +58,12 @@ const DrawerLink: React.FC<{ to: string; label: string; onClick: () => void }> =
             className={`h-1.5 w-1.5 rounded-full ${isActive ? 'bg-brand' : 'border border-line-4'}`}
             aria-hidden="true"
           />
-          <span className={`font-display font-bold ${isActive ? 'text-ink' : 'text-muted-1'}`} style={{ fontSize: '15px' }}>
+          <span className={`font-display font-bold text-[15px] ${isActive ? 'text-ink' : 'text-muted-1'}`}>
             {label}
           </span>
         </span>
         {isActive && (
-          <span className="font-mono uppercase tracking-[0.1em] text-muted-3" style={{ fontSize: '9px' }}>
+          <span className="font-mono uppercase tracking-[0.1em] text-muted-3 text-[9px]">
             Current
           </span>
         )}
@@ -120,7 +120,7 @@ export const AppNav: React.FC = () => {
         <div className="flex items-center gap-7">
           <Link to="/" onClick={close} className="flex items-center gap-2 text-ink" aria-label="rampr — home">
             <RamprMark size={24} />
-            <span className="font-display font-extrabold text-[19px] md:text-[21px]" style={{ letterSpacing: '-0.02em' }}>
+            <span className="font-display font-extrabold text-[19px] md:text-[21px] tracking-[-0.02em]">
               rampr
             </span>
           </Link>
@@ -131,7 +131,7 @@ export const AppNav: React.FC = () => {
           </nav>
         </div>
 
-        <span className="hidden font-mono text-muted-2 md:inline" style={{ fontSize: '11px' }}>
+        <span className="hidden font-mono text-muted-2 md:inline text-[11px]">
           {stamp}
         </span>
 

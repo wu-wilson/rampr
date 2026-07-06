@@ -21,16 +21,16 @@ export const NotFound: React.FC<NotFoundProps> = ({
   body = "That page isn't on the board. It may have moved, or never existed.",
 }) => (
   <div className="flex flex-col items-center justify-center gap-4 px-5 py-24 text-center md:px-10">
-    <h2 className="font-display font-bold text-ink" style={{ fontSize: '20px' }}>
+    <h2 className="font-display font-bold text-ink text-[20px]">
       {title}
     </h2>
-    <p className="max-w-sm text-muted-1" style={{ fontSize: '13px', lineHeight: 1.6 }}>
+    <p className="max-w-sm text-muted-1 text-[13px] leading-[1.6]">
       {body}
     </p>
     <Link
       to="/"
-      className="mt-1 border border-line-4 px-4 py-2 font-mono uppercase text-ink transition-colors hover:border-ink hover:bg-raised/60"
-      style={{ fontSize: '12px', letterSpacing: '0.1em', transitionDuration: `${DURATION.fast}ms` }}
+      className="mt-1 border border-line-4 px-4 py-2 font-mono uppercase text-ink transition-colors hover:border-ink hover:bg-raised/60 text-[12px] tracking-[0.1em]"
+      style={{ transitionDuration: `${DURATION.fast}ms` }}
     >
       ← Back to the board
     </Link>

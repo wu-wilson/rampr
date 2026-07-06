@@ -46,12 +46,16 @@ export async function loadCompanies(): Promise<CompanyRow[]> {
        FROM companies
       ORDER BY id`,
   );
-  return result.rows.map((row) => ({
-    id: row.id as number,
-    name: row.name as string,
-    provider: row.ats_provider as AtsProvider,
-    atsId: row.ats_id as string,
-  }));
+  return result.rows.map((r) => {
+    const row = r as Record<string, unknown>;
+    return {
+      id: Number(row.id),
+      name: String(row.name),
+      // `ats_provider` is DB-constrained to the provider enum, so the union narrowing is safe.
+      provider: String(row.ats_provider) as AtsProvider,
+      atsId: String(row.ats_id),
+    };
+  });
 }
 
 /**

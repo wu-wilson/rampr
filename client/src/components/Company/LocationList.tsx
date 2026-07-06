@@ -24,15 +24,14 @@ export const LocationList: React.FC<LocationListProps> = ({ locations }) => (
       {locations.map((location) => (
         <li
           key={location.name}
-          className="flex items-baseline justify-between gap-3 border-b border-line-1 py-[9px] md:py-2.5"
-          style={{ fontSize: '12px' }}
+          className="flex items-baseline justify-between gap-3 border-b border-line-1 py-[9px] md:py-2.5 text-[12px]"
         >
           <span className="min-w-0 truncate font-semibold text-ink">{location.name}</span>
           <span className="font-mono tabular-nums text-muted-1">{formatCount(location.count)}</span>
         </li>
       ))}
       {locations.length === 0 && (
-        <li className="text-muted-3" style={{ fontSize: '12px' }}>
+        <li className="text-muted-3 text-[12px]">
           No locations reported.
         </li>
       )}

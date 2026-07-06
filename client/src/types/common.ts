@@ -12,6 +12,4 @@ export interface Momentum {
   direction: MomentumDirection;
   /** True until GATING_DAYS daily snapshots have accrued for the company. */
   gated: boolean;
-  /** Count of daily snapshots recorded so far for the company. */
-  daysTracked: number;
 }

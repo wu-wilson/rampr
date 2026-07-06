@@ -50,7 +50,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ companyCount }) => {
       </div>
       <SectorChips />
       <div className="flex items-center justify-between md:hidden">
-        <span className="font-mono text-muted-1" style={{ fontSize: '11px' }}>
+        <span className="font-mono text-muted-1 text-[11px]">
           {formatCount(companyCount)} companies
         </span>
         <SortText value={sort} label={activeLabel} onChange={setSort} />
@@ -83,8 +83,8 @@ const SearchInput: React.FC<{ value: string; onChange: (value: string) => void }
       onChange={(e) => onChange(e.target.value)}
       placeholder="search company"
       aria-label="search company"
-      className="w-full border border-line-4 bg-paper py-2.5 pl-9 pr-3.5 font-mono text-ink transition-colors placeholder:text-muted-3 focus:border-brand"
-      style={{ fontSize: '12px', transitionDuration: `${DURATION.fast}ms` }}
+      className="w-full border border-line-4 bg-paper py-2.5 pl-9 pr-3.5 font-mono text-ink transition-colors placeholder:text-muted-3 focus:border-brand text-[12px]"
+      style={{ transitionDuration: `${DURATION.fast}ms` }}
     />
   </div>
 );
@@ -98,8 +98,7 @@ const SortFacade: React.FC<{
 }> = ({ value, label, onChange, className }) => (
   <div className={`group ${className ?? ''}`}>
     <div
-      className="flex items-center gap-2 border border-line-4 bg-paper px-3.5 py-2.5 font-mono text-muted-1 transition-shadow group-has-[:focus-visible]:ring-1 group-has-[:focus-visible]:ring-ink/60"
-      style={{ fontSize: '11px' }}
+      className="flex items-center gap-2 border border-line-4 bg-paper px-3.5 py-2.5 font-mono text-muted-1 transition-shadow group-has-[:focus-visible]:ring-1 group-has-[:focus-visible]:ring-ink/60 text-[11px]"
       aria-hidden="true"
     >
       <span>
@@ -119,8 +118,7 @@ const SortText: React.FC<{
 }> = ({ value, label, onChange }) => (
   <div className="group relative">
     <span
-      className="font-mono text-muted-1 underline-offset-4 group-has-[:focus-visible]:underline"
-      style={{ fontSize: '11px' }}
+      className="font-mono text-muted-1 underline-offset-4 group-has-[:focus-visible]:underline text-[11px]"
       aria-hidden="true"
     >
       Sort: <b className="font-semibold text-ink">{label}</b> ▾

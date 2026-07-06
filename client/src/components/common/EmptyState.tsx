@@ -18,14 +18,14 @@ interface EmptyStateProps {
  */
 export const EmptyState: React.FC<EmptyStateProps> = ({ title, body, note }) => (
   <div className="flex flex-col items-center justify-center gap-4 px-5 py-24 text-center md:px-10">
-    <h2 className="font-display font-bold text-ink" style={{ fontSize: '20px' }}>
+    <h2 className="font-display font-bold text-ink text-[20px]">
       {title}
     </h2>
-    <p className="max-w-sm text-muted-1" style={{ fontSize: '13px', lineHeight: 1.6 }}>
+    <p className="max-w-sm text-muted-1 text-[13px] leading-[1.6]">
       {body}
     </p>
     {note && (
-      <p className="font-mono text-muted-2" style={{ fontSize: '11px' }}>
+      <p className="font-mono text-muted-2 text-[11px]">
         {note}
       </p>
     )}

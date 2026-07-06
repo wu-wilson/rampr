@@ -13,8 +13,7 @@ interface StatusNoteProps {
  */
 export const StatusNote: React.FC<StatusNoteProps> = ({ children }) => (
   <p
-    className="mx-auto max-w-md px-5 py-24 text-center text-muted-2"
-    style={{ fontSize: '13px', lineHeight: 1.6 }}
+    className="mx-auto max-w-md px-5 py-24 text-center text-muted-2 text-[13px] leading-[1.6]"
   >
     {children}
   </p>

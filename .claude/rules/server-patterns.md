@@ -15,7 +15,7 @@ paths:
 ## API semantics
 
 - `/api/board` reads `listings` (live open set) joined to `companies`; open now = `COUNT(listings)`, never the latest snapshot. Returns `{ market, companies, total, updatedAt }` — `total` = matching companies for load-more. Momentum is the 7d `delta` + `direction` from the snapshot on-or-before `CURRENT_DATE − 7`, `null` when gated.
-- `/api/companies/:slug`, `/api/market`, `/api/meta` are read-only aggregates over `listings` + `daily_snapshots`. `updatedAt` = `MAX(snapshot_date)` as an ISO date, or `null` before the first poll (client shows day-zero).
+- `/api/companies/:slug` and `/api/market` are read-only aggregates over `listings` + `daily_snapshots`; `/api/meta` returns just the last-updated stamp for the nav. `updatedAt` = `MAX(snapshot_date)` as an ISO date, or `null` before the first poll (client shows day-zero).
 - **Gating** mirrors `GATING_DAYS = 14` (keep the constant in sync with the client). Trend fields (trajectory, market index, movers) return `gated: true` with empty `points` / `null` deltas; snapshot fields (open, breakdowns, sector totals) are never gated.
 
 ## Security

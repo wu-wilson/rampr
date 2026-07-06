@@ -42,11 +42,11 @@ All read-only JSON under `/api`. Money-free; counts are integers. `updatedAt` = 
 ```jsonc
 {
   "market":  { "totalOpen": 84317, "companyCount": 100, "sectorCount": 9,
-               "gated": true, "daysTracked": 6, "delta7d": null },
+               "gated": true, "delta7d": null },
   "companies": [
     { "rank": 1, "slug": "stripe", "name": "Stripe", "sector": "fintech",
       "sectorLabel": "Fintech", "open": 312, "remotePct": 41,
-      "momentum": { "delta": 18, "direction": "up", "gated": false, "daysTracked": 22 } }
+      "momentum": { "delta": 18, "direction": "up", "gated": false } }
   ],
   "total": 100,          // matching companies, for load-more
   "updatedAt": "2026-07-05"
@@ -61,7 +61,7 @@ All read-only JSON under `/api`. Money-free; counts are integers. `updatedAt` = 
                "careersUrl": "https://boards.greenhouse.io/databricks", "source": "greenhouse" },
                // careersUrl is null when the company has no board link
   "open": 288,
-  "momentum": { "delta": 24, "direction": "up", "gated": false, "daysTracked": 22 },
+  "momentum": { "delta": 24, "direction": "up", "gated": false },
   "breakdowns": {
     "departments": [ { "name": "Engineering", "count": 141 } ],
     "locations":   [ { "name": "San Francisco", "count": 96 } ],
@@ -87,9 +87,9 @@ All read-only JSON under `/api`. Money-free; counts are integers. `updatedAt` = 
 ```
 
 ### `GET /api/meta`
+The lightweight last-updated stamp for the nav; screens derive day-zero from their own `updatedAt`.
 ```jsonc
-{ "totalOpen": 84317, "companyCount": 100, "sectorCount": 9, "updatedAt": "2026-07-05",
-  "gated": true, "daysOfHistory": 6, "sources": ["Greenhouse", "Lever", "Ashby"] }
+{ "updatedAt": "2026-07-05" }   // null before the first poll
 ```
 
 ### `GET /api/health`

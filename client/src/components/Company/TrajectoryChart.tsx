@@ -37,13 +37,13 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ trajectory }) 
           Open roles over time
         </h2>
         {trajectory.gated ? (
-          <span className="hidden font-mono text-muted-3 md:inline" style={{ fontSize: '11px' }}>
+          <span className="hidden font-mono text-muted-3 md:inline text-[11px]">
             one snapshot per day · no backfill
           </span>
         ) : (
           <div className="flex items-center gap-3.5">
             <RangePicker value={range} onChange={setRange} />
-            <span className="hidden font-mono text-muted-3 md:inline" style={{ fontSize: '11px' }}>
+            <span className="hidden font-mono text-muted-3 md:inline text-[11px]">
               one snapshot / day
             </span>
           </div>

@@ -10,8 +10,6 @@ export interface MarketSummary {
   sectorCount: number;
   /** True until 14 distinct snapshot dates exist globally; hides the 7-day delta. */
   gated: boolean;
-  /** Distinct snapshot dates recorded so far, for the gated "N of 14" caption. */
-  daysTracked: number;
   /** Signed 7-day change in total open roles, or null when gated. */
   delta7d: number | null;
 }

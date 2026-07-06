@@ -75,12 +75,11 @@ const MoverColumn: React.FC<{
                 className="flex items-center justify-between gap-3 px-3 py-2 transition-colors hover:bg-raised/60 md:py-[9px]"
                 style={{ transitionDuration: `${DURATION.fast}ms` }}
               >
-                <span className="min-w-0 truncate font-display font-semibold text-ink" style={{ fontSize: '12px' }}>
+                <span className="min-w-0 truncate font-display font-semibold text-ink text-[12px]">
                   {mover.name}
                 </span>
                 <span
-                  className={`font-mono font-semibold tabular-nums ${colorClass}`}
-                  style={{ fontSize: '12px' }}
+                  className={`font-mono font-semibold tabular-nums text-[12px] ${colorClass}`}
                 >
                   {formatDelta(mover.delta)}
                 </span>
@@ -88,7 +87,7 @@ const MoverColumn: React.FC<{
             </li>
           ))}
           {movers.length === 0 && (
-            <li className="border-b border-line-1 px-3 py-2 font-display text-muted-3 md:py-[9px]" style={{ fontSize: '12px' }}>
+            <li className="border-b border-line-1 px-3 py-2 font-display text-muted-3 md:py-[9px] text-[12px]">
               No movers in this direction.
             </li>
           )}

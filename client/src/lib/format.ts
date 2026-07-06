@@ -45,19 +45,6 @@ export function formatDate(iso: string): string {
 }
 
 /**
- * Format an ISO date (`YYYY-MM-DD`) as a compact month + day label without the year, for
- * chart axes. Parsed as UTC noon so the calendar day never shifts across the viewer's timezone.
- * @param iso - An ISO date string
- * @returns A short label (e.g. `Jun 28`)
- */
-export function formatDayMonth(iso: string): string {
-  return new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
-}
-
-/**
  * The daily poll time — scheduled at 06:17 UTC — rendered in the viewer's local timezone.
  * @returns A local time label like `11:17 PM PDT`
  */

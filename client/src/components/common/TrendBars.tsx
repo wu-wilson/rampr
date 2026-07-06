@@ -99,7 +99,7 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
             {yTicks.map((tick) => (
               <g key={`y-${tick}`} transform={`translate(0, ${y(tick)})`}>
                 <line x2={innerW} stroke={token('--line-4')} shapeRendering="crispEdges" />
-                <text x={-8} dy="0.32em" textAnchor="end" className="font-mono" style={{ fontSize: '10px', fill: token('--muted-3') }}>
+                <text x={-8} dy="0.32em" textAnchor="end" className="font-mono text-[10px]" style={{ fill: token('--muted-3') }}>
                   {formatCount(tick)}
                 </text>
               </g>
@@ -127,8 +127,8 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
                 x={tick.x}
                 y={innerH + 14}
                 textAnchor="middle"
-                className="font-mono uppercase"
-                style={{ fontSize: '10px', fill: token('--muted-3'), letterSpacing: '0.04em' }}
+                className="font-mono uppercase text-[10px] tracking-[0.04em]"
+                style={{ fill: token('--muted-3') }}
               >
                 {tick.label}
               </text>
@@ -169,8 +169,8 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
 /** The hover readout: a small ink card above the active column, clamped within the chart width. */
 const Tooltip: React.FC<{ left: number; width: number; point: TrendPoint }> = ({ left, width, point }) => (
   <div
-    className="pointer-events-none absolute top-1 z-10 -translate-x-1/2 whitespace-nowrap rounded-sm bg-ink-strong px-2 py-1 font-mono text-paper"
-    style={{ left: Math.max(56, Math.min(width - 56, left)), fontSize: '10px' }}
+    className="pointer-events-none absolute top-1 z-10 -translate-x-1/2 whitespace-nowrap rounded-sm bg-ink-strong px-2 py-1 font-mono text-paper text-[10px]"
+    style={{ left: Math.max(56, Math.min(width - 56, left)) }}
   >
     {formatDate(point.date)} · {formatCount(point.value)} open
   </div>

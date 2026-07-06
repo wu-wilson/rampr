@@ -4,7 +4,7 @@ import type { Momentum } from './common';
 export type AtsSource = 'greenhouse' | 'lever' | 'ashby';
 
 /** Identity and placement of a company on the board. */
-export interface CompanyInfo {
+interface CompanyInfo {
   slug: string;
   name: string;
   sector: string;

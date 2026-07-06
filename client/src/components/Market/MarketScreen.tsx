@@ -34,8 +34,8 @@ export const MarketScreen: React.FC = () => {
     <div>
       <Band className="pb-5 pt-6 md:pb-[30px] md:pt-[38px]">
         <h1
-          className="font-display font-extrabold text-ink"
-          style={{ fontSize: 'clamp(25px, 6vw, 34px)', letterSpacing: '-0.03em', lineHeight: 1.05 }}
+          className="font-display font-extrabold text-ink tracking-[-0.03em] leading-[1.05]"
+          style={{ fontSize: 'clamp(25px, 6vw, 34px)' }}
         >
           The market, by sector.
         </h1>

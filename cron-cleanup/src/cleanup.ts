@@ -2,7 +2,7 @@ import { config } from './config';
 import { deleteOldSnapshots } from './db';
 
 /** Outcome of a single cleanup run. */
-export interface CleanupResult {
+interface CleanupResult {
   /** Number of `daily_snapshots` rows pruned past the retention window. */
   snapshotsDeleted: number;
 }

@@ -92,4 +92,4 @@ The paper surface (`bg-paper` + grain) fills the whole viewport; **content and t
 
 ## Interaction
 
-Every clickable element gets a hover state, a visible focus ring (`box-shadow: 0 0 0 1px rgb(var(--ink) / 0.6)` via `:focus-visible`), and a transition. Leaderboard rows highlight to `bg-raised` on hover.
+Every clickable element gets a hover state, a visible focus ring (`box-shadow: 0 0 0 1px rgb(var(--ink) / 0.6)` via `:focus-visible`), and a transition. Row/link hovers use a translucent `bg-raised/60` so the paper grain still shows through.

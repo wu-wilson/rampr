@@ -1,7 +1,7 @@
 import type { MomentumDirection } from '../types/common';
 
 /** The presentation of a momentum direction: a word and a semantic color class (the arrow is `MomentumArrow`). */
-export interface MomentumView {
+interface MomentumView {
   /** Human-readable label paired with the arrow so color is never load-bearing. */
   label: string;
   /** Tailwind text-color token: `text-up` | `text-down` | `text-flat`. */

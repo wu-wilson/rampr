@@ -23,7 +23,7 @@ interface MomentumBadgeProps {
  * The reusable momentum indicator: a directional glyph, the signed delta, and an optional
  * word, all sharing a semantic color. Never signals by color alone — the glyph and word
  * carry the meaning. While momentum is gated it renders a muted dot and a "building" label.
- * @param props - The momentum, whether to show the word label, the glyph size, and weight
+ * @param props - The momentum, whether to show the word label, the delta font size, the arrow-to-digit scale, and whether the delta is display weight
  * @returns The momentum badge
  */
 export const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, showLabel, size = 14, arrowScale = 1.3, strong }) => {
@@ -31,7 +31,7 @@ export const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, showLabe
     return (
       <span className="inline-flex items-center gap-1 text-muted-3" style={{ fontSize: `${size}px` }}>
         <span aria-hidden="true">·</span>
-        <span className="font-mono" style={{ fontSize: '11px' }}>
+        <span className="font-mono text-[11px]">
           building
         </span>
       </span>
@@ -51,7 +51,7 @@ export const MomentumBadge: React.FC<MomentumBadgeProps> = ({ momentum, showLabe
         {formatDelta(momentum.delta)}
       </span>
       {showLabel && (
-        <span className="font-mono" style={{ fontSize: '11px' }}>
+        <span className="font-mono text-[11px]">
           {view.label}
         </span>
       )}

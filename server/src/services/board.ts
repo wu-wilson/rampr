@@ -20,8 +20,6 @@ export interface MomentumSummary {
   direction: MomentumDirection;
   /** True while `daysTracked < GATING_DAYS` — the trend is still building. */
   gated: boolean;
-  /** Count of daily snapshots recorded for the company (its history depth). */
-  daysTracked: number;
 }
 
 /** Market headline shown above the board leaderboard. */
@@ -32,8 +30,6 @@ interface BoardMarket {
   sectorCount: number;
   /** Global gating — `true` while `< GATING_DAYS` distinct snapshot dates exist. */
   gated: boolean;
-  /** Distinct snapshot dates recorded so far; drives the "N of 14" gated caption without a second call. */
-  daysTracked: number;
   /** Live total open minus the market index 7 days ago; `null` when globally gated. */
   delta7d: number | null;
 }
@@ -90,7 +86,7 @@ export function resolveMomentum(
 ): MomentumSummary {
   const gated = daysTracked < GATING_DAYS;
   const delta = gated || priorOpen === null ? null : openNow - priorOpen;
-  return { delta, direction: directionOf(delta), gated, daysTracked };
+  return { delta, direction: directionOf(delta), gated };
 }
 
 /** Coerce a nullable numeric pg column (integer or `null`) to `number | null`. */
@@ -162,7 +158,6 @@ export async function getBoard(params: BoardQuery): Promise<BoardResponse> {
     companyCount: Number(marketRow.company_count),
     sectorCount: Number(marketRow.sector_count),
     gated: marketGated,
-    daysTracked: distinctDays,
     delta7d: marketGated || priorTotal === null ? null : totalOpen - priorTotal,
   };
   const updatedAt = marketRow.updated_at === null ? null : String(marketRow.updated_at);

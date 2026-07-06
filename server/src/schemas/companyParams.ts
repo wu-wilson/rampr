@@ -8,6 +8,3 @@ import { z } from 'zod';
 export const CompanyParamsSchema = z.object({
   slug: z.string().trim().max(100).regex(/^[a-z0-9-]+$/),
 });
-
-/** Inferred TypeScript type for validated company route params. */
-export type CompanyParams = z.infer<typeof CompanyParamsSchema>;

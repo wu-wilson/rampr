@@ -38,7 +38,7 @@ export const GatedTrend: React.FC<GatedTrendProps> = ({ daysTracked, label = 'Tr
     </p>
 
     {caption && (
-      <p className="hidden font-mono text-muted-3 md:block" style={{ fontSize: '11px' }}>
+      <p className="hidden font-mono text-muted-3 md:block text-[11px]">
         {caption}
       </p>
     )}

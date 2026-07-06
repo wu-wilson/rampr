@@ -30,15 +30,15 @@ export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
     {/* Mobile: stacked block */}
     <div className="flex items-center justify-between gap-3 md:hidden">
       <div className="flex min-w-0 flex-col gap-1">
-        <span className="truncate font-display font-bold text-ink" style={{ fontSize: '15px' }}>
+        <span className="truncate font-display font-bold text-ink text-[15px]">
           {company.name}
         </span>
-        <span className="truncate font-mono text-muted-2" style={{ fontSize: '10px' }}>
+        <span className="truncate font-mono text-muted-2 text-[10px]">
           {company.rank} · {company.sectorLabel} · {formatPercent(company.remotePct)} remote
         </span>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <span className="font-mono font-semibold tabular-nums text-ink" style={{ fontSize: '17px' }}>
+        <span className="font-mono font-semibold tabular-nums text-ink text-[17px]">
           {formatCount(company.open)}
         </span>
         <MomentumBadge momentum={company.momentum} size={12} arrowScale={1.15} />
@@ -47,22 +47,21 @@ export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
 
     {/* Desktop: single grid line */}
     <div className="hidden md:grid md:grid-cols-[48px_minmax(0,1fr)_150px_120px_100px_170px] md:items-center md:gap-4">
-      <span className="font-mono tabular-nums text-muted-3" style={{ fontSize: '12px' }}>
+      <span className="font-mono tabular-nums text-muted-3 text-[12px]">
         {company.rank}
       </span>
-      <span className="truncate font-display font-bold text-ink" style={{ fontSize: '16px' }}>
+      <span className="truncate font-display font-bold text-ink text-[16px]">
         {company.name}
       </span>
-      <span className="truncate font-mono text-muted-2" style={{ fontSize: '11px' }}>
+      <span className="truncate font-mono text-muted-2 text-[11px]">
         {company.sectorLabel}
       </span>
       <span
-        className="text-right font-mono font-semibold tabular-nums text-ink"
-        style={{ fontSize: '17px' }}
+        className="text-right font-mono font-semibold tabular-nums text-ink text-[17px]"
       >
         {formatCount(company.open)}
       </span>
-      <span className="text-right font-mono tabular-nums text-muted-2" style={{ fontSize: '12px' }}>
+      <span className="text-right font-mono tabular-nums text-muted-2 text-[12px]">
         {formatPercent(company.remotePct)}
       </span>
       <span className="flex justify-end">

@@ -24,8 +24,7 @@ const ColumnHeader: React.FC = () => (
     {HEADERS.map((header) => (
       <span
         key={header.label}
-        className={`font-mono uppercase text-muted-3 ${header.align === 'right' ? 'text-right' : ''}`}
-        style={{ fontSize: '10px', letterSpacing: '0.14em' }}
+        className={`font-mono uppercase text-muted-3 text-[10px] tracking-[0.14em] ${header.align === 'right' ? 'text-right' : ''}`}
       >
         {header.label}
       </span>

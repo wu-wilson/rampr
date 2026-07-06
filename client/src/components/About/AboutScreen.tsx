@@ -44,14 +44,14 @@ export const AboutScreen: React.FC = () => {
     <div className="grid md:grid-cols-[380px_1fr]">
       <div className="border-b border-line-2 px-5 py-7 md:border-b-0 md:border-r md:border-line-2 md:px-10 md:py-11">
         <h1
-          className="font-display font-extrabold text-ink"
-          style={{ fontSize: 'clamp(24px, 6vw, 32px)', letterSpacing: '-0.03em', lineHeight: 1.15 }}
+          className="font-display font-extrabold text-ink tracking-[-0.03em] leading-[1.15]"
+          style={{ fontSize: 'clamp(24px, 6vw, 32px)' }}
         >
           What rampr counts, and how.
         </h1>
         <p
-          className="mt-4 hidden font-display font-medium text-muted-1 md:block"
-          style={{ fontSize: '14px', lineHeight: 1.7, maxWidth: '340px' }}
+          className="mt-4 hidden font-display font-medium text-muted-1 md:block text-[14px] leading-[1.7]"
+          style={{ maxWidth: '340px' }}
         >
           A public, read-only board. No accounts, no alerts, no AI — just companies' own postings, counted the same way
           every day.
@@ -66,7 +66,7 @@ export const AboutScreen: React.FC = () => {
             }`}
           >
             <MonoLabel className="md:pt-0.5">{row.key}</MonoLabel>
-            <p className="font-display font-medium text-ink" style={{ fontSize: '13px', lineHeight: 1.65 }}>
+            <p className="font-display font-medium text-ink text-[13px] leading-[1.65]">
               {row.value}
             </p>
           </div>

@@ -6,7 +6,7 @@ import { loadCompanies, reconcileCompany, type CompanyRow } from './db';
 const POLITE_DELAY_MS = 250;
 
 /** Totals recorded for a completed poll run. */
-export interface PollTotals {
+interface PollTotals {
   /** Companies whose feed was fetched, reconciled, and snapshotted successfully. */
   companiesPolled: number;
   /** Total listings across all successfully polled feeds. */

@@ -17,12 +17,12 @@ const Chip: React.FC<{ label: string; active: boolean; onClick: () => void }> = 
     type="button"
     onClick={onClick}
     aria-pressed={active}
-    className={`whitespace-nowrap rounded-full px-3 py-[7px] font-mono transition-colors md:px-[13px] md:py-2 ${
+    className={`whitespace-nowrap rounded-full px-3 py-[7px] font-mono transition-colors md:px-[13px] md:py-2 text-[11px] ${
       active
         ? 'bg-ink-strong text-paper'
         : 'border border-line-4 bg-paper text-muted-1 hover:border-ink hover:text-ink'
     }`}
-    style={{ fontSize: '11px', transitionDuration: `${DURATION.fast}ms` }}
+    style={{ transitionDuration: `${DURATION.fast}ms` }}
   >
     {label}
   </button>

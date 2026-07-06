@@ -38,4 +38,4 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 ## Animation
 
 - Duration constants from `constants/animations.ts` (`DURATION = { fast: 150, normal: 250, smooth: 300 }`); all in-flow ≤300ms. Prefer `transform`/`opacity`. Honor `prefers-reduced-motion` in `index.css` (disable keyframes, clamp transitions).
-- Inline `style={{...}}` is reserved for values Tailwind can't statically extract (JS-derived chart bar widths/heights, durations, animation delays).
+- Inline `style={{...}}` is reserved for values Tailwind can't cleanly express: JS-derived chart bar widths/heights, durations, animation delays, and fluid `clamp()` headline sizes. Fixed typographic values (`text-[11px]`, `tracking-[0.1em]`, `leading-[1.6]`) go in `className`, not `style`.

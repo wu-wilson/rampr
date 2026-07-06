@@ -25,14 +25,14 @@ export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
     <div className="grid gap-9 min-[1024px]:grid-cols-[1fr_460px] min-[1024px]:items-center min-[1024px]:gap-14">
       <div>
         <h1
-          className="font-display font-extrabold text-ink"
-          style={{ fontSize: 'clamp(29px, 4.5vw, 46px)', letterSpacing: '-0.03em', lineHeight: 1.06 }}
+          className="font-display font-extrabold text-ink tracking-[-0.03em] leading-[1.06]"
+          style={{ fontSize: 'clamp(29px, 4.5vw, 46px)' }}
         >
           Who&apos;s ramping up?
         </h1>
         <p
-          className="mt-4 font-medium text-muted-1"
-          style={{ fontSize: '16px', lineHeight: 1.65, maxWidth: '520px' }}
+          className="mt-4 font-medium text-muted-1 text-[16px] leading-[1.65]"
+          style={{ maxWidth: '520px' }}
         >
           Open-role counts pulled straight from each company&apos;s own job board — Greenhouse,
           Lever, Ashby — once a day. No aggregators, no spin — just the count, and where it&apos;s
@@ -92,14 +92,13 @@ const StatNote: React.FC<{ children: React.ReactNode; label: string; index: numb
       aria-hidden="true"
     />
     <div
-      className="font-display font-extrabold tabular-nums text-ink"
-      style={{ fontSize: 'clamp(24px, 5.5vw, 32px)', letterSpacing: '-0.02em', lineHeight: 1 }}
+      className="font-display font-extrabold tabular-nums text-ink tracking-[-0.02em] leading-none"
+      style={{ fontSize: 'clamp(24px, 5.5vw, 32px)' }}
     >
       {children}
     </div>
     <div
-      className="mt-1.5 font-mono uppercase text-muted-3"
-      style={{ fontSize: '10px', letterSpacing: '0.1em' }}
+      className="mt-1.5 font-mono uppercase text-muted-3 text-[10px] tracking-[0.1em]"
     >
       {label}
     </div>

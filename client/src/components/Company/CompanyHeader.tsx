@@ -38,20 +38,19 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
             #{company.rank} on the board · {company.sectorLabel}
           </MonoLabel>
           <span
-            className="font-mono uppercase text-muted-2 md:hidden"
-            style={{ fontSize: '10px', letterSpacing: '0.12em' }}
+            className="font-mono uppercase text-muted-2 md:hidden text-[10px] tracking-[0.12em]"
           >
             #{company.rank} · {company.sectorLabel} · {company.source}
           </span>
 
           <h1
-            className="mt-1.5 font-display font-extrabold text-ink md:mt-2"
-            style={{ fontSize: 'clamp(30px, 6vw, 40px)', lineHeight: 1.04, letterSpacing: '-0.03em' }}
+            className="mt-1.5 font-display font-extrabold text-ink md:mt-2 leading-[1.04] tracking-[-0.03em]"
+            style={{ fontSize: 'clamp(30px, 6vw, 40px)' }}
           >
             {company.name}
           </h1>
 
-          <p className="mt-2.5 hidden font-mono text-muted-1 md:block" style={{ fontSize: '12px' }}>
+          <p className="mt-2.5 hidden font-mono text-muted-1 md:block text-[12px]">
             source: {provider} feed · tracked since {formatDate(company.trackedSince)}
           </p>
           {company.careersUrl && (
@@ -59,8 +58,8 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
               href={company.careersUrl}
               target="_blank"
               rel="noreferrer noopener"
-              className="mt-2 hidden font-mono font-semibold text-muted-1 underline underline-offset-[3px] transition-colors hover:text-ink md:inline-block"
-              style={{ fontSize: '12px', transitionDuration: `${DURATION.fast}ms` }}
+              className="mt-2 hidden font-mono font-semibold text-muted-1 underline underline-offset-[3px] transition-colors hover:text-ink md:inline-block text-[12px]"
+              style={{ transitionDuration: `${DURATION.fast}ms` }}
             >
               view roles on {company.name}&apos;s board ↗
             </a>
@@ -69,18 +68,17 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
           {/* Mobile-only stat tiles: open now + momentum 7d, side by side. */}
           <div className="mt-4 flex gap-3 md:hidden">
             <div className="flex-1 border border-line-3 bg-raised px-4 py-3.5">
-              <span className="font-mono uppercase text-muted-2" style={{ fontSize: '9px', letterSpacing: '0.1em' }}>
+              <span className="font-mono uppercase text-muted-2 text-[9px] tracking-[0.1em]">
                 Open now
               </span>
               <div
-                className="mt-0.5 font-display font-extrabold tabular-nums text-ink"
-                style={{ fontSize: '30px', lineHeight: 1 }}
+                className="mt-0.5 font-display font-extrabold tabular-nums text-ink text-[30px] leading-none"
               >
                 {formatCount(open)}
               </div>
             </div>
             <div className="flex-1 border border-line-3 bg-raised px-4 py-3.5">
-              <span className="font-mono uppercase text-muted-2" style={{ fontSize: '9px', letterSpacing: '0.1em' }}>
+              <span className="font-mono uppercase text-muted-2 text-[9px] tracking-[0.1em]">
                 Momentum 7d
               </span>
               <div className="mt-2">
@@ -94,8 +92,7 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
         <div className="hidden md:block md:border-r md:border-line-2 md:px-8 md:py-10">
           <MonoLabel>Open roles now</MonoLabel>
           <div
-            className="mt-1.5 font-display font-extrabold tabular-nums text-ink"
-            style={{ fontSize: '46px', lineHeight: 1 }}
+            className="mt-1.5 font-display font-extrabold tabular-nums text-ink text-[46px] leading-none"
           >
             {formatCount(open)}
           </div>
@@ -107,7 +104,7 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
           <div className="mt-2.5">
             <MomentumBadge momentum={momentum} showLabel size={24} strong />
           </div>
-          <p className="mt-2 font-mono text-muted-2" style={{ fontSize: '11px' }}>
+          <p className="mt-2 font-mono text-muted-2 text-[11px]">
             {momoSub}
           </p>
         </div>

@@ -25,8 +25,8 @@ export const LoadMore: React.FC<LoadMoreProps> = ({ remaining, onClick }) => {
       <button
         type="button"
         onClick={onClick}
-        className="w-full border border-line-4 px-6 py-2.5 font-mono uppercase text-muted-1 transition-colors hover:border-ink hover:text-ink md:w-auto"
-        style={{ fontSize: '11px', letterSpacing: '0.08em', transitionDuration: `${DURATION.fast}ms` }}
+        className="w-full border border-line-4 px-6 py-2.5 font-mono uppercase text-muted-1 transition-colors hover:border-ink hover:text-ink md:w-auto text-[11px] tracking-[0.08em]"
+        style={{ transitionDuration: `${DURATION.fast}ms` }}
       >
         Load {formatCount(next)} more ↓
       </button>

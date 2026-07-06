@@ -24,7 +24,7 @@ export const MarketIndexChart: React.FC<MarketIndexChartProps> = ({ index }) => 
   <div>
     <div className="mb-3.5 flex items-center justify-between gap-3 md:mb-5">
       <MonoLabel>Market hiring index</MonoLabel>
-      <span className="hidden font-mono text-muted-3 md:inline" style={{ fontSize: '11px' }}>
+      <span className="hidden font-mono text-muted-3 md:inline text-[11px]">
         total open roles / day
       </span>
     </div>

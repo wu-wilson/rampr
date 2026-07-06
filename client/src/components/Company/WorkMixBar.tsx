@@ -56,7 +56,7 @@ export const WorkMixBar: React.FC<WorkMixBarProps> = ({ workMix }) => {
       {/* Desktop legend: swatch + label + percent · count, one row each. */}
       <ul className="mt-4 hidden flex-col gap-2.5 md:flex">
         {segments.map((segment) => (
-          <li key={segment.key} className="flex items-center justify-between" style={{ fontSize: '12px' }}>
+          <li key={segment.key} className="flex items-center justify-between text-[12px]">
             <span className="flex items-center gap-2">
               <span className={`h-2.5 w-2.5 ${segment.color}`} aria-hidden="true" />
               <span className="text-ink">{segment.label}</span>
@@ -70,8 +70,7 @@ export const WorkMixBar: React.FC<WorkMixBarProps> = ({ workMix }) => {
 
       {/* Mobile legend: a single compact row of label + percent. */}
       <div
-        className="mt-2.5 flex justify-between font-mono tabular-nums text-muted-1 md:hidden"
-        style={{ fontSize: '10px' }}
+        className="mt-2.5 flex justify-between font-mono tabular-nums text-muted-1 md:hidden text-[10px]"
       >
         {segments.map((segment) => (
           <span key={segment.key}>

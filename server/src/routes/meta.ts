@@ -1,4 +1,4 @@
-/** Meta route: GET /api/meta — site-wide totals, last-updated stamp, gating, and ATS sources. */
+/** Meta route: GET /api/meta — the last-updated stamp (`MAX(snapshot_date)`) for the nav. */
 import { Router } from 'express';
 
 import { getMeta } from '../services/meta';
