@@ -18,7 +18,7 @@ Mobile-first, with a single primary breakpoint at **~760px** (define it as the T
 ## Typography
 
 - Base body 14px (set on `body` in `index.css`), line-height 1.5.
-- The Board headline (market total) and big Archivo numbers scale up at the desktop breakpoint; mono micro-labels stay small. Never go below `text-xs` (12px) for primary text.
+- The Board headline and the big Archivo stat numbers scale up at the desktop breakpoint; mono micro-labels stay small. Never go below `text-xs` (12px) for primary text.
 
 ## Layout collapse (≤760px)
 

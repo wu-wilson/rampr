@@ -19,8 +19,8 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 ## Visual Language
 
 - Display/headlines and **every count/number** use **Archivo** (weights 500–800, `font-display`, `tabular-nums`). Labels, metadata, table cells, and badges use **IBM Plex Mono** (400–600, `font-mono`). Base 14px, line-height 1.5.
-- The market total is the Board headline — a large Archivo number. Micro-labels are uppercase tracked mono.
-- Square-ish corners, hairline borders from the border ramp, surface-tier shifts (`bg-paper` vs `bg-raised`) for depth — **prefer hairlines over shadows**. Never lean on a drop shadow where a `--line-*` border reads the section.
+- The Board pairs an editorial headline (large Archivo) with a row of market stat post-its — big Archivo numbers over uppercase tracked-mono micro-labels.
+- Square-ish corners, hairline borders from the border ramp, surface-tier shifts (`bg-paper` vs `bg-raised`) for depth — **prefer hairlines over shadows**. Never lean on a drop shadow where a `--line-*` border reads the section. The one deliberate exception: the Board stat post-its (`MarketHeadline`), where a soft shadow + slight tilt + torn tape sell the taped-note effect.
 - Charts: the work-mix bar (Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown residual `--muted-3`) and sector bars (ramp `--brand-dark` → `--brand` → `--brand-soft` → `--line-4`, ordered by count) are hand-rolled CSS. The two daily time-series charts are d3-scaled SVG via `TrendBars` (latest bar `--brand`, the rest `--brand-soft`; axes/gridlines from the `--line-*` and `--muted-*` ramps). SVG `fill`/`stroke` take a token as `rgb(var(--token))` — never a hex.
 
 ## Momentum status
@@ -33,7 +33,7 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 
 ## Interactive States
 
-- Every clickable element has a hover state via a smooth `transition-colors` / `transition-[filter]` and a visible focus ring (`:focus-visible` box-shadow from the ink token). Row/link hovers use a translucent `bg-raised/60` (not opaque `bg-raised`) so the paper grain still shows through — leaderboard rows and market-mover links (each the width of its divider rules, so the highlight never overhangs the borders); the Board's market stat card uses the same translucent raised for the same reason. No instant visual changes — all in-flow motion ≤300ms.
+- Every clickable element has a hover state via a smooth `transition-colors` / `transition-[filter]` and a visible focus ring (`:focus-visible` box-shadow from the ink token). Row/link hovers use a translucent `bg-raised/60` (not opaque `bg-raised`) so the paper grain still shows through — leaderboard rows and market-mover links (each the width of its divider rules, so the highlight never overhangs the borders). No instant visual changes — all in-flow motion ≤300ms.
 
 ## Animation
 

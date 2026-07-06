@@ -2,29 +2,27 @@ import React from 'react';
 
 import { Band } from '../common/Band';
 import { MomentumArrow } from '../common/MomentumArrow';
-import { MonoLabel } from '../common/MonoLabel';
 
 import { formatCount, formatDelta } from '../../lib/format';
-import { gatingLabel } from '../../lib/gating';
 import { momentumView } from '../../lib/momentum';
 
 import type { MarketSummary } from '../../types/board';
 
 interface MarketHeadlineProps {
-  /** Market-wide totals and 7-day trend gating for the hero stat card. */
+  /** Market-wide totals and 7-day trend gating for the hero + stat band. */
   market: MarketSummary;
 }
 
 /**
- * The Board hero: an editorial headline and lede on the left, and a bordered market
- * stat card on the right holding the market-wide open-role total, company/sector counts,
- * and a trend line that reads as a gated "N of 14" caption until the market unlocks.
- * @param props - The market summary driving the stat card
- * @returns The hero band
+ * The Board hero: a full-width editorial headline and lede, then a row of post-it-style stat
+ * notes — open roles now, companies, sectors, and the (gated) 7-day change — each a big Archivo
+ * number over an uppercase mono label, tilted and taped to the board (2-up mobile / 4-up desktop).
+ * @param props - The market summary driving the stat notes
+ * @returns The headline band followed by the stat-notes band
  */
 export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
-  <Band className="grid gap-[18px] pb-[22px] pt-[26px] md:grid-cols-[1fr_340px] md:gap-10 md:pb-9 md:pt-11">
-    <div>
+  <>
+    <Band className="pb-[22px] pt-[26px] md:pb-9 md:pt-11">
       <h1
         className="font-display font-extrabold text-ink"
         style={{ fontSize: 'clamp(29px, 5vw, 46px)', letterSpacing: '-0.03em', lineHeight: 1.08 }}
@@ -38,66 +36,91 @@ export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
         Open-role counts straight from companies&apos; own job boards, updated daily. No spin —
         just the count, and where it&apos;s headed.
       </p>
-    </div>
+    </Band>
 
-    <StatCard market={market} />
-  </Band>
+    <Band className="py-7 md:py-9">
+      <div className="grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-6">
+        <StatNote index={0} label="open roles now">
+          {formatCount(market.totalOpen)}
+        </StatNote>
+        <StatNote index={1} label="companies">
+          {formatCount(market.companyCount)}
+        </StatNote>
+        <StatNote index={2} label="sectors">
+          {formatCount(market.sectorCount)}
+        </StatNote>
+        <StatNote index={3} label="vs 7 days ago">
+          <TrendValue gated={market.gated} delta7d={market.delta7d} />
+        </StatNote>
+      </div>
+    </Band>
+  </>
 );
 
-/** The bordered market stat card: label, big total, counts, and the trend line. */
-const StatCard: React.FC<{ market: MarketSummary }> = ({ market }) => (
-  <div className="border border-line-3 bg-raised/60 px-5 py-[18px] md:px-[26px] md:py-6">
-    <MonoLabel>Market · open roles now</MonoLabel>
+/** Slight per-note tilt so they read as taped up by hand, not printed on a grid. */
+const NOTE_TILT = ['-2deg', '1.6deg', '-1.2deg', '2.1deg'];
+
+/**
+ * One stat "post-it": a warm paper note lifted off the board with a soft shadow, a slight hand
+ * tilt, and a translucent strip of tape across the top — carrying a big Archivo value over an
+ * uppercase mono label.
+ * @param props - The value node, its label, and the zero-based index picking the tilt
+ * @returns The stat note
+ */
+const StatNote: React.FC<{ children: React.ReactNode; label: string; index: number }> = ({
+  children,
+  label,
+  index,
+}) => (
+  <div
+    className="relative bg-raised px-4 py-5 shadow-[0_5px_16px_rgb(var(--ink)/0.11)]"
+    style={{ transform: `rotate(${NOTE_TILT[index % NOTE_TILT.length]})` }}
+  >
+    <span
+      className="pointer-events-none absolute h-[18px] w-14 bg-line-4/60"
+      style={{
+        left: '50%',
+        top: '-8px',
+        transform: 'translateX(-50%) rotate(-4deg)',
+        // Torn ends: fine zigzag on the short (left/right) edges (shallow teeth), roll edges straight.
+        clipPath:
+          'polygon(0% 0%, 100% 0%, 95% 12.5%, 100% 25%, 95% 37.5%, 100% 50%, 95% 62.5%, 100% 75%, 95% 87.5%, 100% 100%, 0% 100%, 5% 87.5%, 0% 75%, 5% 62.5%, 0% 50%, 5% 37.5%, 0% 25%, 5% 12.5%)',
+      }}
+      aria-hidden="true"
+    />
     <div
-      className="mt-1 font-display font-extrabold tabular-nums text-ink md:mt-1.5"
-      style={{ fontSize: 'clamp(40px, 10vw, 52px)', letterSpacing: '-0.03em', lineHeight: 1 }}
+      className="font-display font-extrabold tabular-nums text-ink"
+      style={{ fontSize: 'clamp(24px, 5.5vw, 32px)', letterSpacing: '-0.02em', lineHeight: 1 }}
     >
-      {formatCount(market.totalOpen)}
+      {children}
     </div>
     <div
-      className="mt-3.5 hidden gap-5 font-mono text-muted-1 md:flex"
-      style={{ fontSize: '12px' }}
+      className="mt-1.5 font-mono uppercase text-muted-3"
+      style={{ fontSize: '10px', letterSpacing: '0.1em' }}
     >
-      <span>
-        <b className="font-semibold text-ink">{formatCount(market.companyCount)}</b> companies
-      </span>
-      <span>
-        <b className="font-semibold text-ink">{formatCount(market.sectorCount)}</b> sectors
-      </span>
-    </div>
-    <div className="mt-2 md:mt-3.5">
-      <TrendNote gated={market.gated} daysTracked={market.daysTracked} delta7d={market.delta7d} />
+      {label}
     </div>
   </div>
 );
 
 /**
- * The market trend line beneath the total: a "trend building — N of 14 daily snapshots"
- * caption while globally gated, or the signed 7-day delta with a directional glyph and
- * color once the market unlocks. All values come from the board's own market summary.
- * @param props - Global gating flag, distinct snapshot dates tracked, and the 7-day delta
- * @returns The trend line
+ * The 7-day-change value: a muted em dash while globally gated, otherwise the signed delta paired
+ * with its directional arrow and semantic color (never color alone).
+ * @param props - Global gating flag and the signed 7-day delta (`null` when gated)
+ * @returns The trend value node
  */
-const TrendNote: React.FC<{ gated: boolean; daysTracked: number; delta7d: number | null }> = ({
-  gated,
-  daysTracked,
-  delta7d,
-}) => {
+const TrendValue: React.FC<{ gated: boolean; delta7d: number | null }> = ({ gated, delta7d }) => {
   if (gated || delta7d === null) {
-    return (
-      <span className="font-mono text-muted-3" style={{ fontSize: '11px' }}>
-        trend building — {gatingLabel(daysTracked)} daily snapshots
-      </span>
-    );
+    return <span className="text-muted-3">—</span>;
   }
 
   const direction = delta7d > 0 ? 'up' : delta7d < 0 ? 'down' : 'flat';
   const view = momentumView(direction);
 
   return (
-    <span className={`inline-flex items-center gap-1.5 font-mono ${view.className}`} style={{ fontSize: '11px' }}>
-      <MomentumArrow direction={direction} size={14} />
-      <span>{formatDelta(delta7d)} roles vs 7 days ago</span>
+    <span className={`inline-flex items-center gap-2 ${view.className}`}>
+      <MomentumArrow direction={direction} size={26} />
+      {formatDelta(delta7d)}
     </span>
   );
 };
