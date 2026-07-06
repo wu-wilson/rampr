@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { RamprMark } from './RamprMark';
-
 import { DURATION } from '../../constants/animations';
 
 interface NotFoundProps {
@@ -22,8 +20,7 @@ export const NotFound: React.FC<NotFoundProps> = ({
   title = 'Not found',
   body = "That page isn't on the board. It may have moved, or never existed.",
 }) => (
-  <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-    <RamprMark size={44} className="opacity-70" />
+  <div className="flex flex-col items-center justify-center gap-4 px-5 py-24 text-center md:px-10">
     <h2 className="font-display font-bold text-ink" style={{ fontSize: '20px' }}>
       {title}
     </h2>
