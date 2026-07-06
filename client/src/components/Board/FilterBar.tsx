@@ -1,13 +1,12 @@
 import React from 'react';
 
 import { Band } from '../common/Band';
+import { SearchInput } from './SearchInput';
 import { SectorChips } from './SectorChips';
 
 import { useFilterStore } from '../../store/filterStore';
 
 import { formatCount } from '../../lib/format';
-
-import { DURATION } from '../../constants/animations';
 
 import type { BoardSort } from '../../types/board';
 
@@ -58,36 +57,6 @@ export const FilterBar: React.FC<FilterBarProps> = ({ companyCount }) => {
     </Band>
   );
 };
-
-/** The company search field with a leading magnifier icon. */
-const SearchInput: React.FC<{ value: string; onChange: (value: string) => void }> = ({
-  value,
-  onChange,
-}) => (
-  <div className="relative w-full md:w-[340px]">
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      aria-hidden="true"
-      className="pointer-events-none absolute left-3 top-1/2 h-[15px] w-[15px] -translate-y-1/2 text-muted-3"
-    >
-      <circle cx="7" cy="7" r="4.5" />
-      <line x1="10.5" y1="10.5" x2="14" y2="14" />
-    </svg>
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="search company"
-      aria-label="search company"
-      className="w-full border border-line-4 bg-paper py-2.5 pl-9 pr-3.5 font-mono text-ink transition-colors placeholder:text-muted-3 focus:border-brand text-[12px]"
-      style={{ transitionDuration: `${DURATION.fast}ms` }}
-    />
-  </div>
-);
 
 /** The desktop "Sort: {label} ▾" bordered facade over a transparent native select; because the select is invisible, the facade surfaces its keyboard focus ring. */
 const SortFacade: React.FC<{
