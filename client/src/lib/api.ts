@@ -30,8 +30,8 @@ export async function apiGet<T>(path: string): Promise<T> {
 /**
  * Turn a thrown fetch/api error into a short, non-technical message safe to show a general
  * reader — never a URL, status code, or stack. A transport failure reads as a connection
- * problem; a 503 as a brief data outage; anything else falls back to the caller's
- * screen-specific line.
+ * problem; a 503 as a brief data outage; a 429 as a "slow down" nudge; anything else falls
+ * back to the caller's screen-specific line.
  * @param err - The value thrown by {@link apiGet} (usually an {@link ApiError}) or the fetch layer
  * @param fallback - A friendly, screen-specific default for otherwise-unclassified errors
  * @returns A user-facing message
@@ -40,6 +40,9 @@ export function toUserMessage(err: unknown, fallback: string): string {
   if (err instanceof ApiError) {
     if (err.status === 503) {
       return 'Temporarily unavailable — try again shortly.';
+    }
+    if (err.status === 429) {
+      return 'Too many requests — give it a moment.';
     }
     return fallback;
   }

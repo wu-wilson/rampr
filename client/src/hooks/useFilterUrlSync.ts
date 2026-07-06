@@ -32,15 +32,19 @@ export function useFilterUrlSync(): void {
   }, [searchParams]);
 
   // store → URL: mirror filter changes into the query string, replacing (not pushing) and only
-  // when the string actually differs, so the two effects converge instead of ping-ponging.
+  // when the string actually differs. The values are read live via getState() — not the render-scope
+  // closures, which would be stale relative to the URL→store seed above and make the two effects
+  // fight (oscillating store↔URL every render). The store selectors below stay in the deps purely to
+  // re-run this effect when a filter changes.
   useEffect(() => {
+    const { sector: s, sort: so, search: q } = useFilterStore.getState();
     // Seed from the current params so unrelated keys (e.g. tracking tags) survive; manage only ours.
     const next = new URLSearchParams(searchParams);
-    if (sector) next.set('sector', sector);
+    if (s) next.set('sector', s);
     else next.delete('sector');
-    if (sort !== 'open') next.set('sort', sort);
+    if (so !== 'open') next.set('sort', so);
     else next.delete('sort');
-    if (search) next.set('q', search);
+    if (q) next.set('q', q);
     else next.delete('q');
     if (next.toString() !== searchParams.toString()) {
       setSearchParams(next, { replace: true });
