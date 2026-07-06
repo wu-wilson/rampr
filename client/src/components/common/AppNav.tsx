@@ -5,6 +5,8 @@ import { RamprMark } from './RamprMark';
 
 import { useMeta } from '../../hooks/useMeta';
 
+import { formatPollTimeLocal, formatUpdatedAtLocal } from '../../lib/format';
+
 import { DURATION } from '../../constants/animations';
 
 /** The three primary routes, in nav order. */
@@ -95,8 +97,9 @@ const ToggleGlyph: React.FC<{ open: boolean }> = ({ open }) => (
 
 /**
  * The persistent top navigation: the rampr mark + wordmark and the three route links
- * grouped at the left, with a desktop-only "updated daily · 06:00 UTC" cadence stamp at the
- * right. Below 760px the links collapse behind a hamburger-icon toggle (an X when open)
+ * grouped at the left, with a desktop-only cadence stamp — the latest snapshot's moment, or
+ * the daily poll time before the first poll, in the viewer's local timezone — at the right.
+ * Below 760px the links collapse behind a hamburger-icon toggle (an X when open)
  * that drops a compact drawer of the three routes.
  * @returns The top nav header
  */
@@ -105,8 +108,11 @@ export const AppNav: React.FC = () => {
   const { meta } = useMeta();
   const close = () => setOpen(false);
 
-  // Cadence stamp; once the first poll has run it names the exact snapshot date.
-  const stamp = meta?.updatedAt ? `updated ${meta.updatedAt} · 06:00 UTC` : 'updated daily · 06:00 UTC';
+  // Cadence stamp, all in the viewer's local zone: the latest snapshot's moment once a poll
+  // has run, or the daily poll time before day zero.
+  const stamp = meta?.updatedAt
+    ? `updated ${formatUpdatedAtLocal(meta.updatedAt)}`
+    : `updated daily · ${formatPollTimeLocal()}`;
 
   return (
     <header>

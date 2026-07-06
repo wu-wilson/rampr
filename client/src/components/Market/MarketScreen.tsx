@@ -27,17 +27,8 @@ export const MarketScreen: React.FC = () => {
     );
   }
 
-  if (market.totals.updatedAt === null) {
-    return (
-      <EmptyState
-        title="Tracking just started"
-        body="rampr hasn't run its first poll yet — open-role counts land here once it does."
-        note={formatPollSchedule()}
-      />
-    );
-  }
-
   const { totals } = market;
+  const isDayZero = totals.updatedAt === null;
 
   return (
     <div>
@@ -55,20 +46,30 @@ export const MarketScreen: React.FC = () => {
         </p>
       </Band>
 
-      <Band>
-        <div className="-mx-5 grid md:-mx-10 md:grid-cols-2">
-          <div className="border-b border-line-2 px-5 py-[22px] md:border-b-0 md:border-r md:px-10 md:py-7">
-            <SectorBars sectors={market.sectors} />
-          </div>
-          <div className="px-5 py-[22px] md:px-10 md:py-7">
-            <MarketIndexChart index={market.index} />
-          </div>
-        </div>
-      </Band>
+      {isDayZero ? (
+        <EmptyState
+          title="Tracking just started"
+          body="rampr hasn't run its first poll yet — open-role counts land here once it does."
+          note={formatPollSchedule()}
+        />
+      ) : (
+        <>
+          <Band>
+            <div className="-mx-5 grid md:-mx-10 md:grid-cols-2">
+              <div className="border-b border-line-2 px-5 py-[22px] md:border-b-0 md:border-r md:px-10 md:py-7">
+                <SectorBars sectors={market.sectors} />
+              </div>
+              <div className="px-5 py-[22px] md:px-10 md:py-7">
+                <MarketIndexChart index={market.index} />
+              </div>
+            </div>
+          </Band>
 
-      <Band divider={false}>
-        <MoversStrip movers={market.movers} daysTracked={market.index.daysTracked} />
-      </Band>
+          <Band divider={false}>
+            <MoversStrip movers={market.movers} daysTracked={market.index.daysTracked} />
+          </Band>
+        </>
+      )}
     </div>
   );
 };
