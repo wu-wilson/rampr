@@ -63,7 +63,7 @@ const DrawerLink: React.FC<{ to: string; label: string; onClick: () => void }> =
     {({ isActive }: { isActive: boolean }) => (
       <>
         <span
-          className={`font-display text-[14px] ${
+          className={`font-display text-[15px] ${
             isActive
               ? 'font-bold text-ink underline decoration-brand decoration-2 underline-offset-[5px]'
               : 'font-medium text-muted-1'
@@ -72,7 +72,7 @@ const DrawerLink: React.FC<{ to: string; label: string; onClick: () => void }> =
           {label}
         </span>
         {isActive && (
-          <span className="font-mono uppercase tracking-[0.1em] text-muted-3 text-[9px]">
+          <span className="font-mono uppercase tracking-[0.1em] text-muted-3 text-[10px]">
             Current
           </span>
         )}

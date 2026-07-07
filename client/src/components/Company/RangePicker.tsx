@@ -32,7 +32,7 @@ export const RangePicker: React.FC<RangePickerProps> = ({ value, onChange }) => 
           type="button"
           onClick={() => onChange(range)}
           aria-pressed={active}
-          className={`px-1.5 py-1 font-mono text-[9px] uppercase transition-colors md:px-2 md:text-[10px] tracking-[0.06em] ${
+          className={`px-1.5 py-1 font-mono text-[10px] uppercase transition-colors md:px-2 tracking-[0.06em] ${
             active ? 'bg-ink-strong text-paper' : 'text-muted-2 hover:text-ink'
           }`}
           style={{ transitionDuration: `${DURATION.fast}ms` }}
