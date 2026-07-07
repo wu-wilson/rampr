@@ -81,6 +81,8 @@ function toMover(row: Record<string, unknown>): Mover {
  *
  * Sector totals come live from `listings`; the index and movers derive from `daily_snapshots` and are
  * suppressed (empty `points` / arrays with `gated: true`) until `GATING_DAYS` distinct snapshot dates exist.
+ * Movers additionally exclude any company with fewer than `GATING_DAYS` of its own snapshots, so a
+ * company still gated on its own page is never surfaced as a mover.
  * @returns The full `GET /api/market` response body
  */
 export async function getMarket(): Promise<MarketResponse> {
@@ -145,6 +147,8 @@ export async function getMarket(): Promise<MarketResponse> {
       totalOpen: Number(row.total_open),
     }));
 
+    // Movers gate per-company as well: a company needs >= GATING_DAYS of its own snapshots to appear,
+    // matching the board/company momentum gate so a still-building company is never surfaced as a mover.
     const heatingResult = await query(
       `WITH open_now AS (
          SELECT c.id, c.slug, c.name, COUNT(l.id) AS open_now
@@ -157,14 +161,20 @@ export async function getMarket(): Promise<MarketResponse> {
            FROM daily_snapshots
           WHERE snapshot_date <= CURRENT_DATE - 7
           ORDER BY company_id, snapshot_date DESC
+       ),
+       days AS (
+         SELECT company_id, COUNT(*) AS days_tracked
+           FROM daily_snapshots
+          GROUP BY company_id
        )
        SELECT o.slug, o.name, (o.open_now - p.prior_open)::int AS delta
          FROM open_now o
          JOIN prior p ON p.company_id = o.id
+         JOIN days d ON d.company_id = o.id AND d.days_tracked >= $2
         WHERE (o.open_now - p.prior_open) > 0
         ORDER BY delta DESC, o.name ASC
         LIMIT $1`,
-      [MOVERS_LIMIT],
+      [MOVERS_LIMIT, GATING_DAYS],
     );
     const coolingResult = await query(
       `WITH open_now AS (
@@ -178,14 +188,20 @@ export async function getMarket(): Promise<MarketResponse> {
            FROM daily_snapshots
           WHERE snapshot_date <= CURRENT_DATE - 7
           ORDER BY company_id, snapshot_date DESC
+       ),
+       days AS (
+         SELECT company_id, COUNT(*) AS days_tracked
+           FROM daily_snapshots
+          GROUP BY company_id
        )
        SELECT o.slug, o.name, (o.open_now - p.prior_open)::int AS delta
          FROM open_now o
          JOIN prior p ON p.company_id = o.id
+         JOIN days d ON d.company_id = o.id AND d.days_tracked >= $2
         WHERE (o.open_now - p.prior_open) < 0
         ORDER BY delta ASC, o.name ASC
         LIMIT $1`,
-      [MOVERS_LIMIT],
+      [MOVERS_LIMIT, GATING_DAYS],
     );
     movers.heating = (heatingResult.rows as Record<string, unknown>[]).map(toMover);
     movers.cooling = (coolingResult.rows as Record<string, unknown>[]).map(toMover);

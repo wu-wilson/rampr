@@ -22,14 +22,14 @@ No views, no aggregate tables. Everything below is derived at query time.
 - **Work mix** (company) = shares of remote / hybrid / onsite over open roles; `unknown` is shown as a residual slice only when `> 0`.
 - **Momentum (7d)** = `open_now − open_count` from the **most recent snapshot on-or-before `CURRENT_DATE − 7`** (tolerates a missed poll). Returned as `{ delta, direction, gated }` (`direction` ∈ `'up' | 'down' | 'flat'`); `delta` is `null` when gated or when no on-or-before-7d snapshot exists.
 - **Market index point** (per day) = `SUM(open_count)` across companies for that `snapshot_date`.
-- **Movers** = per-company 7d `delta`, top N positive = heating, top N negative = cooling.
+- **Movers** = per-company 7d `delta`, top N positive = heating, top N negative = cooling. A company must have ≥14 of its own daily snapshots to appear (same per-company gate as board/company momentum), so a still-building company is never a mover.
 
 ## Gating
 
 `GATING_DAYS = 14` (mirror the constant in client and server, with a "keep in sync" comment).
 
 - **Per-company** `gated = daysTracked < 14`, where `daysTracked = COUNT(*) FROM daily_snapshots WHERE company_id = $1`.
-- **Global** (market index + movers) `gated = COUNT(DISTINCT snapshot_date) < 14`.
+- **Global** (market index + movers) `gated = COUNT(DISTINCT snapshot_date) < 14` — the section-level flag; movers additionally drop any company that hasn't cleared the per-company gate above.
 
 Gated trend fields return `gated: true` with empty `points` / `null` deltas; the client renders the "trend building — N of 14" state. Snapshot fields (open, breakdowns, sector totals) are never gated.
 
