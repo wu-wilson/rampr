@@ -9,8 +9,8 @@ interface RamprMarkProps {
 
 /**
  * The rampr logo mark: a green tile with a large quarter-circle notch bitten out of its
- * top-left corner and a small dark-green dot floating in the notch — an upward ramp motif.
- * Built from a radial-gradient so it scales cleanly with `size`; colors come from the brand tokens.
+ * top-left corner and a small dot in the same brand green floating in the notch — an upward
+ * ramp motif. Built from a radial-gradient so it scales cleanly with `size`; colors from the brand token.
  * @param props - Optional pixel size and extra wrapper classes
  * @returns The logo mark
  */
@@ -36,7 +36,7 @@ export const RamprMark: React.FC<RamprMarkProps> = ({ size = 24, className }) =>
         width: `${size * 0.214}px`,
         height: `${size * 0.214}px`,
         borderRadius: '99px',
-        background: 'rgb(var(--brand-dark))',
+        background: 'rgb(var(--brand))',
       }}
     />
   </span>
