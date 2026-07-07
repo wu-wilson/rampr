@@ -25,7 +25,7 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 
 ## Momentum status
 
-- Never signal momentum by color alone. Always pair a glyph **and** text with the color: `↗ Ramping up` → `text-up`, `↘ Cooling down` → `text-down`, `→ flat` → `text-flat`. The glyph and word carry the meaning; color only reinforces.
+- Never signal momentum by color alone. Always pair the semantic color with a glyph **and** text: the directional glyph (`↗` → `text-up`, `↘` → `text-down`, `→` → `text-flat`) beside the signed delta. The glyph and number carry the meaning; the direction word ("Ramping up" / "Cooling down" / "Flat") rides along as the hover title, and color only reinforces.
 
 ## Texture
 

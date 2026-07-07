@@ -73,7 +73,7 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
             <PostItNote index={1} className="px-4 py-4">
               <MonoLabel>Momentum 7d</MonoLabel>
               <div className="mt-2">
-                <MomentumBadge momentum={momentum} showLabel size={15} strong />
+                <MomentumBadge momentum={momentum} size={15} strong />
               </div>
             </PostItNote>
           </div>
@@ -90,7 +90,7 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
           <PostItNote index={1} className="px-5 py-5">
             <MonoLabel>Momentum · 7d</MonoLabel>
             <div className="mt-2.5">
-              <MomentumBadge momentum={momentum} showLabel size={24} strong />
+              <MomentumBadge momentum={momentum} size={24} strong />
             </div>
             <p className="mt-2 font-mono text-muted-2 text-[11px]">
               {momoSub}
