@@ -3,6 +3,7 @@ import React from 'react';
 import { Band } from '../common/Band';
 import { MomentumBadge } from '../common/MomentumBadge';
 import { MonoLabel } from '../common/MonoLabel';
+import { PostItNote } from '../common/PostItNote';
 
 import { formatCount, formatDate } from '../../lib/format';
 
@@ -16,11 +17,10 @@ interface CompanyHeaderProps {
 }
 
 /**
- * The company header band. On desktop it splits into three cells — a left identity cell
- * (rank/sector caption, name, source line, and out-link to the company's own board), a
- * middle open-role count, and a right momentum tile on a raised surface. On mobile it uses
- * a distinct layout: a compact "#rank · SECTOR · PROVIDER" caption, the name, and two
- * side-by-side stat tiles; the source line and out-link are hidden.
+ * The company header band: a left identity cell (rank/sector caption, name, and — desktop only —
+ * the source line and out-link to the company's own board) paired with the open-role count and
+ * 7-day momentum as two taped post-its. The notes cluster to the right on desktop and drop below
+ * the name on mobile, where the caption compacts to "#rank · SECTOR · PROVIDER".
  * @param props - The full company payload
  * @returns The company header band
  */
@@ -30,16 +30,14 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
   const momoSub = momentum.gated ? 'unlocks at 14 days' : 'vs. 7 days ago';
 
   return (
-    <Band>
-      <div className="-mx-5 md:-mx-10 md:grid md:grid-cols-[minmax(0,1fr)_240px_240px]">
-        {/* Identity cell — the full header on mobile, the left column on desktop. */}
-        <div className="px-5 py-6 md:border-r md:border-line-2 md:px-10 md:py-10">
+    <Band className="py-7 md:py-11">
+      <div className="md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12">
+        {/* Identity: caption, name, and — desktop only — the source line and out-link. */}
+        <div>
           <MonoLabel className="hidden md:inline">
             #{company.rank} on the board · {company.sectorLabel}
           </MonoLabel>
-          <span
-            className="font-mono uppercase text-muted-2 md:hidden text-[10px] tracking-[0.12em]"
-          >
+          <span className="font-mono uppercase text-muted-2 md:hidden text-[10px] tracking-[0.12em]">
             #{company.rank} · {company.sectorLabel} · {company.source}
           </span>
 
@@ -65,48 +63,40 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
             </a>
           )}
 
-          {/* Mobile-only stat tiles: open now + momentum 7d, side by side. */}
-          <div className="mt-4 flex gap-3 md:hidden">
-            <div className="flex-1 border border-line-3 bg-raised px-4 py-3.5">
-              <span className="font-mono uppercase text-muted-2 text-[9px] tracking-[0.1em]">
-                Open now
-              </span>
-              <div
-                className="mt-0.5 font-display font-extrabold tabular-nums text-ink text-[30px] leading-none"
-              >
+          {/* Mobile stat post-its: open now + momentum 7d, side by side below the name. */}
+          <div className="mt-6 grid grid-cols-2 items-start gap-4 md:hidden">
+            <PostItNote index={0} className="px-4 py-4">
+              <MonoLabel>Open now</MonoLabel>
+              <div className="mt-1 font-display font-extrabold tabular-nums text-ink text-[30px] leading-none">
                 {formatCount(open)}
               </div>
-            </div>
-            <div className="flex-1 border border-line-3 bg-raised px-4 py-3.5">
-              <span className="font-mono uppercase text-muted-2 text-[9px] tracking-[0.1em]">
-                Momentum 7d
-              </span>
+            </PostItNote>
+            <PostItNote index={1} className="px-4 py-4">
+              <MonoLabel>Momentum 7d</MonoLabel>
               <div className="mt-2">
                 <MomentumBadge momentum={momentum} showLabel size={15} strong />
               </div>
+            </PostItNote>
+          </div>
+        </div>
+
+        {/* Desktop stat post-its: open count + 7-day momentum, clustered to the right. */}
+        <div className="hidden md:grid md:w-[440px] md:grid-cols-2 md:items-start md:gap-7">
+          <PostItNote index={0} className="px-5 py-5">
+            <MonoLabel>Open roles now</MonoLabel>
+            <div className="mt-1.5 font-display font-extrabold tabular-nums text-ink text-[46px] leading-none">
+              {formatCount(open)}
             </div>
-          </div>
-        </div>
-
-        {/* Middle cell — desktop-only open-role count. */}
-        <div className="hidden md:block md:border-r md:border-line-2 md:px-8 md:py-10">
-          <MonoLabel>Open roles now</MonoLabel>
-          <div
-            className="mt-1.5 font-display font-extrabold tabular-nums text-ink text-[46px] leading-none"
-          >
-            {formatCount(open)}
-          </div>
-        </div>
-
-        {/* Right cell — desktop-only momentum tile on a raised surface. */}
-        <div className="hidden bg-raised md:block md:px-8 md:py-10">
-          <MonoLabel>Momentum · 7d</MonoLabel>
-          <div className="mt-2.5">
-            <MomentumBadge momentum={momentum} showLabel size={24} strong />
-          </div>
-          <p className="mt-2 font-mono text-muted-2 text-[11px]">
-            {momoSub}
-          </p>
+          </PostItNote>
+          <PostItNote index={1} className="px-5 py-5">
+            <MonoLabel>Momentum · 7d</MonoLabel>
+            <div className="mt-2.5">
+              <MomentumBadge momentum={momentum} showLabel size={24} strong />
+            </div>
+            <p className="mt-2 font-mono text-muted-2 text-[11px]">
+              {momoSub}
+            </p>
+          </PostItNote>
         </div>
       </div>
     </Band>

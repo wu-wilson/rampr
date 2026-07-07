@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Band } from '../common/Band';
 import { MomentumArrow } from '../common/MomentumArrow';
+import { PostItNote } from '../common/PostItNote';
 
 import { formatCount, formatDelta } from '../../lib/format';
 import { momentumView } from '../../lib/momentum';
@@ -58,16 +59,10 @@ export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
   </Band>
 );
 
-/** Slight per-note tilt so they read as taped up by hand, not printed on a grid. */
-const NOTE_TILT = ['-2deg', '1.6deg', '-1.2deg', '2.1deg'];
-/** Per-note tape angle, varied so each strip looks torn and stuck on individually. */
-const TAPE_TILT = ['-6deg', '5deg', '7deg', '-3.5deg'];
-
 /**
- * One stat "post-it": a warm paper note lifted off the board with a soft shadow, a slight hand
- * tilt, and a translucent strip of tape across the top — carrying a big Archivo value over an
- * uppercase mono label.
- * @param props - The value node, its label, and the zero-based index picking the tilt
+ * One market stat on a post-it: a big Archivo value over an uppercase mono label, carried on the
+ * shared taped note.
+ * @param props - The value node, its label, and the zero-based index picking the note's tilt
  * @returns The stat note
  */
 const StatNote: React.FC<{ children: React.ReactNode; label: string; index: number }> = ({
@@ -75,34 +70,17 @@ const StatNote: React.FC<{ children: React.ReactNode; label: string; index: numb
   label,
   index,
 }) => (
-  <div
-    className="relative bg-raised px-4 py-5 shadow-[0_5px_16px_rgb(var(--ink)/0.11)]"
-    style={{ transform: `rotate(${NOTE_TILT[index % NOTE_TILT.length]})` }}
-  >
-    <span
-      className="pointer-events-none absolute h-[18px] w-14 bg-line-4/60"
-      style={{
-        left: '50%',
-        top: '-8px',
-        transform: `translateX(-50%) rotate(${TAPE_TILT[index % TAPE_TILT.length]})`,
-        // Torn ends: fine zigzag on the short (left/right) edges (shallow teeth), roll edges straight.
-        clipPath:
-          'polygon(0% 0%, 100% 0%, 95% 12.5%, 100% 25%, 95% 37.5%, 100% 50%, 95% 62.5%, 100% 75%, 95% 87.5%, 100% 100%, 0% 100%, 5% 87.5%, 0% 75%, 5% 62.5%, 0% 50%, 5% 37.5%, 0% 25%, 5% 12.5%)',
-      }}
-      aria-hidden="true"
-    />
+  <PostItNote index={index} className="px-4 py-5">
     <div
       className="font-display font-extrabold tabular-nums text-ink tracking-[-0.02em] leading-none"
       style={{ fontSize: 'clamp(24px, 5.5vw, 32px)' }}
     >
       {children}
     </div>
-    <div
-      className="mt-1.5 font-mono uppercase text-muted-3 text-[10px] tracking-[0.1em]"
-    >
+    <div className="mt-1.5 font-mono uppercase text-muted-3 text-[10px] tracking-[0.1em]">
       {label}
     </div>
-  </div>
+  </PostItNote>
 );
 
 /**
