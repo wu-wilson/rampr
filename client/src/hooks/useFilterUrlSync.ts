@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { useFilterStore } from '../store/filterStore';
 
-import type { BoardSort } from '../types/board';
+import { parseBoardSort } from '../types/board';
 
 /**
  * Two-way sync between the Board filter store and the URL query string, so a filtered or sorted
@@ -24,7 +24,7 @@ export function useFilterUrlSync(): void {
   useEffect(() => {
     const store = useFilterStore.getState();
     const urlSector = searchParams.get('sector');
-    const urlSort: BoardSort = searchParams.get('sort') === 'momentum' ? 'momentum' : 'open';
+    const urlSort = parseBoardSort(searchParams.get('sort'));
     const urlSearch = searchParams.get('q') ?? '';
     if (urlSector !== store.sector) store.setSector(urlSector);
     if (urlSort !== store.sort) store.setSort(urlSort);

@@ -8,6 +8,7 @@ import type { BoardQuery } from '../schemas/boardQuery';
 const SORT_CLAUSES: Record<BoardQuery['sort'], string> = {
   open: 'open_now DESC, name ASC',
   momentum: 'delta DESC NULLS LAST, open_now DESC, name ASC',
+  cooling: 'delta ASC NULLS LAST, open_now DESC, name ASC',
 };
 
 /** Momentum direction, computed from the signed 7d delta. */

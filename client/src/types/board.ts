@@ -1,7 +1,17 @@
 import type { Momentum } from './common';
 
 /** Sort order applied to the leaderboard, mapped to the API `sort` query param. */
-export type BoardSort = 'open' | 'momentum';
+export type BoardSort = 'open' | 'momentum' | 'cooling';
+
+/**
+ * Narrow an arbitrary string — a URL param or native-select value — to a {@link BoardSort},
+ * falling back to `open` for anything unrecognized.
+ * @param value - The raw string to narrow (or null, e.g. a missing URL param)
+ * @returns The matching sort key, or `open`
+ */
+export function parseBoardSort(value: string | null): BoardSort {
+  return value === 'momentum' || value === 'cooling' ? value : 'open';
+}
 
 /** Market-wide summary shown as the Board headline. */
 export interface MarketSummary {

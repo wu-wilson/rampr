@@ -8,7 +8,7 @@ paths:
 ## Routes
 
 - One route handler per file under `server/src/routes/` (`board.ts`, `company.ts`, `market.ts`, `meta.ts`, `health.ts`), each mounted under `/api`.
-- Validate every input with Zod before business logic — query params on `/api/board` (`sector` slug or omitted, `q` search, `sort` ∈ `open|momentum`, `limit`, `offset`) and the `:slug` on company detail.
+- Validate every input with Zod before business logic — query params on `/api/board` (`sector` slug or omitted, `q` search, `sort` ∈ `open|momentum|cooling`, `limit`, `offset`) and the `:slug` on company detail.
 - SQL/business logic in `server/src/services/` (`db.ts` owns the pool + query helpers), not in handlers.
 - Single tail error-handling middleware in `middleware/errorHandler.ts`.
 

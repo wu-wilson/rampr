@@ -8,13 +8,13 @@ const MAX_LIMIT = 100;
 /**
  * Validated, coerced query params for `GET /api/board`.
  * `sector` narrows to one sector slug (omitted = all); `q` is a case-insensitive company-name search;
- * `sort` orders the matched rows (`open` = open count desc, `momentum` = 7d delta desc); `limit`/`offset`
- * paginate. All fields fall back to safe defaults when absent or malformed.
+ * `sort` orders the matched rows (`open` = open count desc, `momentum` = 7d delta desc, `cooling` = 7d
+ * delta asc); `limit`/`offset` paginate. All fields fall back to safe defaults when absent or malformed.
  */
 export const BoardQuerySchema = z.object({
   sector: z.string().trim().max(50).optional(),
   q: z.string().trim().max(200).optional(),
-  sort: z.enum(['open', 'momentum']).optional().default('open'),
+  sort: z.enum(['open', 'momentum', 'cooling']).optional().default('open'),
   limit: z.coerce.number().int().positive().max(MAX_LIMIT).optional().default(DEFAULT_LIMIT),
   offset: z.coerce.number().int().nonnegative().optional().default(0),
 });

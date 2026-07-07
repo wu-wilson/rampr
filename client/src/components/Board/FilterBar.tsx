@@ -7,12 +7,14 @@ import { SectorChips } from './SectorChips';
 import { useFilterStore } from '../../store/filterStore';
 
 import { formatCount } from '../../lib/format';
+import { parseBoardSort } from '../../types/board';
 
 import type { BoardSort } from '../../types/board';
 
 const SORTS: Array<{ value: BoardSort; label: string }> = [
   { value: 'open', label: 'Most open' },
   { value: 'momentum', label: 'Ramping fastest' },
+  { value: 'cooling', label: 'Cooling fastest' },
 ];
 
 interface FilterBarProps {
@@ -103,7 +105,7 @@ const SortSelect: React.FC<{ value: BoardSort; onChange: (value: BoardSort) => v
 }) => (
   <select
     value={value}
-    onChange={(e) => onChange(e.target.value === 'momentum' ? 'momentum' : 'open')}
+    onChange={(e) => onChange(parseBoardSort(e.target.value))}
     aria-label="Sort the board"
     className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
   >

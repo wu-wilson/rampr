@@ -38,7 +38,7 @@ Gated trend fields return `gated: true` with empty `points` / `null` deltas; the
 All read-only JSON under `/api`. Money-free; counts are integers. `updatedAt` = `MAX(snapshot_date)` as an ISO date (or `null` before the first poll).
 
 ### `GET /api/board?sector=&q=&sort=&limit=&offset=`
-- `sector` sector slug or omitted (all); `q` name search; `sort` `open` (default) | `momentum`; `limit` default 25; `offset` default 0.
+- `sector` sector slug or omitted (all); `q` name search; `sort` `open` (default) | `momentum` | `cooling`; `limit` default 25; `offset` default 0.
 ```jsonc
 {
   "market":  { "totalOpen": 84317, "companyCount": 100, "sectorCount": 9,
