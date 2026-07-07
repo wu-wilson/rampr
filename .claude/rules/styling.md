@@ -14,14 +14,14 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 - All colors via CSS custom properties / Tailwind semantic tokens. Never hardcode hex in components (no `bg-[#ABC]`).
 - **Light mode only** — palette defined on `:root` in `index.css`. Never use Tailwind `dark:` prefixes; there is no dark mode and no theme toggle.
 - Tokens are stored as **space-separated RGB channels** (e.g. `--ink: 27 33 28;`, hex in a comment) and consumed via `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js`, so alpha modifiers like `text-ink/60` resolve. Direct `var(--token)` uses (SVG `fill`/`stroke`) must wrap as `rgb(var(--token))`.
-- Surfaces: the paper app surface `--paper` fills the viewport; stat cards, gated panels, and hover `--raised`. Primary ink `--ink`; dark pills/rules/headers `--ink-strong`; muted-text ramp `--muted-1` → `--muted-3`. Borders tightest→lightest `--line-1` → `--line-4`. Brand green `--brand` (`--brand-dark`, `--brand-soft` for chart ramps).
+- Surfaces: the paper app surface `--paper` fills the viewport; stat cards, gated panels, and hover `--raised`. Primary ink `--ink`; dark pills/rules/headers `--ink-strong`; muted-text ramp `--muted-1` → `--muted-3`. Borders tightest→lightest `--line-1` → `--line-4`. Brand green `--brand`, with a deeper `--brand-dark` and softer `--brand-soft`.
 
 ## Visual Language
 
 - Display/headlines and **every count/number** use **Archivo** (weights 500–800, `font-display`, `tabular-nums`). Labels, metadata, table cells, and badges use **IBM Plex Mono** (400–600, `font-mono`). Base 14px, line-height 1.5.
 - The Board pairs an editorial headline (large Archivo) with a 2×2 cluster of market stat post-its (beside the headline on wide screens, stacked below on mobile) — big Archivo numbers over uppercase tracked-mono micro-labels.
 - Square-ish corners, hairline borders from the border ramp, surface-tier shifts (`bg-paper` vs `bg-raised`) for depth — **prefer hairlines over shadows**. Never lean on a drop shadow where a `--line-*` border reads the section. The one deliberate exception: the stat post-its (`PostItNote` — the Board's market cluster and the company header's two stat cards), where a soft shadow + slight tilt + torn tape sell the taped-note effect.
-- Charts: the work-mix bar (Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown residual `--muted-3`) and sector bars (ramp `--brand-dark` → `--brand` → `--brand-soft` → `--line-4`, ordered by count) are hand-rolled CSS. The two daily time-series charts are d3-scaled SVG via `TrendBars` (latest bar `--brand`, the rest `--brand-soft`; axes/gridlines from the `--line-*` and `--muted-*` ramps). SVG `fill`/`stroke` take a token as `rgb(var(--token))` — never a hex.
+- Charts: the work-mix bar (Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown residual `--muted-3`) and sector bars (every bar `--brand`, ordered by count — length carries rank) are hand-rolled CSS. The two daily time-series charts are d3-scaled SVG via `TrendBars` (every bar `--brand`, the hovered column `--brand-dark`; axes/gridlines from the `--line-*` and `--muted-*` ramps). SVG `fill`/`stroke` take a token as `rgb(var(--token))` — never a hex.
 
 ## Momentum status
 

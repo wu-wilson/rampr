@@ -24,7 +24,7 @@ Store every color as **space-separated RGB channels** on `:root` in `client/src/
   /* Brand green */
   --brand:      31 157 91;  /* #1F9D5B */
   --brand-dark: 22 107 62;  /* #166B3E */
-  --brand-soft: 143 203 168;/* #8FCBA8  hybrid slice, non-final chart bars */
+  --brand-soft: 143 203 168;/* #8FCBA8  work-mix hybrid slice */
 
   /* Muted text ramp, lightest use to faintest */
   --muted-1: 86 91 79;      /* #565B4F  body-muted */
@@ -74,7 +74,7 @@ The arrow is rendered by the `MomentumArrow` SVG component (rotated per directio
 ## Work-mix + sector colors
 
 - Work mix bar: Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown (residual, only if > 0) `--muted-3`.
-- Sector bars: a green ramp from `--brand-dark` down through `--brand`, `--brand-soft`, to `--line-4` for the tail, ordered by count.
+- Sector bars: every bar the same `--brand`, ordered by count — rank reads from bar length, not from dimming a live sector.
 
 ## Animation
 

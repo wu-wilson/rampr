@@ -14,7 +14,7 @@ interface TrendPoint {
 }
 
 interface TrendBarsProps {
-  /** The daily series, oldest first; the last point is drawn as "today" in full brand. */
+  /** The daily series, oldest first; every point is drawn as a full-brand bar. */
   points: TrendPoint[];
   /** Tailwind height utilities for the whole plot (mobile + desktop), e.g. `h-[160px] md:h-[200px]`. */
   heightClass: string;
@@ -39,8 +39,8 @@ const token = (name: string): string => `rgb(var(${name}))`;
  * A d3-scaled SVG bar chart shared by the company trajectory and market index. d3-scale owns the
  * geometry — `scaleBand` for evenly-gapped columns at any density, `scaleLinear` for a value axis
  * with gridlines, and `scaleTime` for adaptive time-ticks — while React renders the SVG. A
- * full-height hit area per column drives a hover tooltip and a guide line; the most recent bar
- * is drawn in full brand, the rest in the soft ramp.
+ * full-height hit area per column drives a hover tooltip and a guide line; every bar is full
+ * brand, with the hovered column deepened to `--brand-dark`.
  * @param props - The daily points, plot height utilities, and an accessible summary
  * @returns The chart (svg + tooltip), sized to its container
  */
@@ -107,7 +107,6 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
 
             {points.map((point, i) => {
               const barH = Math.max(MIN_BAR, innerH - y(point.value));
-              const highlit = i === lastIndex || i === activeIndex;
               return (
                 <rect
                   key={point.date}
@@ -116,7 +115,7 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
                   width={x.bandwidth()}
                   height={barH}
                   className="animate-bar-rise"
-                  style={{ fill: token(highlit ? '--brand' : '--brand-soft'), transformBox: 'fill-box' }}
+                  style={{ fill: token(i === activeIndex ? '--brand-dark' : '--brand'), transformBox: 'fill-box' }}
                 />
               );
             })}
