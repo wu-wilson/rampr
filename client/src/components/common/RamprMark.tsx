@@ -18,7 +18,7 @@ export const RamprMark: React.FC<RamprMarkProps> = ({ size = 24, className }) =>
   <span
     className={className}
     role="img"
-    aria-label="rampr"
+    aria-label="Rampr"
     style={{ position: 'relative', display: 'inline-block', width: `${size}px`, height: `${size}px` }}
   >
     <span

@@ -11,7 +11,7 @@ const SORT_CLAUSES: Record<BoardQuery['sort'], string> = {
 };
 
 /** Momentum direction, computed from the signed 7d delta. */
-export type MomentumDirection = 'up' | 'down' | 'flat';
+type MomentumDirection = 'up' | 'down' | 'flat';
 
 /** A company's 7d hiring momentum, shaped for the client. `delta` is `null` when gated or lacking a 7d-ago snapshot. */
 export interface MomentumSummary {

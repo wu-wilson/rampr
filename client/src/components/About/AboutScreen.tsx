@@ -34,7 +34,7 @@ export const AboutScreen: React.FC = () => {
         'History accrues forward from the day tracking started — there is no backfill. Trend charts and momentum badges unlock once 14 daily snapshots exist; snapshot counts are live from day one.',
     },
     {
-      key: 'What rampr is not',
+      key: 'What Rampr is not',
       value:
         'Not applicant data, not salary data, not a job board. No accounts, no alerts, no editorializing — the count is the story.',
     },
@@ -47,7 +47,7 @@ export const AboutScreen: React.FC = () => {
           className="font-display font-extrabold text-ink tracking-[-0.03em] leading-[1.15]"
           style={{ fontSize: 'clamp(24px, 6vw, 32px)' }}
         >
-          What rampr counts, and how.
+          What Rampr counts, and how.
         </h1>
         <p
           className="mt-4 hidden font-display font-medium text-muted-1 md:block text-[14px] leading-[1.7]"

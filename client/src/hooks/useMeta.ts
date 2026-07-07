@@ -34,7 +34,7 @@ export function useMeta(): UseMetaResult {
         if (!cancelled) setMeta(data);
       } catch (err) {
         if (!cancelled) {
-          setError(toUserMessage(err, 'Couldn’t load rampr.'));
+          setError(toUserMessage(err, 'Couldn’t load Rampr.'));
         }
       } finally {
         if (!cancelled) setLoading(false);

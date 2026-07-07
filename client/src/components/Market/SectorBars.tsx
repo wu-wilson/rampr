@@ -46,7 +46,7 @@ export const SectorBars: React.FC<SectorBarsProps> = ({ sectors }) => (
       ))}
     </div>
     <p className="mt-[18px] hidden font-mono text-muted-3 md:block text-[10px]">
-      select a sector to filter the board
+      sectors filter the board
     </p>
   </div>
 );

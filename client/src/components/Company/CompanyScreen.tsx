@@ -26,7 +26,7 @@ export const CompanyScreen: React.FC = () => {
     return (
       <NotFound
         title="Company not tracked"
-        body="rampr isn't tracking a company at that address. It may not be on the curated list yet."
+        body="Rampr isn't tracking a company at that address. It may not be on the curated list yet."
       />
     );
   }

@@ -49,7 +49,7 @@ export const MarketScreen: React.FC = () => {
       {isDayZero ? (
         <EmptyState
           title="Tracking just started"
-          body="rampr hasn't run its first poll yet — open-role counts land here once it does."
+          body="Rampr hasn't run its first poll yet — open-role counts land here once it does."
           note={formatPollSchedule()}
         />
       ) : (

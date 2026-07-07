@@ -1,7 +1,7 @@
 import type { Momentum } from './common';
 
 /** ATS provider a company's roles are polled from. */
-export type AtsSource = 'greenhouse' | 'lever' | 'ashby';
+type AtsSource = 'greenhouse' | 'lever' | 'ashby';
 
 /** Identity and placement of a company on the board. */
 interface CompanyInfo {
@@ -46,7 +46,7 @@ export interface WorkMix {
 }
 
 /** Live breakdowns over the company's currently-open roles. */
-export interface Breakdowns {
+interface Breakdowns {
   departments: DeptCount[];
   locations: LocationCount[];
   workMix: WorkMix;

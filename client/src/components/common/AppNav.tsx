@@ -17,50 +17,53 @@ const LINKS: Array<{ to: string; label: string }> = [
 ];
 
 /**
- * A desktop primary nav link: Archivo, active in bold ink with a small green dot, inactive
- * in medium muted. `end` restricts the Board match to exactly "/".
+ * A desktop primary nav link: Archivo. The active route is bold ink with a green underline; others
+ * are medium muted and darken on hover. An invisible bold ghost holds the active width so selecting
+ * a tab never reflows the row. `end` restricts the Board match to exactly "/".
  */
 const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
-  <NavLink
-    to={to}
-    end={to === '/'}
-    className={({ isActive }) =>
-      `inline-flex items-center gap-1.5 font-display transition-colors hover:text-ink text-[13px] ${
-        isActive ? 'font-extrabold text-ink' : 'font-medium text-muted-2'
-      }`
-    }
-    style={{ transitionDuration: `${DURATION.fast}ms` }}
-  >
+  <NavLink to={to} end={to === '/'} className="grid place-items-center font-display text-[14px]">
     {({ isActive }: { isActive: boolean }) => (
       <>
-        {isActive && <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden="true" />}
-        {label}
+        <span className="invisible col-start-1 row-start-1 font-bold" aria-hidden="true">
+          {label}
+        </span>
+        <span
+          className={`col-start-1 row-start-1 transition-colors hover:text-ink ${
+            isActive
+              ? 'font-bold text-ink underline decoration-brand decoration-2 underline-offset-[5px]'
+              : 'font-medium text-muted-2'
+          }`}
+          style={{ transitionDuration: `${DURATION.fast}ms` }}
+        >
+          {label}
+        </span>
       </>
     )}
   </NavLink>
 );
 
 /**
- * A row in the open mobile drawer: a status dot (filled green when current, hollow
- * otherwise) beside the label, with a "CURRENT" tag on the active route.
+ * A row in the open mobile drawer: the current route bold ink with a green underline and a "CURRENT"
+ * tag, other routes medium muted. A full-width tap target.
  */
 const DrawerLink: React.FC<{ to: string; label: string; onClick: () => void }> = ({ to, label, onClick }) => (
   <NavLink
     to={to}
     end={to === '/'}
     onClick={onClick}
-    className="flex items-center justify-between border-b border-line-1 px-5 py-[13px]"
+    className="flex items-center justify-between border-b border-line-1 px-5 py-3"
   >
     {({ isActive }: { isActive: boolean }) => (
       <>
-        <span className="flex items-center gap-2.5">
-          <span
-            className={`h-1.5 w-1.5 rounded-full ${isActive ? 'bg-brand' : 'border border-line-4'}`}
-            aria-hidden="true"
-          />
-          <span className={`font-display font-bold text-[15px] ${isActive ? 'text-ink' : 'text-muted-1'}`}>
-            {label}
-          </span>
+        <span
+          className={`font-display text-[14px] ${
+            isActive
+              ? 'font-bold text-ink underline decoration-brand decoration-2 underline-offset-[5px]'
+              : 'font-medium text-muted-1'
+          }`}
+        >
+          {label}
         </span>
         {isActive && (
           <span className="font-mono uppercase tracking-[0.1em] text-muted-3 text-[9px]">
@@ -118,10 +121,10 @@ export const AppNav: React.FC = () => {
     <header>
       <div className="flex items-center justify-between border-b border-line-2 px-5 py-4 md:px-10 md:py-[18px]">
         <div className="flex items-center gap-7">
-          <Link to="/" onClick={close} className="flex items-center gap-2 text-ink" aria-label="rampr — home">
+          <Link to="/" onClick={close} className="flex items-center gap-2 text-ink" aria-label="Rampr — home">
             <RamprMark size={24} />
             <span className="font-display font-extrabold text-[19px] md:text-[21px] tracking-[-0.02em]">
-              rampr
+              Rampr
             </span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
@@ -131,7 +134,7 @@ export const AppNav: React.FC = () => {
           </nav>
         </div>
 
-        <span className="hidden font-mono text-muted-2 md:inline text-[11px]">
+        <span className="hidden font-mono text-muted-2 md:inline text-[12px]">
           {stamp}
         </span>
 

@@ -46,5 +46,5 @@ export function toUserMessage(err: unknown, fallback: string): string {
     }
     return fallback;
   }
-  return 'Couldn’t reach rampr — check your connection.';
+  return 'Couldn’t reach Rampr — check your connection.';
 }

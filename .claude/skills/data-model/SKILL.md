@@ -20,7 +20,7 @@ No views, no aggregate tables. Everything below is derived at query time.
 - **Breakdowns** = `GROUP BY department | location | remote_type` over that company's `listings`.
 - **Remote share** = `remote / total_open` (hybrid excluded), integer percent. Used for the board's remote column.
 - **Work mix** (company) = shares of remote / hybrid / onsite over open roles; `unknown` is shown as a residual slice only when `> 0`.
-- **Momentum (7d)** = `open_now − open_count` from the **most recent snapshot on-or-before `CURRENT_DATE − 7`** (tolerates a missed poll). Returned as a signed integer `delta` + `direction` (`'up' | 'down' | 'flat'`); `null` when gated.
+- **Momentum (7d)** = `open_now − open_count` from the **most recent snapshot on-or-before `CURRENT_DATE − 7`** (tolerates a missed poll). Returned as `{ delta, direction, gated }` (`direction` ∈ `'up' | 'down' | 'flat'`); `delta` is `null` when gated or when no on-or-before-7d snapshot exists.
 - **Market index point** (per day) = `SUM(open_count)` across companies for that `snapshot_date`.
 - **Movers** = per-company 7d `delta`, top N positive = heating, top N negative = cooling.
 

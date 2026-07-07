@@ -1,5 +1,5 @@
 /** Market-wide totals shown atop the Market screen. */
-export interface MarketTotals {
+interface MarketTotals {
   totalOpen: number;
   companyCount: number;
   sectorCount: number;
