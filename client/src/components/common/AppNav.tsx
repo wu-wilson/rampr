@@ -7,7 +7,7 @@ import { useMeta } from '../../hooks/useMeta';
 
 import { formatPollTimeLocal, formatUpdatedAtLocal } from '../../lib/format';
 
-import { DURATION } from '../../constants/animations';
+import { DURATION, EASING } from '../../constants/animations';
 
 /** The three primary routes, in nav order. */
 const LINKS: Array<{ to: string; label: string }> = [
@@ -17,12 +17,12 @@ const LINKS: Array<{ to: string; label: string }> = [
 ];
 
 /**
- * A desktop primary nav link: Archivo. The active route is bold ink with a green underline; others
- * are medium muted and darken on hover. An invisible bold ghost holds the active width so selecting
- * a tab never reflows the row. `end` restricts the Board match to exactly "/".
+ * A desktop primary nav link: Archivo. The active route is bold ink with a green underline that
+ * scales out from center; others are medium muted and darken on hover. An invisible bold ghost holds
+ * the active width so selecting a tab never reflows the row. `end` restricts the Board match to "/".
  */
 const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
-  <NavLink to={to} end={to === '/'} className="grid place-items-center font-display text-[14px]">
+  <NavLink to={to} end={to === '/'} className="relative grid place-items-center font-display text-[14px]">
     {({ isActive }: { isActive: boolean }) => (
       <>
         <span className="invisible col-start-1 row-start-1 font-bold" aria-hidden="true">
@@ -30,14 +30,20 @@ const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
         </span>
         <span
           className={`col-start-1 row-start-1 transition-colors hover:text-ink ${
-            isActive
-              ? 'font-bold text-ink underline decoration-brand decoration-2 underline-offset-[5px]'
-              : 'font-medium text-muted-2'
+            isActive ? 'font-bold text-ink' : 'font-medium text-muted-2'
           }`}
           style={{ transitionDuration: `${DURATION.fast}ms` }}
         >
           {label}
         </span>
+        {/* Green underline that scales out from center when the tab becomes active. */}
+        <span
+          aria-hidden="true"
+          className={`absolute inset-x-0 -bottom-[1px] h-[2px] rounded-full bg-brand origin-center transition-transform ${
+            isActive ? 'scale-x-100' : 'scale-x-0'
+          }`}
+          style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+        />
       </>
     )}
   </NavLink>
@@ -76,27 +82,25 @@ const DrawerLink: React.FC<{ to: string; label: string; onClick: () => void }> =
 );
 
 /**
- * The mobile menu toggle glyph: a hamburger when the drawer is closed, an X when open.
+ * The mobile menu toggle: three bars that smoothly morph between a hamburger and an X — the top and
+ * bottom bars rotate to the diagonals and meet at center while the middle bar fades out.
  */
-const ToggleGlyph: React.FC<{ open: boolean }> = ({ open }) => (
-  <svg
-    viewBox="0 0 16 16"
-    width="18"
-    height="18"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    aria-hidden="true"
-    className="shrink-0"
-  >
-    {open ? (
-      <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" />
-    ) : (
-      <path d="M2.5 3.5h11M2.5 8h11M2.5 12.5h11" />
-    )}
-  </svg>
-);
+const ToggleGlyph: React.FC<{ open: boolean }> = ({ open }) => {
+  const bar = 'absolute left-0 h-[1.5px] w-full rounded-full bg-current origin-center transition-transform';
+  const motion = { transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING };
+  return (
+    <span className="relative block h-[12px] w-[16px] shrink-0" aria-hidden="true">
+      <span className={`${bar} top-0 ${open ? 'translate-y-[5px] rotate-45' : ''}`} style={motion} />
+      <span
+        className={`absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2 rounded-full bg-current transition-opacity ${
+          open ? 'opacity-0' : ''
+        }`}
+        style={motion}
+      />
+      <span className={`${bar} bottom-0 ${open ? '-translate-y-[5px] -rotate-45' : ''}`} style={motion} />
+    </span>
+  );
+};
 
 /**
  * The persistent top navigation: the rampr mark + wordmark and the three route links
@@ -150,13 +154,22 @@ export const AppNav: React.FC = () => {
         </button>
       </div>
 
-      {open && (
-        <div className="flex flex-col md:hidden">
+      {/* Stays mounted and collapses via grid-rows (0fr → 1fr) so it animates open AND closed;
+          visibility flips only after the collapse finishes, keeping hidden links out of focus/AT order. */}
+      <div
+        className={`grid md:hidden ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr] invisible'}`}
+        style={{
+          transition: open
+            ? `grid-template-rows ${DURATION.normal}ms ${EASING}`
+            : `grid-template-rows ${DURATION.normal}ms ${EASING}, visibility 0s ${DURATION.normal}ms`,
+        }}
+      >
+        <div className="flex flex-col overflow-hidden">
           {LINKS.map((link) => (
             <DrawerLink key={link.to} to={link.to} label={link.label} onClick={close} />
           ))}
         </div>
-      )}
+      </div>
     </header>
   );
 };
