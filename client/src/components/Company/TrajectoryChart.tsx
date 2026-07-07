@@ -18,7 +18,7 @@ interface TrajectoryChartProps {
 /**
  * The company's open-role trajectory band. When gated it shows the shared "trend building"
  * panel; once live it renders the d3-scaled {@link TrendBars} chart over the chosen 14 / 30 /
- * 90-day window (sliced client-side), with value + time axes and the most recent bar in full brand.
+ * 90-day window (sliced client-side), with value + time axes.
  * @param props - The trajectory series (gated flag + daily points)
  * @returns The trajectory band
  */

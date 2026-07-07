@@ -61,7 +61,7 @@ export interface TrajectoryPoint {
 
 /**
  * The company's open-count time series. `points` is empty and `gated` is true until
- * GATING_DAYS daily snapshots exist; otherwise up to 90 days of daily points.
+ * 14 daily snapshots exist; otherwise up to 90 days of daily points.
  */
 export interface Trajectory {
   gated: boolean;

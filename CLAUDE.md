@@ -35,7 +35,7 @@ rampr is a public, read-only hiring-momentum board with a light, editorial visua
 - Hardcode hex colors in component files — use Tailwind semantic tokens mapped from CSS custom properties. Light, warm-paper theme; no dark mode, no theme toggle.
 - Allow horizontal overflow on any screen, or use `h-screen` / `min-h-screen` — use `min-h-dvh`.
 - Show blank screens — every state (loading, empty, day-zero before the first poll, not-found, gated trend) must have designed UI.
-- Signal status by color alone — momentum always pairs a glyph (`↗ ↘ →`) and text with its color.
+- Signal status by color alone — momentum always pairs the directional glyph and the signed delta with its color (the direction word is hover-only).
 - String-concatenate input into SQL — use parameterized queries (`$1`, `$2`).
 - Leak raw upstream/pg errors to the client — gate client-visible messages behind an `isPublic` flag.
 

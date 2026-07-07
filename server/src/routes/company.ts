@@ -18,7 +18,7 @@ router.get('/companies/:slug', async (req, res, next) => {
 
     const response: CompanyResponse | null = await getCompany(parsed.data.slug);
     if (response === null) {
-      console.log(`Company not found: ${parsed.data.slug}`);
+      console.warn(`Company not found: ${parsed.data.slug}`);
       res.status(404).json({ error: 'Company not found' });
       return;
     }

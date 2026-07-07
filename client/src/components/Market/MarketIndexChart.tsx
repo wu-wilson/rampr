@@ -16,7 +16,7 @@ interface MarketIndexChartProps {
 /**
  * The market hiring index: total open roles across every tracked company per day. Renders
  * the shared "trend building" panel while globally gated; once live, the d3-scaled
- * {@link TrendBars} chart with value + time axes and the most recent day in full brand.
+ * {@link TrendBars} chart with value + time axes.
  * @param props - The index series (gated flag + daily totals)
  * @returns The market-index column
  */

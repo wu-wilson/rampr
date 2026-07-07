@@ -11,7 +11,6 @@ import { parseBoardSort } from '../types/board';
  * store; any filter change is written back with `replace` (never stacking history). It manages
  * only the `sector`, `sort` (omitted when `open`), and `q` keys — non-default values keep shared
  * links clean, and any unrelated params are left untouched. Call once from the Board screen.
- * @returns Nothing
  */
 export function useFilterUrlSync(): void {
   const [searchParams, setSearchParams] = useSearchParams();

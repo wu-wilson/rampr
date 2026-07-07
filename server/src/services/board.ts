@@ -1,4 +1,4 @@
-import { query } from './db';
+import { query, toNullableInt } from './db';
 
 import { GATING_DAYS } from '../constants';
 
@@ -88,11 +88,6 @@ export function resolveMomentum(
   const gated = daysTracked < GATING_DAYS;
   const delta = gated || priorOpen === null ? null : openNow - priorOpen;
   return { delta, direction: directionOf(delta), gated };
-}
-
-/** Coerce a nullable numeric pg column (integer or `null`) to `number | null`. */
-function toNullableInt(value: unknown): number | null {
-  return value === null || value === undefined ? null : Number(value);
 }
 
 /**

@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-/** Typed, frozen configuration loaded from environment variables at startup. */
+/** Typed, readonly configuration loaded from environment variables at startup. */
 export const config = {
   port: parseInt(process.env.PORT || '3001', 10),
   databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/rampr',

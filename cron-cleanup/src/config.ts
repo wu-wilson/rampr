@@ -10,7 +10,7 @@ function parseRetentionDays(raw: string | undefined): number {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : DEFAULT_RETENTION_DAYS;
 }
 
-/** Typed, frozen configuration loaded from environment variables at startup. */
+/** Typed, readonly configuration loaded from environment variables at startup. */
 export const config = {
   databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/rampr',
   retentionDays: parseRetentionDays(process.env.RETENTION_DAYS),

@@ -118,7 +118,7 @@ Every variable ships with a working default — `./launch.sh` runs on a fresh cl
 | Variable             | Default                             | Description                                                        |
 | -------------------- | ----------------------------------- | ------------------------------------------------------------------ |
 | `DATABASE_URL`       | `postgresql://localhost:5432/rampr` | Postgres connection. The poll fails loudly if unreachable.         |
-| `POLL_CONCURRENCY`   | `4`                                 | Max ATS feeds fetched in parallel (polite per-host concurrency).   |
+| `POLL_CONCURRENCY`   | `4`                                 | Max ATS feeds fetched in parallel (global cap; a small inter-request delay stays polite). |
 | `REQUEST_TIMEOUT_MS` | `10000`                             | Per-request timeout for outbound feed fetches, in milliseconds.    |
 | `USER_AGENT`         | `rampr (+https://github.com/wu-wilson/rampr)` | Identifies the poller to ATS endpoints; production sets `rampr (+https://rampr.dev)`. |
 

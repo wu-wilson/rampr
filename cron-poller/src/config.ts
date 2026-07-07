@@ -17,7 +17,7 @@ function parseIntEnv(value: string | undefined, fallback: number): number {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-/** Typed, frozen configuration loaded from environment variables at startup. */
+/** Typed, readonly configuration loaded from environment variables at startup. */
 export const config = {
   databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/rampr',
   pollConcurrency: parseIntEnv(process.env.POLL_CONCURRENCY, 4),

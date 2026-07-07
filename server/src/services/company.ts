@@ -1,5 +1,5 @@
 import { resolveMomentum } from './board';
-import { query } from './db';
+import { query, toNullableInt } from './db';
 
 import { GATING_DAYS } from '../constants';
 
@@ -82,11 +82,6 @@ export interface CompanyResponse {
 
 /** Trajectory window depth in days — the deepest the chart ever renders (matches cleanup retention). */
 const TRAJECTORY_WINDOW_DAYS = 90;
-
-/** Coerce a nullable numeric pg column (integer or `null`) to `number | null`. */
-function toNullableInt(value: unknown): number | null {
-  return value === null || value === undefined ? null : Number(value);
-}
 
 /**
  * Map a raw `GROUP BY` breakdown row to a `BreakdownEntry`.

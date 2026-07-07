@@ -83,3 +83,8 @@ export async function query(text: string, params?: unknown[]): Promise<QueryResu
     throw err;
   }
 }
+
+/** Coerce a nullable numeric pg column (integer or `null`/absent) to `number | null`. */
+export function toNullableInt(value: unknown): number | null {
+  return value === null || value === undefined ? null : Number(value);
+}

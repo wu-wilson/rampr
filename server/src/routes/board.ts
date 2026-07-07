@@ -12,7 +12,7 @@ router.get('/board', async (req, res, next) => {
   try {
     const parsed = BoardQuerySchema.safeParse(req.query);
     if (!parsed.success) {
-      console.error(`Invalid board query: ${JSON.stringify(parsed.error.issues)}`);
+      console.warn(`Invalid board query: ${JSON.stringify(parsed.error.issues)}`);
       res.status(400).json({ error: 'Invalid query parameters' });
       return;
     }
