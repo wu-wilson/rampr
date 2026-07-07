@@ -45,12 +45,12 @@ export function formatDate(iso: string): string {
 }
 
 /**
- * The daily poll time — scheduled at 06:17 UTC — rendered in the viewer's local timezone.
- * @returns A local time label like `11:17 PM PDT`
+ * The daily poll time — scheduled at 08:00 UTC — rendered in the viewer's local timezone.
+ * @returns A local time label like `1:00 AM PDT`
  */
 export function formatPollTimeLocal(): string {
   const scheduled = new Date();
-  scheduled.setUTCHours(6, 17, 0, 0);
+  scheduled.setUTCHours(8, 0, 0, 0);
   return scheduled.toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
@@ -61,20 +61,20 @@ export function formatPollTimeLocal(): string {
 /**
  * Format the daily poll as a day-zero label in the viewer's local timezone, so a first-time
  * visitor sees when the first counts will land on their own clock.
- * @returns A label like `Poll scheduled · 11:17 PM PDT`
+ * @returns A label like `Poll scheduled · 1:00 AM PDT`
  */
 export function formatPollSchedule(): string {
   return `Poll scheduled · ${formatPollTimeLocal()}`;
 }
 
 /**
- * Render the moment a snapshot was written — its date at the 06:17 UTC poll — fully in the
+ * Render the moment a snapshot was written — its date at the 08:00 UTC poll — fully in the
  * viewer's local timezone, so the date and time never straddle a day boundary.
  * @param snapshotDate - The ISO snapshot date (`YYYY-MM-DD`) the poll wrote
- * @returns A local label like `Jul 5 · 11:17 PM PDT`
+ * @returns A local label like `Jul 5 · 1:00 AM PDT`
  */
 export function formatUpdatedAtLocal(snapshotDate: string): string {
-  const moment = new Date(`${snapshotDate}T06:17:00Z`);
+  const moment = new Date(`${snapshotDate}T08:00:00Z`);
   const date = moment.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const time = moment.toLocaleTimeString('en-US', {
     hour: 'numeric',

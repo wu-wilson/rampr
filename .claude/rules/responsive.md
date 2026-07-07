@@ -26,7 +26,7 @@ Mobile-first, with a single primary breakpoint at **~760px** (define it as the T
 - **Board rows** reflow from a single desktop grid line into a stacked block — the company name over a compact mono meta line (rank · sector · remote %), with the open count and momentum stacked to the right. The desktop-only column header is hidden on mobile.
 - **Company breakdowns** (departments / locations / work mix) and the trajectory chart go from side-by-side to a single stacked column.
 - **Controls row** (sector filter, sort, search) stacks vertically.
-- The top bar's cadence stamp is **desktop-only**: before the first poll it reads `updated daily · {poll time}`; once `updatedAt` is set it shows the latest snapshot's moment (`updated {date} · {time}`). Both derive from the daily 06:17 UTC poll, rendered in the viewer's local timezone.
+- The top bar's cadence stamp is **desktop-only**: before the first poll it reads `updated daily · {poll time}`; once `updatedAt` is set it shows the latest snapshot's moment (`updated {date} · {time}`). Both derive from the daily 08:00 UTC poll, rendered in the viewer's local timezone.
 
 ## Viewport
 

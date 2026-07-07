@@ -122,7 +122,7 @@ Every variable ships with a working default — `./launch.sh` runs on a fresh cl
 | `REQUEST_TIMEOUT_MS` | `10000`                             | Per-request timeout for outbound feed fetches, in milliseconds.    |
 | `USER_AGENT`         | `rampr (+https://github.com/wu-wilson/rampr)` | Identifies the poller to ATS endpoints; production sets `rampr (+https://rampr.dev)`. |
 
-Schedule is defined in `cron-poller/railway.json` via `cronSchedule` (currently `17 6 * * *` — daily 06:17 UTC).
+Schedule is defined in `cron-poller/railway.json` via `cronSchedule` (currently `0 8 * * *` — daily 08:00 UTC).
 
 #### Cron Cleanup (`cron-cleanup/`)
 
@@ -131,4 +131,4 @@ Schedule is defined in `cron-poller/railway.json` via `cronSchedule` (currently 
 | `DATABASE_URL`   | `postgresql://localhost:5432/rampr` | Postgres connection. The cleanup fails loudly if unreachable.         |
 | `RETENTION_DAYS` | `90`                                | Daily snapshots older than this many days are deleted on each run.    |
 
-Schedule is defined in `cron-cleanup/railway.json` via `cronSchedule` (currently `43 4 * * 0` — Sundays 04:43 UTC).
+Schedule is defined in `cron-cleanup/railway.json` via `cronSchedule` (currently `0 6 * * 0` — Sundays 06:00 UTC).
