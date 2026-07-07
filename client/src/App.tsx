@@ -27,9 +27,13 @@ const ScrollToTop: React.FC = () => {
 export const App: React.FC = () => (
   <div className="app-surface min-h-dvh">
     <ScrollToTop />
+    {/* Clear the notch and home indicator; the paper surface behind fills the insets. */}
     <div
       className="mx-auto min-h-dvh w-full max-w-rail"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      style={{
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}
     >
       <AppNav />
       <main>
