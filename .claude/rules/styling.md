@@ -14,7 +14,7 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 - All colors via CSS custom properties / Tailwind semantic tokens. Never hardcode hex in components (no `bg-[#ABC]`).
 - **Light mode only** — palette defined on `:root` in `index.css`. Never use Tailwind `dark:` prefixes; there is no dark mode and no theme toggle.
 - Tokens are stored as **space-separated RGB channels** (e.g. `--ink: 27 33 28;`, hex in a comment) and consumed via `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js`, so alpha modifiers like `text-ink/60` resolve. Direct `var(--token)` uses (SVG `fill`/`stroke`) must wrap as `rgb(var(--token))`.
-- Surfaces: the paper app surface `--paper` fills the viewport; stat cards, gated panels, and hover `--raised`. Primary ink `--ink`; dark pills/rules/headers `--ink-strong`; muted-text ramp `--muted-1` → `--muted-3`. Borders tightest→lightest `--line-1` → `--line-4`. Brand green `--brand`, with a deeper `--brand-dark` and softer `--brand-soft`.
+- Surfaces: the paper app surface `--paper` fills the viewport; stat cards, gated panels, and hover `--raised`. Primary ink `--ink`; dark pills/rules/headers `--ink-strong`; muted-text ramp `--muted-1` → `--muted-3`. Borders tightest→lightest `--line-1` → `--line-4`. Brand blue `--brand`, with a deeper `--brand-dark` and softer `--brand-soft`.
 
 ## Visual Language
 

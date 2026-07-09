@@ -17,7 +17,7 @@ const LINKS: Array<{ to: string; label: string }> = [
 ];
 
 /**
- * A desktop primary nav link: Archivo. The active route is bold ink with a green underline that
+ * A desktop primary nav link: Archivo. The active route is bold ink with a blue underline that
  * scales out from center; others are medium muted and darken on hover. An invisible bold ghost holds
  * the active width so selecting a tab never reflows the row. `end` restricts the Board match to "/".
  */
@@ -36,7 +36,7 @@ const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
         >
           {label}
         </span>
-        {/* Green underline that scales out from center when the tab becomes active. */}
+        {/* Blue underline that scales out from center when the tab becomes active. */}
         <span
           aria-hidden="true"
           className={`absolute inset-x-0 -bottom-[1px] h-[2px] rounded-full bg-brand origin-center transition-transform ${
@@ -50,7 +50,7 @@ const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
 );
 
 /**
- * A row in the open mobile drawer: the current route bold ink with a green underline and a "CURRENT"
+ * A row in the open mobile drawer: the current route bold ink with a blue underline and a "CURRENT"
  * tag, other routes medium muted. A full-width tap target.
  */
 const DrawerLink: React.FC<{ to: string; label: string; onClick: () => void }> = ({ to, label, onClick }) => (

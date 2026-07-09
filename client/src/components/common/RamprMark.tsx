@@ -8,8 +8,8 @@ interface RamprMarkProps {
 }
 
 /**
- * The rampr logo mark: a green tile with a large quarter-circle notch bitten out of its
- * top-left corner and a small dot in the same brand green floating in the notch — an upward
+ * The rampr logo mark: a blue tile with a large quarter-circle notch bitten out of its
+ * top-left corner and a small dot in the same brand blue floating in the notch — an upward
  * ramp motif. Built from a radial-gradient so it scales cleanly with `size`; colors from the brand token.
  * @param props - Optional pixel size and extra wrapper classes
  * @returns The logo mark

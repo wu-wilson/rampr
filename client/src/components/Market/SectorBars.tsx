@@ -13,7 +13,7 @@ interface SectorBarsProps {
 
 /**
  * Open roles by sector as labeled horizontal bars: a mono label, a bar whose width is the
- * sector's share of the leader, and the count. Every bar is the same brand green — rank reads
+ * sector's share of the leader, and the count. Every bar is the same brand blue — rank reads
  * from bar length and the descending order, never from dimming a live sector. Always live,
  * never gated.
  * @param props - The sector totals, already ordered by count

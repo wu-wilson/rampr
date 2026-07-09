@@ -5,7 +5,7 @@ description: rampr's exact color tokens, fonts, paper texture, animation duratio
 
 # rampr design tokens
 
-rampr is a **light, warm-paper editorial** board: paper surfaces, hairline borders (never shadows-as-crutch), square-ish corners, a green accent, and mono labels/numbers. No dark mode, no theme toggle.
+rampr is a **light, warm-paper editorial** board: paper surfaces, hairline borders (never shadows-as-crutch), square-ish corners, a blue accent, and mono labels/numbers. No dark mode, no theme toggle.
 
 ## Color tokens
 
@@ -21,10 +21,10 @@ Store every color as **space-separated RGB channels** on `:root` in `client/src/
   --ink:        27 33 28;   /* #1B211C  primary text */
   --ink-strong: 35 40 31;   /* #23281F  dark pills, rules, headers */
 
-  /* Brand green */
-  --brand:      31 157 91;  /* #1F9D5B */
-  --brand-dark: 22 107 62;  /* #166B3E */
-  --brand-soft: 143 203 168;/* #8FCBA8  work-mix hybrid slice */
+  /* Brand blue */
+  --brand:      33 115 217;  /* #2173D9 */
+  --brand-dark: 24 84 168;  /* #1854A8 */
+  --brand-soft: 158 190 236;/* #9EBEEC  work-mix hybrid slice */
 
   /* Muted text ramp, lightest use to faintest */
   --muted-1: 86 91 79;      /* #565B4F  body-muted */
