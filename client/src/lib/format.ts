@@ -10,6 +10,20 @@ export function formatCount(value: number): string {
   return value.toLocaleString('en-US');
 }
 
+/** Shared compact number formatter (thousands → `K`, millions → `M`, one fraction digit). */
+const COMPACT_FORMAT = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
+
+/**
+ * Format a count as a compact axis label — `3000 → "3K"`, `1500 → "1.5K"`, `100000 → "100K"`;
+ * values below 1,000 render in full. For chart axis ticks where space is tight; the exact value
+ * stays available in the hover tooltip.
+ * @param value - The count to abbreviate
+ * @returns The compact label
+ */
+export function formatCompact(value: number): string {
+  return COMPACT_FORMAT.format(value);
+}
+
 /**
  * Format an already-whole-number percent for display.
  * @param pct - An integer percentage in the range 0..100

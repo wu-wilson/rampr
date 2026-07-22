@@ -3,7 +3,7 @@ import { scaleBand, scaleLinear, scaleTime } from 'd3-scale';
 
 import { useElementSize } from '../../hooks/useElementSize';
 
-import { formatCount, formatDate } from '../../lib/format';
+import { formatCompact, formatCount, formatDate } from '../../lib/format';
 
 /** One daily point on a trend chart. */
 interface TrendPoint {
@@ -22,12 +22,27 @@ interface TrendBarsProps {
   ariaLabel: string;
 }
 
-/** Plot inset (px) reserving room for the value axis (left) and time axis (bottom). */
+/** Plot inset (px): value axis (left) and time-axis baseline (bottom); `right` is the floor beneath the per-render label reserve. */
 const MARGIN = { top: 8, right: 6, bottom: 20 };
 /** Minimum painted bar height (px) so a zero/near-zero count still reads as a bar. */
 const MIN_BAR = 2;
 /** Share of each column left as the gap between bars (d3 `paddingInner`) — even at any density. */
 const BAR_GAP_RATIO = 0.28;
+
+/** Axis tick label size (px) — both axes render at `text-[10px]` mono. */
+const AXIS_LABEL_PX = 10;
+/** IBM Plex Mono advance per glyph (~0.64em incl. `tracking-[0.04em]`), rounded up for cushion. */
+const AXIS_CHAR_ADVANCE_EM = 0.68;
+/** Widest label the pinned '%b %d' formatter emits ("Sep 01" = 6 chars) plus slack — makes the reserve an over-estimate. */
+const X_MAX_LABEL_CHARS = 7;
+/**
+ * Half the widest x-axis label (px), reserved on the right so a centered edge tick label never
+ * crosses the SVG clip edge. Intentionally an over-estimate — a few px of chart width for a
+ * guaranteed no-clip. ≈ 26px.
+ */
+const X_LABEL_HALF = Math.ceil((X_MAX_LABEL_CHARS * AXIS_LABEL_PX * AXIS_CHAR_ADVANCE_EM) / 2) + 2;
+/** Gap (px) between a y-axis label's right edge and the plot's left edge (the label's `x` offset). */
+const Y_LABEL_GAP = 8;
 
 /** Parse an ISO date as UTC noon so the calendar day never shifts across the viewer's timezone. */
 const parseDate = (iso: string): Date => new Date(`${iso}T12:00:00Z`);
@@ -54,15 +69,28 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
     setActive(null);
   }, [points]);
 
-  const marginLeft = width < 380 ? 26 : 34;
-  const innerW = Math.max(0, width - marginLeft - MARGIN.right);
+  // Y-tick values are range-independent, so derive them (and the left gutter their labels need) up
+  // front — sizing to the widest *rendered* compact label, since e.g. "800" is wider than "3K".
+  const { yTickValues, marginLeft } = useMemo(() => {
+    const max = Math.max(1, ...points.map((p) => p.value));
+    const values = scaleLinear().domain([0, max]).nice().ticks(width < 380 ? 3 : 4);
+    const widestChars = Math.max(1, ...values.map((t) => formatCompact(t).length));
+    return {
+      yTickValues: values,
+      marginLeft: Y_LABEL_GAP + Math.ceil(widestChars * AXIS_LABEL_PX * AXIS_CHAR_ADVANCE_EM) + 2,
+    };
+  }, [points, width]);
+  // Reserve half the widest (centered) edge label on the right so it can't clip at the SVG edge.
+  // Floored at MARGIN.right; the label reserve is capped at 15% of width so a narrow plot keeps its bars.
+  const marginRight = Math.max(MARGIN.right, Math.min(X_LABEL_HALF, width * 0.15));
+  const innerW = Math.max(0, width - marginLeft - marginRight);
   const innerH = Math.max(0, height - MARGIN.top - MARGIN.bottom);
   const ready = innerW > 0 && innerH > 0 && points.length > 0;
 
   // Rebuild the d3 scales only when the data or dimensions change, not on every hover re-render.
   // scaleTime chooses and formats the temporal ticks; each is then snapped to its nearest bar's
   // center so labels align with the bands (and stay correct if a poll gap leaves a missing day).
-  const { x, y, yTicks, xTicks } = useMemo(() => {
+  const { x, y, xTicks } = useMemo(() => {
     const firstDate = points[0]?.date ?? '2020-01-01';
     const lastDate = points[points.length - 1]?.date ?? '2020-01-01';
     const xScale = scaleBand<number>()
@@ -72,7 +100,9 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
     const max = Math.max(1, ...points.map((p) => p.value));
     const yScale = scaleLinear().domain([0, max]).range([innerH, 0]).nice();
     const timeScale = scaleTime().domain([parseDate(firstDate), parseDate(lastDate)]).range([0, innerW]);
-    const formatTick = timeScale.tickFormat();
+    // Pin an abbreviated month-day format so ticks never hit d3's multi-scale full-month name
+    // ("%B" → "September"); labels stay a consistent, width-bounded "Sep 01" (uppercased in CSS).
+    const formatTick = timeScale.tickFormat(undefined, '%b %d');
     const bandCenter = (i: number): number => (xScale(i) ?? 0) + xScale.bandwidth() / 2;
     const pointTimes = points.map((p) => parseDate(p.date).getTime());
     const ticks = timeScale.ticks(width < 380 ? 3 : width < 640 ? 5 : 8).map((tickDate) => {
@@ -83,7 +113,7 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
       }
       return { key: t, label: formatTick(tickDate), x: bandCenter(nearest) };
     });
-    return { x: xScale, y: yScale, yTicks: yScale.ticks(width < 380 ? 3 : 4), xTicks: ticks };
+    return { x: xScale, y: yScale, xTicks: ticks };
   }, [points, innerW, innerH, width]);
 
   const lastIndex = points.length - 1;
@@ -96,11 +126,11 @@ export const TrendBars: React.FC<TrendBarsProps> = ({ points, heightClass, ariaL
       {ready && (
         <svg width={width} height={height} role="img" aria-label={ariaLabel} className="block">
           <g transform={`translate(${marginLeft}, ${MARGIN.top})`}>
-            {yTicks.map((tick) => (
+            {yTickValues.map((tick) => (
               <g key={`y-${tick}`} transform={`translate(0, ${y(tick)})`}>
                 <line x2={innerW} stroke={token('--line-4')} shapeRendering="crispEdges" />
-                <text x={-8} dy="0.32em" textAnchor="end" className="font-mono text-[10px]" style={{ fill: token('--muted-3') }}>
-                  {formatCount(tick)}
+                <text x={-Y_LABEL_GAP} dy="0.32em" textAnchor="end" className="font-mono text-[10px]" style={{ fill: token('--muted-3') }}>
+                  {formatCompact(tick)}
                 </text>
               </g>
             ))}
