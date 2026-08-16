@@ -22,6 +22,7 @@ rampr is a public, read-only hiring-momentum board with a light, editorial visua
 - **Rolling 90-day window.** `cron-cleanup` prunes `daily_snapshots` past 90 days, which is exactly the deepest the trajectory/index charts ever render — so nothing visible is lost. `listings` self-trims every poll and needs no cleanup.
 - **UTC everywhere.** The poller's "today" and the DB's `CURRENT_DATE` (snapshot date + retention math) must agree — both pinned to UTC.
 - **Two Railway crons.** Each cron is a Railway service purely because `deploy.cronSchedule` is set; each boots, runs once, and exits. `restartPolicyType: "NEVER"`.
+- **No canonical or `og:url`.** Every route shares the one `client/index.html`, so a static value would declare `/company/*`, `/market`, and `/about` duplicates of the board and drop them from search. `sitemap.xml` lists the static routes only — company URLs stay out so the seed list never couples to a hand-kept file.
 
 ## Do NOT
 
