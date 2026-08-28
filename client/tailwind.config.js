@@ -35,7 +35,7 @@ export default {
       },
       fontFamily: {
         display: ['"DM Sans"', 'system-ui', 'sans-serif'],
-        mono: ['"Source Code Pro"', 'monospace'],
+        mono: ['"Courier Prime"', 'monospace'],
       },
       maxWidth: {
         rail: '1280px',

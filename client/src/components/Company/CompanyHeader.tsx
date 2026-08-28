@@ -79,7 +79,7 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
             <PostItNote index={1} className="px-4 py-4">
               <MonoLabel>7-day momentum</MonoLabel>
               <div className="mt-2">
-                <MomentumBadge momentum={momentum} size={15} strong />
+                <MomentumBadge momentum={momentum} size={20} strong />
               </div>
             </PostItNote>
           </div>
