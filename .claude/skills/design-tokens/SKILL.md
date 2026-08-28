@@ -55,7 +55,7 @@ const ch = (name) => `rgb(var(${name}) / <alpha-value>)`;
 ## Fonts
 
 - **DM Sans** (weights 500–800) — display headings, names, and every count/number. `font-display`. **The `body` defaults to DM Sans** — it's the common case for content.
-- **Courier Prime** (400 + 700 only; `font-semibold`/`font-extrabold` resolve to 700) — labels, metadata, table cells, badges. Apply `font-mono` explicitly; it's the labeled exception, not the default. Chosen for its typewriter warmth and plain (undotted, unslashed) zero — verify any replacement's zero at large glyph size before adopting it.
+- **Chivo Mono** (400–800) — labels, metadata, table cells, badges. Apply `font-mono` explicitly; it's the labeled exception, not the default. Chosen for its plain (undotted, unslashed) zero and UI-friendly metrics — vet any replacement's zero at large glyph size, and confirm its x-height and vertical centering hold up at label sizes.
 
 Load via Google Fonts `preconnect` + stylesheet `<link>` tags in `index.html` (not a CSS `@import`, which would render-block behind the stylesheet). Base body size `14px`.
 

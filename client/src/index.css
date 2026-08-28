@@ -1,4 +1,4 @@
-/* Fonts (DM Sans + Courier Prime) load via preconnect + <link> in index.html, not an
+/* Fonts (DM Sans + Chivo Mono) load via preconnect + <link> in index.html, not an
    @import here, so the request starts before the stylesheet finishes parsing. */
 @tailwind base;
 @tailwind components;

@@ -31,7 +31,7 @@ const BAR_GAP_RATIO = 0.28;
 
 /** Axis tick label size (px) — both axes render at `text-[10px]` mono. */
 const AXIS_LABEL_PX = 10;
-/** Courier Prime advance per glyph (~0.64em incl. `tracking-[0.04em]`), rounded up for cushion. */
+/** Chivo Mono advance per glyph (~0.64em incl. `tracking-[0.04em]`), rounded up for cushion. */
 const AXIS_CHAR_ADVANCE_EM = 0.68;
 /** Widest label the pinned '%b %d' formatter emits ("Sep 01" = 6 chars) plus slack — makes the reserve an over-estimate. */
 const X_MAX_LABEL_CHARS = 7;
