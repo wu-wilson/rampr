@@ -54,10 +54,10 @@ const ch = (name) => `rgb(var(${name}) / <alpha-value>)`;
 
 ## Fonts
 
-- **Archivo** (weights 500–800) — display headings, names, and every count/number. `font-display`. **The `body` defaults to Archivo** — it's the common case for content.
-- **IBM Plex Mono** (400–600) — labels, metadata, table cells, badges. Apply `font-mono` explicitly; it's the labeled exception, not the default.
+- **DM Sans** (weights 500–800) — display headings, names, and every count/number. `font-display`. **The `body` defaults to DM Sans** — it's the common case for content.
+- **Source Code Pro** (400–600) — labels, metadata, table cells, badges. Apply `font-mono` explicitly; it's the labeled exception, not the default. Chosen for its plain (undotted, unslashed) zero.
 
-Load via the same Google Fonts `@import` at the top of `index.css`. Base body size `14px`.
+Load via Google Fonts `preconnect` + stylesheet `<link>` tags in `index.html` (not a CSS `@import`, which would render-block behind the stylesheet). Base body size `14px`.
 
 ## Paper texture
 

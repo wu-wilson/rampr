@@ -39,12 +39,12 @@ export async function apiGet<T>(path: string): Promise<T> {
 export function toUserMessage(err: unknown, fallback: string): string {
   if (err instanceof ApiError) {
     if (err.status === 503) {
-      return 'Temporarily unavailable — try again shortly.';
+      return 'Temporarily unavailable. Try again shortly.';
     }
     if (err.status === 429) {
-      return 'Too many requests — give it a moment.';
+      return 'Too many requests. Give it a moment.';
     }
     return fallback;
   }
-  return 'Couldn’t reach Rampr — check your connection.';
+  return 'Couldn’t reach Rampr. Check your connection.';
 }

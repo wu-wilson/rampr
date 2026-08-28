@@ -16,11 +16,18 @@ interface CompanyHeaderProps {
   data: CompanyResponse;
 }
 
+/** Human-readable ATS provider names for the header caption. */
+const SOURCE_LABELS: Record<CompanyResponse['company']['source'], string> = {
+  greenhouse: 'Greenhouse',
+  lever: 'Lever',
+  ashby: 'Ashby',
+};
+
 /**
  * The company header band: a left identity cell (rank/sector/provider caption, name, the tracked-
  * since line, and the out-link to the company's own board) paired with the open-role count and
- * 7-day momentum as two taped post-its. The notes cluster to the right on desktop and drop below
- * the name on mobile, where the caption compacts to "#rank · SECTOR · PROVIDER".
+ * 7-day momentum as two taped post-its. The caption ("Ranked #N / filed under SECTOR / via PROVIDER")
+ * is shared across breakpoints; the notes cluster right on desktop and drop below the name on mobile.
  * @param props - The full company payload
  * @returns The company header band
  */
@@ -33,12 +40,11 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
       <div className="md:grid md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12">
         {/* Identity: caption, name, tracked-since line, and out-link to the company's board. */}
         <div>
-          <MonoLabel className="hidden md:inline">
-            #{company.rank} on the board · {company.sectorLabel} · {company.source}
+          {/* Non-breaking spaces keep each phrase whole, so a narrow viewport wraps at a slash, never mid-phrase. */}
+          <MonoLabel>
+            Ranked&nbsp;#{company.rank} / filed&nbsp;under&nbsp;{company.sectorLabel} / via&nbsp;
+            {SOURCE_LABELS[company.source]}
           </MonoLabel>
-          <span className="font-mono uppercase text-muted-2 md:hidden text-[10px] tracking-[0.12em]">
-            #{company.rank} · {company.sectorLabel} · {company.source}
-          </span>
 
           <h1
             className="mt-1.5 font-display font-extrabold text-ink md:mt-2 leading-[1.04] tracking-[-0.03em]"
@@ -66,12 +72,12 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
           <div className="mt-6 grid grid-cols-2 items-start gap-4 md:hidden">
             <PostItNote index={0} className="px-4 py-4">
               <MonoLabel>Open now</MonoLabel>
-              <div className="mt-1 font-display font-extrabold tabular-nums text-ink text-[30px] leading-none">
+              <div className="mt-1 font-display font-extrabold tabular-nums text-ink text-[28px] leading-none">
                 {formatCount(open)}
               </div>
             </PostItNote>
             <PostItNote index={1} className="px-4 py-4">
-              <MonoLabel>Momentum 7d</MonoLabel>
+              <MonoLabel>7-day momentum</MonoLabel>
               <div className="mt-2">
                 <MomentumBadge momentum={momentum} size={15} strong />
               </div>
@@ -83,12 +89,12 @@ export const CompanyHeader: React.FC<CompanyHeaderProps> = ({ data }) => {
         <div className="hidden md:grid md:w-[440px] md:grid-cols-2 md:items-start md:gap-7">
           <PostItNote index={0} className="px-5 py-5">
             <MonoLabel>Open roles now</MonoLabel>
-            <div className="mt-1.5 font-display font-extrabold tabular-nums text-ink text-[46px] leading-none">
+            <div className="mt-1.5 font-display font-extrabold tabular-nums text-ink text-[43px] leading-none">
               {formatCount(open)}
             </div>
           </PostItNote>
           <PostItNote index={1} className="px-5 py-5">
-            <MonoLabel>Momentum · 7d</MonoLabel>
+            <MonoLabel>7-day momentum</MonoLabel>
             <div className="mt-2.5">
               <MomentumBadge momentum={momentum} size={24} strong />
             </div>

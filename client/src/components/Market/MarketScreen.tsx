@@ -41,7 +41,7 @@ export const MarketScreen: React.FC = () => {
         </h1>
         <p className="mt-1.5 font-mono text-[11px] text-muted-1 md:mt-2 md:text-[12px]">
           {formatCount(totals.totalOpen)} open roles
-          <span className="hidden md:inline"> across {formatCount(totals.companyCount)} companies</span> ·{' '}
+          <span className="hidden md:inline"> across {formatCount(totals.companyCount)} companies</span> in{' '}
           {formatCount(totals.sectorCount)} sectors
         </p>
       </Band>
@@ -49,7 +49,7 @@ export const MarketScreen: React.FC = () => {
       {isDayZero ? (
         <EmptyState
           title="Tracking just started"
-          body="Rampr hasn't run its first poll yet — open-role counts land here once it does."
+          body="Rampr hasn't run its first poll yet. Open-role counts will land here once it does."
           note={formatPollSchedule()}
         />
       ) : (

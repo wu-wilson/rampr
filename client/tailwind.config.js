@@ -34,8 +34,8 @@ export default {
         flat: ch('--flat'),
       },
       fontFamily: {
-        display: ['Archivo', 'system-ui', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'monospace'],
+        display: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        mono: ['"Source Code Pro"', 'monospace'],
       },
       maxWidth: {
         rail: '1280px',

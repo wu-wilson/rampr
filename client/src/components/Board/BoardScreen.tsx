@@ -57,7 +57,7 @@ export const BoardScreen: React.FC = () => {
       {isDayZero ? (
         <EmptyState
           title="Tracking just started"
-          body="Rampr hasn't run its first poll yet — open-role counts land here once it does."
+          body="Rampr hasn't run its first poll yet. Open-role counts will land here once it does."
           note={formatPollSchedule()}
         />
       ) : (
@@ -69,7 +69,7 @@ export const BoardScreen: React.FC = () => {
               className="px-5 pt-3 font-mono text-down md:px-10 text-[11px]"
               role="status"
             >
-              Couldn’t refresh — showing the last result.
+              Couldn’t refresh. Showing the last result.
             </p>
           )}
 

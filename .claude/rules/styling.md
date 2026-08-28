@@ -18,8 +18,8 @@ Light, warm-paper editorial aesthetic. No UI component libraries and no charting
 
 ## Visual Language
 
-- Display/headlines and **every count/number** use **Archivo** (weights 500–800, `font-display`, `tabular-nums`). Labels, metadata, table cells, and badges use **IBM Plex Mono** (400–600, `font-mono`). Base 14px, line-height 1.5.
-- The Board pairs an editorial headline (large Archivo) with a 2×2 cluster of market stat post-its (beside the headline on wide screens, stacked below on mobile) — big Archivo numbers over uppercase tracked-mono micro-labels.
+- Display/headlines and **every count/number** use **DM Sans** (weights 500–800, `font-display`, `tabular-nums`). Labels, metadata, table cells, and badges use **Source Code Pro** (400–600, `font-mono`). Base 14px, line-height 1.5.
+- The Board pairs an editorial headline (large DM Sans) with a 2×2 cluster of market stat post-its (beside the headline on wide screens, stacked below on mobile) — big display numbers over uppercase tracked-mono micro-labels.
 - Square-ish corners, hairline borders from the border ramp, surface-tier shifts (`bg-paper` vs `bg-raised`) for depth — **prefer hairlines over shadows**. Never lean on a drop shadow where a `--line-*` border reads the section. The one deliberate exception: the stat post-its (`PostItNote` — the Board's market cluster and the company header's two stat cards), where a soft shadow + slight tilt + torn tape sell the taped-note effect.
 - Charts: the work-mix bar (Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown residual `--muted-3`) and sector bars (every bar `--brand`, ordered by count — length carries rank) are hand-rolled CSS. The two daily time-series charts are d3-scaled SVG via `TrendBars` (every bar `--brand`, the hovered column `--brand-dark`; axes/gridlines from the `--line-*` and `--muted-*` ramps). SVG `fill`/`stroke` take a token as `rgb(var(--token))` — never a hex.
 

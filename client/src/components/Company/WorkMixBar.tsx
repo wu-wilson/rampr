@@ -48,12 +48,12 @@ export const WorkMixBar: React.FC<WorkMixBarProps> = ({ workMix }) => {
             key={segment.key}
             className={segment.color}
             style={{ width: `${segment.slice.pct}%` }}
-            title={`${segment.label} · ${formatPercent(segment.slice.pct)}`}
+            title={`${segment.label}: ${formatPercent(segment.slice.pct)}`}
           />
         ))}
       </div>
 
-      {/* Desktop legend: swatch + label + percent · count, one row each. */}
+      {/* Desktop legend: swatch + label + percent (count), one row each. */}
       <ul className="mt-4 hidden flex-col gap-2.5 md:flex">
         {segments.map((segment) => (
           <li key={segment.key} className="flex items-center justify-between text-[12px]">
@@ -62,7 +62,7 @@ export const WorkMixBar: React.FC<WorkMixBarProps> = ({ workMix }) => {
               <span className="text-ink">{segment.label}</span>
             </span>
             <span className="font-mono tabular-nums text-muted-1">
-              {formatPercent(segment.slice.pct)} · {formatCount(segment.slice.count)}
+              {formatPercent(segment.slice.pct)} ({formatCount(segment.slice.count)})
             </span>
           </li>
         ))}

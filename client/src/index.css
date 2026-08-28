@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-
+/* Fonts (DM Sans + Source Code Pro) load via preconnect + <link> in index.html, not an
+   @import here, so the request starts before the stylesheet finishes parsing. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -75,17 +75,17 @@ export function formatPollTimeLocal(): string {
 /**
  * Format the daily poll as a day-zero label in the viewer's local timezone, so a first-time
  * visitor sees when the first counts will land on their own clock.
- * @returns A label like `Poll scheduled · 1:00 AM PDT`
+ * @returns A label like `Next poll at 1:00 AM PDT`
  */
 export function formatPollSchedule(): string {
-  return `Poll scheduled · ${formatPollTimeLocal()}`;
+  return `Next poll at ${formatPollTimeLocal()}`;
 }
 
 /**
  * Render the moment a snapshot was written — its date at the 08:00 UTC poll — fully in the
  * viewer's local timezone, so the date and time never straddle a day boundary.
  * @param snapshotDate - The ISO snapshot date (`YYYY-MM-DD`) the poll wrote
- * @returns A local label like `Jul 5 · 1:00 AM PDT`
+ * @returns A local label like `Jul 5 at 1:00 AM PDT`
  */
 export function formatUpdatedAtLocal(snapshotDate: string): string {
   const moment = new Date(`${snapshotDate}T08:00:00Z`);
@@ -95,5 +95,5 @@ export function formatUpdatedAtLocal(snapshotDate: string): string {
     minute: '2-digit',
     timeZoneName: 'short',
   });
-  return `${date} · ${time}`;
+  return `${date} at ${time}`;
 }

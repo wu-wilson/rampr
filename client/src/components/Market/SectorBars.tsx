@@ -22,7 +22,7 @@ interface SectorBarsProps {
 export const SectorBars: React.FC<SectorBarsProps> = ({ sectors }) => (
   <div>
     <MonoLabel>
-      Open roles by sector<span className="hidden md:inline"> · now</span>
+      Open roles by sector<span className="hidden md:inline"> right now</span>
     </MonoLabel>
     <div className="mt-4 flex flex-col gap-[11px] md:mt-5 md:gap-[13px]">
       {sectors.map((sector) => (

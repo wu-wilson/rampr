@@ -31,7 +31,7 @@ const BAR_GAP_RATIO = 0.28;
 
 /** Axis tick label size (px) — both axes render at `text-[10px]` mono. */
 const AXIS_LABEL_PX = 10;
-/** IBM Plex Mono advance per glyph (~0.64em incl. `tracking-[0.04em]`), rounded up for cushion. */
+/** Source Code Pro advance per glyph (~0.64em incl. `tracking-[0.04em]`), rounded up for cushion. */
 const AXIS_CHAR_ADVANCE_EM = 0.68;
 /** Widest label the pinned '%b %d' formatter emits ("Sep 01" = 6 chars) plus slack — makes the reserve an over-estimate. */
 const X_MAX_LABEL_CHARS = 7;
@@ -201,6 +201,6 @@ const Tooltip: React.FC<{ left: number; width: number; point: TrendPoint }> = ({
     className="pointer-events-none absolute top-1 z-10 -translate-x-1/2 whitespace-nowrap rounded-sm bg-ink-strong px-2 py-1 font-mono text-paper text-[10px]"
     style={{ left: Math.max(56, Math.min(width - 56, left)) }}
   >
-    {formatDate(point.date)} · {formatCount(point.value)} open
+    {formatDate(point.date)}: {formatCount(point.value)} open
   </div>
 );

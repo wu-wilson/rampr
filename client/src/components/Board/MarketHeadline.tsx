@@ -17,7 +17,7 @@ interface MarketHeadlineProps {
 /**
  * The Board hero: an editorial headline and lede on the left, with the market stat post-its — open
  * roles now, companies, sectors, and the (gated) 7-day change — clustered 2×2 on the right, each a
- * big Archivo number over an uppercase mono label, tilted and taped to the board. Stacks on mobile.
+ * big display number over an uppercase mono label, tilted and taped to the board. Stacks on mobile.
  * @param props - The market summary driving the stat notes
  * @returns The hero band
  */
@@ -35,9 +35,9 @@ export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
           className="mt-4 font-medium text-muted-1 text-[16px] leading-[1.65]"
           style={{ maxWidth: '520px' }}
         >
-          Open-role counts pulled straight from each company&apos;s own job board — Greenhouse,
-          Lever, Ashby — once a day. No aggregators, no spin — just the count, and where it&apos;s
-          headed.
+          Once a day, Rampr counts the open roles on each company&apos;s own job board on
+          Greenhouse, Lever, and Ashby. No aggregators, no spin. Just the count, and where
+          it&apos;s headed.
         </p>
       </div>
 
@@ -60,7 +60,7 @@ export const MarketHeadline: React.FC<MarketHeadlineProps> = ({ market }) => (
 );
 
 /**
- * One market stat on a post-it: a big Archivo value over an uppercase mono label, carried on the
+ * One market stat on a post-it: a big display value over an uppercase mono label, carried on the
  * shared taped note.
  * @param props - The value node, its label, and the zero-based index picking the note's tilt
  * @returns The stat note
@@ -84,14 +84,15 @@ const StatNote: React.FC<{ children: React.ReactNode; label: string; index: numb
 );
 
 /**
- * The 7-day-change value: a muted em dash while globally gated, otherwise the signed delta paired
- * with its directional arrow and semantic color (never color alone).
+ * The 7-day-change value: a muted mono "building" note while globally gated (matching the
+ * momentum badge's gated state), otherwise the signed delta paired with its directional arrow
+ * and semantic color (never color alone).
  * @param props - Global gating flag and the signed 7-day delta (`null` when gated)
  * @returns The trend value node
  */
 const TrendValue: React.FC<{ gated: boolean; delta7d: number | null }> = ({ gated, delta7d }) => {
   if (gated || delta7d === null) {
-    return <span className="text-muted-3">—</span>;
+    return <span className="font-mono font-normal text-muted-3 text-[11px]">building</span>;
   }
 
   const direction = delta7d > 0 ? 'up' : delta7d < 0 ? 'down' : 'flat';

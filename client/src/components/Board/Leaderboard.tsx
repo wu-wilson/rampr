@@ -15,7 +15,7 @@ const HEADERS: Array<{ label: string; align?: 'right' }> = [
   { label: 'Sector' },
   { label: 'Open roles', align: 'right' },
   { label: 'Remote', align: 'right' },
-  { label: 'Momentum · 7d', align: 'right' },
+  { label: '7-day momentum', align: 'right' },
 ];
 
 /** Desktop-only column header aligned to the row grid; hidden on mobile. */

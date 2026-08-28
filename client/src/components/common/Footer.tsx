@@ -11,7 +11,7 @@ import { GITHUB_URL } from '../../constants/config';
  */
 export const Footer: React.FC = () => (
   <footer className="flex flex-col gap-3 border-t border-line-2 px-5 py-5 font-mono text-muted-3 md:flex-row md:items-center md:justify-between md:px-10">
-    <span className="text-[10px] md:text-[11px]">built on public feeds — Greenhouse · Lever · Ashby</span>
+    <span className="text-[10px] md:text-[11px]">built on public feeds from Greenhouse, Lever, and Ashby</span>
     <a
       href={GITHUB_URL}
       target="_blank"

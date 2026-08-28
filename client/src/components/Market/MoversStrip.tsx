@@ -30,7 +30,7 @@ export const MoversStrip: React.FC<MoversStripProps> = ({ movers, daysTracked })
   <div className="-mx-5 md:-mx-10 md:grid md:grid-cols-2">
     <div className="border-b border-line-2 px-5 py-[22px] md:border-b-0 md:border-r md:px-10 md:py-6">
       <MoverColumn
-        title="Heating up · 7d"
+        title="Heating up, last 7 days"
         direction="up"
         movers={movers.heating}
         gated={movers.gated}
@@ -39,7 +39,7 @@ export const MoversStrip: React.FC<MoversStripProps> = ({ movers, daysTracked })
     </div>
     <div className="px-5 py-[22px] md:px-10 md:py-6">
       <MoverColumn
-        title="Cooling down · 7d"
+        title="Cooling down, last 7 days"
         direction="down"
         movers={movers.cooling}
         gated={movers.gated}
@@ -64,7 +64,7 @@ const MoverColumn: React.FC<{
       <MonoLabel>{title}</MonoLabel>
       {gated ? (
         <p className="mt-3 rounded-sm border border-dashed border-line-4 bg-raised px-4 py-3.5 font-mono text-[10px] text-muted-3 md:mt-3.5 md:px-[18px] md:py-4 md:text-[11px]">
-          unlocks with the index — {gatingLabel(daysTracked)} days
+          unlocks with the index: {gatingLabel(daysTracked)} days
         </p>
       ) : (
         <ul className="mt-3 flex flex-col border-t border-line-1 md:mt-3.5">

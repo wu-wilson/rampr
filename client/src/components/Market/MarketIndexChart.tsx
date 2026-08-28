@@ -25,14 +25,14 @@ export const MarketIndexChart: React.FC<MarketIndexChartProps> = ({ index }) => 
     <div className="mb-3.5 flex items-center justify-between gap-3 md:mb-5">
       <MonoLabel>Market hiring index</MonoLabel>
       <span className="hidden font-mono text-muted-3 md:inline text-[11px]">
-        total open roles / day
+        total open roles per day
       </span>
     </div>
     {index.gated ? (
       <GatedTrend
         daysTracked={index.daysTracked}
         label="Index"
-        caption="today's total is already live · history starts the day tracking began"
+        caption="today's total is already live. History starts the day tracking began."
       />
     ) : (
       <IndexBars points={index.points} />

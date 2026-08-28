@@ -24,7 +24,7 @@ paths:
 - `use*` hooks own fetch + loading/error state for each endpoint (`/api/board`, `/api/companies/:slug`, `/api/market`, `/api/meta`). Company detail is fetched per route by slug.
 - Every fetch hook guards against a stale response with a **cancelled flag** in its effect — set `let cancelled = false`, bail on `cancelled` before calling `setState`, and return `() => { cancelled = true }` so a fast filter change or route switch can't apply an out-of-order result.
 - Changing sector, search, or sort resets pagination (offset back to 0). Paginate the Board with "load more".
-- Every fetch hook surfaces loading, empty, and error states. Distinguish **day-zero** (`updatedAt: null`, tracking just started) from the **gated-trend** state (`gated: true`, "trend building — N of 14") — they are different designed UIs, never a blank screen.
+- Every fetch hook surfaces loading, empty, and error states. Distinguish **day-zero** (`updatedAt: null`, tracking just started) from the **gated-trend** state (`gated: true`, "trend building: N of 14") — they are different designed UIs, never a blank screen.
 
 ## Limits
 

@@ -31,7 +31,7 @@ No views, no aggregate tables. Everything below is derived at query time.
 - **Per-company** `gated = daysTracked < 14`, where `daysTracked = COUNT(*) FROM daily_snapshots WHERE company_id = $1`.
 - **Global** (market index + movers) `gated = COUNT(DISTINCT snapshot_date) < 14` — the section-level flag; movers additionally drop any company that hasn't cleared the per-company gate above.
 
-Gated trend fields return `gated: true` with empty `points` / `null` deltas; the client renders the "trend building — N of 14" state. Snapshot fields (open, breakdowns, sector totals) are never gated.
+Gated trend fields return `gated: true` with empty `points` / `null` deltas; the client renders the "trend building: N of 14" state. Snapshot fields (open, breakdowns, sector totals) are never gated.
 
 ## Endpoint contract
 

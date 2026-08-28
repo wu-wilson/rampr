@@ -13,7 +13,7 @@ interface GatedTrendProps {
 
 /**
  * The dashed "trend building" panel shown wherever a trend surface is still gated: a
- * centered 14-dot progress row over a "{label} building — N of 14" line, with an optional
+ * centered 14-dot progress row over a "{label} building: N of 14" line, with an optional
  * desktop-only caption. The title shortens to "… of 14 days" on mobile.
  * @param props - Snapshots tracked so far, the title label, and an optional desktop caption
  * @returns The gated-trend panel
@@ -32,7 +32,7 @@ export const GatedTrend: React.FC<GatedTrendProps> = ({ daysTracked, label = 'Tr
     </div>
 
     <p className="font-mono font-semibold uppercase tracking-[0.06em] text-muted-1 text-[11px] md:text-[12px]">
-      {label} building — {gatingLabel(daysTracked)}
+      {label} building: {gatingLabel(daysTracked)}
       <span className="md:hidden"> days</span>
       <span className="hidden md:inline"> daily snapshots</span>
     </p>

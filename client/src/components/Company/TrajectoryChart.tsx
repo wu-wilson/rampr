@@ -38,13 +38,13 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ trajectory }) 
         </h2>
         {trajectory.gated ? (
           <span className="hidden font-mono text-muted-3 md:inline text-[11px]">
-            one snapshot per day · no backfill
+            one snapshot a day, no backfill
           </span>
         ) : (
           <div className="flex items-center gap-3.5">
             <RangePicker value={range} onChange={setRange} />
             <span className="hidden font-mono text-muted-3 md:inline text-[11px]">
-              one snapshot / day
+              one snapshot a day
             </span>
           </div>
         )}
@@ -55,7 +55,7 @@ export const TrajectoryChart: React.FC<TrajectoryChartProps> = ({ trajectory }) 
           <GatedTrend
             daysTracked={trajectory.daysTracked}
             label="Trend"
-            caption="unlocks at 14 days of history · today's count is already live"
+            caption="today's count is already live. The trend unlocks at 14 days of history."
           />
         </div>
       ) : (

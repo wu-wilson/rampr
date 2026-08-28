@@ -17,7 +17,7 @@ const LINKS: Array<{ to: string; label: string }> = [
 ];
 
 /**
- * A desktop primary nav link: Archivo. The active route is bold ink with a blue underline that
+ * A desktop primary nav link. The active route is bold ink with a blue underline that
  * scales out from center; others are medium muted and darken on hover. An invisible bold ghost holds
  * the active width so selecting a tab never reflows the row. `end` restricts the Board match to "/".
  */
@@ -119,13 +119,13 @@ export const AppNav: React.FC = () => {
   // has run, or the daily poll time before day zero.
   const stamp = meta?.updatedAt
     ? `updated ${formatUpdatedAtLocal(meta.updatedAt)}`
-    : `updated daily · ${formatPollTimeLocal()}`;
+    : `updated daily at ${formatPollTimeLocal()}`;
 
   return (
     <header>
       <div className="flex items-center justify-between border-b border-line-2 px-5 py-4 md:px-10 md:py-[18px]">
         <div className="flex items-center gap-7">
-          <Link to="/" onClick={close} className="flex items-center gap-2 text-ink" aria-label="Rampr — home">
+          <Link to="/" onClick={close} className="flex items-center gap-2 text-ink" aria-label="Rampr, home">
             <RamprMark size={24} />
             <span className="font-display font-extrabold text-[19px] md:text-[21px] tracking-[-0.02em]">
               Rampr

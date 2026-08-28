@@ -34,7 +34,7 @@ export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
           {company.name}
         </span>
         <span className="truncate font-mono text-muted-2 text-[10px]">
-          {company.rank} · {company.sectorLabel} · {formatPercent(company.remotePct)} remote
+          {company.rank} / {company.sectorLabel} / {formatPercent(company.remotePct)} remote
         </span>
       </div>
       <div className="flex flex-col items-end gap-1">

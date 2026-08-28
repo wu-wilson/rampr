@@ -22,7 +22,7 @@ export const AboutScreen: React.FC = () => {
     {
       key: 'What is counted',
       value:
-        "Open roles listed on each company's public job board — Greenhouse, Lever and Ashby feeds. A role counts once; closed or removed postings drop out at the next poll.",
+        "Open roles listed on each company's public job board, read from the Greenhouse, Lever, and Ashby feeds. A role counts once, and closed or removed postings drop out at the next poll.",
     },
     {
       key: 'Cadence',
@@ -31,12 +31,12 @@ export const AboutScreen: React.FC = () => {
     {
       key: 'Trends',
       value:
-        'History accrues forward from the day tracking started — there is no backfill. Trend charts and momentum badges unlock once 14 daily snapshots exist; snapshot counts are live from day one.',
+        'History accrues from the day tracking started, with no backfill. Trend charts and momentum badges unlock once 14 daily snapshots exist; snapshot counts are live from day one.',
     },
     {
       key: 'What Rampr is not',
       value:
-        'Not applicant data, not salary data, not a job board. No accounts, no alerts, no editorializing — the count is the story.',
+        'Not applicant data, not salary data, not a job board. No accounts, no alerts, and no editorializing. The count is the story.',
     },
   ];
 
@@ -53,7 +53,7 @@ export const AboutScreen: React.FC = () => {
           className="mt-4 hidden font-display font-medium text-muted-1 md:block text-[14px] leading-[1.7]"
           style={{ maxWidth: '340px' }}
         >
-          A public, read-only board. No accounts, no alerts, no AI — just companies' own postings, counted the same way
+          A public, read-only board. No accounts, no alerts, no AI. Just companies' own postings, counted the same way
           every day.
         </p>
       </div>
