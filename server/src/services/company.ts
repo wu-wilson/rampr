@@ -1,26 +1,29 @@
-import { resolveMomentum } from './board';
+import { changeSince } from './board';
 import { query, toNullableInt } from './db';
 
-import { GATING_DAYS } from '../constants';
-
-import type { MomentumSummary } from './board';
+import { GATING_DAYS, TREND_WINDOW_DAYS } from '../constants';
 
 /** The ATS providers rampr polls (mirrors the `ats_provider` check constraint). */
 type AtsSource = 'greenhouse' | 'lever' | 'ashby';
 
 /** Identity + standing for a single company. */
 interface CompanyProfile {
-  slug: string;
   name: string;
-  /** Sector slug. */
-  sector: string;
   /** Human sector label. */
   sectorLabel: string;
   /** Global position by open-role count across all companies (1 = most open roles). */
   rank: number;
+  /** Companies tracked in all, the denominator for `rank`. */
+  companyCount: number;
+  /** Position by open-role count within the company's sector (1 = most open roles in the sector). */
+  sectorRank: number;
+  /** Companies tracked in the same sector, the denominator for `sectorRank`. */
+  sectorCompanyCount: number;
+  /** Live open roles across the whole sector, the denominator for the company's share of it. */
+  sectorOpen: number;
   /** Date tracking began (`YYYY-MM-DD`). */
   trackedSince: string;
-  /** "View roles" link to the company's own board, or `null` when unknown. */
+  /** Link to the company's own board, or `null` when unknown. */
   careersUrl: string | null;
   /** The ATS the company is polled from. */
   source: AtsSource;
@@ -63,7 +66,7 @@ interface TrajectoryPoint {
   count: number;
 }
 
-/** The company's open-count time series (up to 90 days); empty while gated. */
+/** The company's open-count time series (the last 90 days); empty while gated. */
 interface Trajectory {
   gated: boolean;
   daysTracked: number;
@@ -75,39 +78,25 @@ export interface CompanyResponse {
   company: CompanyProfile;
   /** Live open-role count (`COUNT(listings)`). */
   open: number;
-  momentum: MomentumSummary;
+  /** Signed change vs. the snapshot on or before 7 days before the latest release; `null` when gated or no such snapshot exists. */
+  delta7d: number | null;
   breakdowns: Breakdowns;
   trajectory: Trajectory;
 }
 
-/** Trajectory window depth in days — the deepest the chart ever renders (matches cleanup retention). */
-const TRAJECTORY_WINDOW_DAYS = 90;
-
-/**
- * Map a raw `GROUP BY` breakdown row to a `BreakdownEntry`.
- * @param row - Raw pg row with `name` + `count` columns
- * @returns One breakdown entry
- */
+/** Map a raw `GROUP BY` breakdown row to a `BreakdownEntry`. */
 function toBreakdownEntry(row: Record<string, unknown>): BreakdownEntry {
   return { name: String(row.name), count: Number(row.count) };
 }
 
-/**
- * Build a single work-mix slice as a share of the company's open roles.
- * @param count - Open roles with this work arrangement
- * @param total - Total open roles (the denominator)
- * @returns The slice with an integer percent (0 when `total` is 0)
- */
+/** Build a single work-mix slice as a share of the company's open roles. */
 function toWorkMixSlice(count: number, total: number): WorkMixSlice {
-  return { pct: total > 0 ? Math.round((count / total) * 100) : 0, count };
+  return { pct: total > 0 ? Math.round((count * 100) / total) : 0, count };
 }
 
 /**
- * Load a company's full detail: profile + rank, live open count + momentum, department/location/work-mix
- * breakdowns, and the (per-company gated) open-count trajectory.
- *
- * Open count and breakdowns come live from `listings` (same rows, so the breakdowns sum to `open`);
- * rank is the global position by open count; momentum and trajectory derive from `daily_snapshots`.
+ * Load a company's full detail: profile and ranks, the live open count and breakdowns from
+ * `listings`, and the 7-day change and gated trajectory from `daily_snapshots`.
  * @param slug - The company slug from the route param
  * @returns The full response body, or `null` when no company has that slug (the route maps `null` to 404)
  */
@@ -117,26 +106,34 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
        SELECT c.id, c.name, COUNT(l.id) AS open_now
          FROM companies c
          LEFT JOIN listings l ON l.company_id = c.id
-        GROUP BY c.id, c.name
+        GROUP BY c.id
      ),
      ranked AS (
-       SELECT id, (ROW_NUMBER() OVER (ORDER BY open_now DESC, name ASC))::int AS rank
-         FROM open_counts
+       SELECT oc.id,
+              oc.open_now::int AS open_now,
+              (ROW_NUMBER() OVER (ORDER BY oc.open_now DESC, oc.name ASC, c.slug ASC))::int AS rank,
+              (ROW_NUMBER() OVER (PARTITION BY c.sector_slug ORDER BY oc.open_now DESC, oc.name ASC, c.slug ASC))::int AS sector_rank,
+              (COUNT(*) OVER (PARTITION BY c.sector_slug))::int AS sector_company_count,
+              (SUM(oc.open_now) OVER (PARTITION BY c.sector_slug))::int AS sector_open
+         FROM open_counts oc
+         JOIN companies c ON c.id = oc.id
      )
      SELECT
        c.id,
-       c.slug,
        c.name,
-       c.sector_slug,
        s.label AS sector_label,
        c.careers_url,
        c.ats_provider,
        to_char(c.tracked_since, 'YYYY-MM-DD') AS tracked_since,
        r.rank,
-       (SELECT COUNT(*)::int FROM listings WHERE company_id = c.id) AS open_now,
+       (SELECT COUNT(*)::int FROM companies) AS company_count,
+       r.sector_rank,
+       r.sector_company_count,
+       r.sector_open,
+       r.open_now,
        (SELECT COUNT(*)::int FROM daily_snapshots WHERE company_id = c.id) AS days_tracked,
        (SELECT open_count FROM daily_snapshots
-          WHERE company_id = c.id AND snapshot_date <= CURRENT_DATE - 7
+          WHERE company_id = c.id AND snapshot_date <= (SELECT MAX(snapshot_date) FROM daily_snapshots) - 7
           ORDER BY snapshot_date DESC LIMIT 1) AS prior_open
      FROM companies c
      JOIN sectors s ON s.slug = c.sector_slug
@@ -152,6 +149,7 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
   const companyId = Number(base.id);
   const open = Number(base.open_now);
   const daysTracked = Number(base.days_tracked);
+  const gated = daysTracked < GATING_DAYS;
 
   const [departmentsResult, locationsResult, workMixResult, trajectoryResult] = await Promise.all([
     query(
@@ -180,13 +178,15 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
        WHERE company_id = $1`,
       [companyId],
     ),
-    query(
-      `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, open_count AS count
-         FROM daily_snapshots
-        WHERE company_id = $1 AND snapshot_date >= CURRENT_DATE - $2::int
-        ORDER BY snapshot_date ASC`,
-      [companyId, TRAJECTORY_WINDOW_DAYS],
-    ),
+    gated
+      ? null
+      : query(
+          `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, open_count AS count
+             FROM daily_snapshots
+            WHERE company_id = $1 AND snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $2::int
+            ORDER BY snapshot_date ASC`,
+          [companyId, TREND_WINDOW_DAYS],
+        ),
   ]);
 
   const mixRow = workMixResult.rows[0] as Record<string, unknown>;
@@ -195,31 +195,33 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
   const onsite = Number(mixRow.onsite);
   const unknown = Number(mixRow.unknown);
 
-  const gated = daysTracked < GATING_DAYS;
   const trajectory: Trajectory = {
     gated,
     daysTracked,
-    points: gated
-      ? []
-      : (trajectoryResult.rows as Record<string, unknown>[]).map((row) => ({
+    points: trajectoryResult
+      ? (trajectoryResult.rows as Record<string, unknown>[]).map((row) => ({
           date: String(row.date),
           count: Number(row.count),
-        })),
+        }))
+      : [],
   };
 
   const response: CompanyResponse = {
     company: {
-      slug: String(base.slug),
       name: String(base.name),
-      sector: String(base.sector_slug),
       sectorLabel: String(base.sector_label),
       rank: Number(base.rank),
+      companyCount: Number(base.company_count),
+      sectorRank: Number(base.sector_rank),
+      sectorCompanyCount: Number(base.sector_company_count),
+      sectorOpen: Number(base.sector_open),
       trackedSince: String(base.tracked_since),
       careersUrl: base.careers_url === null ? null : String(base.careers_url),
+      // `ats_provider` is DB-constrained to the provider enum, so the union narrowing is safe.
       source: String(base.ats_provider) as AtsSource,
     },
     open,
-    momentum: resolveMomentum(open, toNullableInt(base.prior_open), daysTracked),
+    delta7d: changeSince(open, toNullableInt(base.prior_open), daysTracked),
     breakdowns: {
       departments: (departmentsResult.rows as Record<string, unknown>[]).map(toBreakdownEntry),
       locations: (locationsResult.rows as Record<string, unknown>[]).map(toBreakdownEntry),
@@ -233,6 +235,5 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
     trajectory,
   };
 
-  console.log(`Company served: ${response.company.slug} (open ${open}, rank ${response.company.rank})`);
   return response;
 }

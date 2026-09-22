@@ -9,19 +9,13 @@ const greenhouseSchema = z.object({
   jobs: z.array(
     z.object({
       id: z.number(),
-      title: z.string().nullish(),
       location: z.object({ name: z.string().nullish() }).nullish(),
       departments: z.array(z.object({ name: z.string().nullish() })).nullish(),
     }),
   ),
 });
 
-/**
- * Pick the first meaningful department name from a job's inline `departments[]`, skipping
- * Greenhouse's "No Department" placeholder and empty/whitespace names.
- * @param departments - The job's inline departments array, or null/undefined
- * @returns The first usable department name, or null when none qualifies
- */
+/** Pick the first meaningful department name from a job's inline `departments[]`, skipping Greenhouse's "No Department" placeholder and empty/whitespace names. */
 function pickDepartment(
   departments: z.infer<typeof greenhouseSchema>['jobs'][number]['departments'],
 ): string | null {

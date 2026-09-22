@@ -1,15 +1,7 @@
 import { closePool } from './db';
 import { runPoll } from './poll';
 
-/**
- * Run one full poll and exit.
- *
- * Boots, polls every curated company (per-company failures are isolated and counted —
- * `skipped` on a feed-fetch failure, `errored` on a reconcile failure — never fatal), logs the
- * run totals, and exits. A one-shot: exits 1 only on a fatal failure (loading companies / the DB
- * connection), 0 otherwise. `DATABASE_URL` defaults to the local dev URL so a misconfigured
- * production env surfaces as a connection error rather than a silent no-op.
- */
+/** Poll every curated company and log the run totals; exits 1 when the company list cannot be loaded or no board could be read. */
 async function main(): Promise<void> {
   let exitCode = 0;
 
@@ -19,14 +11,20 @@ async function main(): Promise<void> {
       `Poll complete: ${totals.companiesPolled} polled, ` +
         `${totals.listingsSeen} listings seen, ${totals.skipped} skipped, ${totals.errored} errored`,
     );
+    // A morning where no board was read is a failed release, not a quiet success.
+    if (totals.companiesPolled === 0) exitCode = 1;
   } catch (err) {
     console.error('Poll failed:', err);
     exitCode = 1;
   } finally {
-    await closePool();
+    try {
+      await closePool();
+    } catch (err) {
+      console.error('Pool close failed:', err);
+    }
   }
 
-  process.exit(exitCode);
+  process.exitCode = exitCode;
 }
 
 main().catch((err) => {

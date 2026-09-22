@@ -13,4 +13,4 @@ export const adapters: Record<AtsProvider, Adapter> = {
   ashby: ashbyAdapter,
 };
 
-export type { Adapter, NormalizedListing, RemoteType } from './types';
+export type { NormalizedListing } from './types';

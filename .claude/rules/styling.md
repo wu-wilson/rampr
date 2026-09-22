@@ -7,35 +7,41 @@ paths:
 
 # Styling
 
-Light, warm-paper editorial aesthetic. No UI component libraries and no charting/rendering library (Recharts, Chart.js, full d3) — build every component from scratch with Tailwind and CSS. The one exception: the daily time-series charts (company trajectory, market index) use `d3-scale` for geometry only (`scaleBand` / `scaleLinear` / `scaleTime`, ticks, tick-formatting) while React renders the SVG; see `components/common/TrendBars.tsx`.
+rampr reads as a daily statistical release: white paper, ink, hairlines, light headings, tabular figures, titled tables and charts. No UI component libraries and no charting/rendering library (Recharts, Chart.js, full d3) — build every component from scratch with Tailwind and CSS. The one exception: chart geometry uses `d3-scale` (`scaleLinear`, `.nice()`, `.ticks()`) inside `lib/chart.ts` while React renders the SVG; see `components/common/LineChart.tsx` and `BreadthChart.tsx`.
 
 ## Theming
 
-- All colors via CSS custom properties / Tailwind semantic tokens. Never hardcode hex in components (no `bg-[#ABC]`).
+- All colors via CSS custom properties / Tailwind semantic tokens. Never hardcode hex in components (no `bg-[#ABC]`). Hex appears only in the public assets (`favicon.svg`, `og.png`), the `theme-color` meta in `index.html`, and the black of the strip's fade mask in `index.css`.
 - **Light mode only** — palette defined on `:root` in `index.css`. Never use Tailwind `dark:` prefixes; there is no dark mode and no theme toggle.
-- Tokens are stored as **space-separated RGB channels** (e.g. `--ink: 27 33 28;`, hex in a comment) and consumed via `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js`, so alpha modifiers like `text-ink/60` resolve. Direct `var(--token)` uses (SVG `fill`/`stroke`) must wrap as `rgb(var(--token))`.
-- Surfaces: the paper app surface `--paper` fills the viewport; stat cards, gated panels, and hover `--raised`. Primary ink `--ink`; dark pills/rules/headers `--ink-strong`; muted-text ramp `--muted-1` → `--muted-3`. Borders tightest→lightest `--line-1` → `--line-4`. Brand blue `--brand`, with a deeper `--brand-dark` and softer `--brand-soft`.
+- Tokens are stored as **space-separated RGB channels** (e.g. `--ink: 11 12 15;`, hex in a comment) and consumed via `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js`, so alpha modifiers like `text-ink/60` resolve. Direct uses (SVG `fill`/`stroke`, Web Animations keyframes) must wrap as `rgb(var(--token))` — the `token()` helper in `lib/chart.ts` does this. Never animate between hex literals: animate the opacity of a token-coloured element instead (see `RulingBackdrop`).
+- Surfaces: `--paper` (white) is the page; `--hover` for row hover; `--weekend` for the chart weekend bands. Ink ramp `--ink` (text, lines, dots, links) → `--ink-2` (secondary text) → `--ink-3` (captions, axis labels, source lines). Hairlines `--line` (table rules, panel borders, gridlines), `--line-2` (row dividers, the ledger rules at rest), `--line-3` (the zero axis, a bar that did not move, the masthead stamp's separator), `--wave` (a ledger rule at the crest of the wave). Change colours `--up`, `--down`, `--flat`.
+- **There is no brand colour.** Lines, dots, bars, links, and the active tab are ink. Green and red appear only on change figures and never fill a surface.
 
 ## Visual Language
 
-- Display/headlines and **every count/number** use **DM Sans** (weights 500–800, `font-display`, `tabular-nums`). Labels, metadata, table cells, and badges use **Chivo Mono** (400–800, `font-mono`). Base 14px, line-height 1.5.
-- The Board pairs an editorial headline (large DM Sans) with a 2×2 cluster of market stat post-its (beside the headline on wide screens, stacked below on mobile) — big display numbers over uppercase tracked-mono micro-labels.
-- Square-ish corners, hairline borders from the border ramp, surface-tier shifts (`bg-paper` vs `bg-raised`) for depth — **prefer hairlines over shadows**. Never lean on a drop shadow where a `--line-*` border reads the section. The one deliberate exception: the stat post-its (`PostItNote` — the Board's market cluster and the company header's two stat cards), where a soft shadow + slight tilt + torn tape sell the taped-note effect.
-- Charts: the work-mix bar (Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown residual `--muted-3`) and sector bars (every bar `--brand`, ordered by count — length carries rank) are hand-rolled CSS. The two daily time-series charts are d3-scaled SVG via `TrendBars` (every bar `--brand`, the hovered column `--brand-dark`; axes/gridlines from the `--line-*` and `--muted-*` ramps). SVG `fill`/`stroke` take a token as `rgb(var(--token))` — never a hex.
+- One typeface: the `font-sans` stack (Söhne, Suisse Int'l, then the self-hosted **Switzer** in 300/400/500/600 from `public/fonts`, then Helvetica Neue and the system faces). No mono, no display face, no Google Fonts. Body 15px, line-height 1.5, `tabular-nums` on `body`.
+- Headings and the big figures are **weight 300** with tight tracking (the lead figure `clamp(76px, 10vw, 128px)` at `-0.045em`; company name `clamp(44px, 6vw, 64px)`; Method heading `clamp(30px, 3.8vw, 44px)`). Names, counts, and column labels are weight 500. Captions are 15px at weight 500 in ink; source lines are 12.5px in `--ink-3`.
+- Tables and charts carry a titled caption via `Caption`, except the hero chart and the breakdown lists, which carry their own inline headings. All three render an `h2`, so every visible section title sits in the page's heading outline under its one `h1`. Explanations live on the Method page.
+- Each screen renders exactly one `h1`: the Board's eyebrow above the figure, the company name, the Method heading, or a visually hidden one on Market. The day-zero and not-found states carry their own, and they replace a screen rather than sit inside it, so the two never both render.
+- **No shadows, no radius, no gradient fills, no pills, no chips.** (The strip's fade mask and the select chevron are drawn with hard-edged gradients, which is not a fill.) Sections are separated by space and hairlines only. The one radius on the site is 4px on the company marks in the strip. Controls are text on a hairline: the sector select, the search field, the range tabs with a sliding underline, and sortable column headers with a 10px chevron.
+- Charts: a 1.75px ink line with an ink endpoint dot, hairline gridlines, weekend columns in `--weekend`, a value axis fitted to the series (never forced to zero), and a text readout above the plot that shows the latest release until the pointer picks another, when a crosshair follows it. No figure is drawn on the plot itself. Breadth bars are `--up`/`--down`/`--line-3` on a `--line-3` zero axis. Sector bars are a 6px ink bar. Nothing on a chart is any colour but ink, the two change colours, and the hairline greys.
+- Company marks in the strip (`public/marks`, 128px PNGs) render in colour at 22px.
 
-## Momentum status
+## Change figures
 
-- Never signal momentum by color alone. Always pair the semantic color with a glyph **and** text: the directional glyph (`↗` → `text-up`, `↘` → `text-down`, `→` → `text-flat`) beside the signed delta. The glyph and number carry the meaning; the direction word ("Ramping up" / "Cooling down" / "Flat") rides along as the hover title, and color only reinforces.
+- A change is a signed figure: `+34`, `−22` (a true minus, U+2212, from `formatDelta`), or a grey `0`. The **sign carries the direction**; the colour (`text-up` / `text-down` / `text-flat`) reinforces it and is never load-bearing. The direction word ("Rose" / "Fell" / "Held") rides along as the hover title. No arrows, triangles, or glyphs. Render through `components/common/Change.tsx`; a gated change reads "new".
 
-## Texture
+## Copy
 
-- The app surface carries a faint paper grain (`grain.png` over `bg-paper`, in `client/public/assets/`). Keep it subtle — layered once at low contrast, it must never reduce text contrast — not applied per-component.
+- Plain sentences a person would write. No em dashes, no middle dots, no semicolons, no jargon in anything the viewer reads. Numbers in sentences are formatted with `formatCount`; dates are spoken (`September 21`) in sentences and short (`Sep 21`) in tables and axes.
 
 ## Interactive States
 
-- Every clickable element has a hover state via a smooth `transition-colors` / `transition-[filter]` and a visible focus ring (`:focus-visible` box-shadow from the ink token). Row/link hovers use a translucent `bg-raised/60` (not opaque `bg-raised`) so the paper grain still shows through — leaderboard rows and market-mover links (each the width of its divider rules, so the highlight never overhangs the borders). No instant visual changes — all in-flow motion ≤300ms.
+- Every clickable element has a hover state via `transition-colors` at `DURATION.normal` on `EASING`, and a visible focus ring (`:focus-visible` 2px ink outline, 2px offset). Row hovers use `bg-hover`, the width of the row's rules so the highlight never overhangs. Text links use the `.link` class (ink text, grey underline that darkens).
 
 ## Animation
 
-- Duration constants from `constants/animations.ts` (`DURATION = { fast: 150, normal: 250, smooth: 300 }`); all in-flow ≤300ms. Prefer `transform`/`opacity`. Honor `prefers-reduced-motion` in `index.css` (disable keyframes, clamp transitions).
-- Inline `style={{...}}` is reserved for values Tailwind can't cleanly express: JS-derived chart bar widths/heights, durations, animation delays, and fluid `clamp()` headline sizes. Fixed typographic values (`text-[11px]`, `tracking-[0.1em]`, `leading-[1.6]`) go in `className`, not `style`.
+- Duration constants from `constants/animations.ts`. Interaction motion (`DURATION`: 200 / 300ms) stays at or below 300ms. Ambient and reveal motion (the 500ms section rise and the strip loop in `index.css`; `AMBIENT`: the 700ms chart draw and the ledger wave) runs on its own clock or once as a section enters, never in response to a pointer. One curve for interaction, `EASING` (`cubic-bezier(0.25, 1, 0.5, 1)`); `EASING_SYMMETRIC` only for motion that rises and returns.
+- Nothing above the fold animates on load: the first frame is complete. Sections that start below the fold rise 10px once as they enter (`Reveal`), and a chart inside draws its line as its section appears (`useDrawReveal`, a clip-path reveal, never a dash). Sorting the company table slides rows to their places (`useFlipReorder`). Range changes crossfade. The crosshair follows the pointer with no easing.
+- Prefer `transform`/`opacity`. Honor `prefers-reduced-motion` both in `index.css` (transitions and keyframes off) and in every Web Animations code path via `prefersReducedMotion()`, which CSS cannot reach. Ambient motion also pauses while `document.hidden`.
+- Inline `style={{...}}` is reserved for values Tailwind can't cleanly express: JS-derived chart geometry, the snap-to-rules paddings, durations, and fluid `clamp()` sizes. Fixed typographic values (`text-[11px]`, `tracking-[0.1em]`, `leading-[1.6]`) go in `className`, not `style`.

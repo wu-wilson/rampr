@@ -15,16 +15,20 @@ paths:
 
 ## State Management
 
-- `useState` for local UI state (row hover, breakdown tab selection, load-more offset, control inputs before they're committed to the URL).
-- Zustand for shared filter state — sector, sort, and search — kept URL-synced so a filtered Board is linkable. Anything spanning components lives in the store, not prop-drilled. React Router owns the four screens (Board / Company / Market / About); scroll to top on navigation.
-- `useMemo` for derived values computed client-side from what the API returns: momentum glyph + label from `direction`, sector and work-mix bar geometry, remote-share percent, and the "N of 14" gating copy. (The trajectory and market-index charts derive their scales via `d3-scale` inside `TrendBars`, off the measured container size.) Never request extra columns or endpoints for values you can derive.
+- `useState` for local UI state (the search draft before it commits, "show all" expansion, the chart range and its crossfade, a mark that failed to load). `useMediaQuery` for the one layout decision CSS can't make, the breadth chart's phone window.
+- Zustand for state shared across components: the company table's sector, sort (column + direction), and search, kept URL-synced (`useFilterUrlSync`) so a filtered or sorted board is linkable, and the release stamp (`metaStore`), which the masthead and the Method page both read. Anything spanning components lives in the store, not prop-drilled. React Router owns the four screens (Board / Company / Market / Method at `/about`); scroll to top on navigation.
+- `useMemo` for derived values computed client-side from what the API returns: the ordered and filtered rows of the company table, the sector options (from the board rows), a series' 90-day high and low (`seriesExtremes`), and chart geometry off the measured container (`lib/chart.ts`). Never request extra fields or endpoints for values you can derive.
 
 ## Data Fetching
 
-- `use*` hooks own fetch + loading/error state for each endpoint (`/api/board`, `/api/companies/:slug`, `/api/market`, `/api/meta`). Company detail is fetched per route by slug.
-- Every fetch hook guards against a stale response with a **cancelled flag** in its effect — set `let cancelled = false`, bail on `cancelled` before calling `setState`, and return `() => { cancelled = true }` so a fast filter change or route switch can't apply an out-of-order result.
-- Changing sector, search, or sort resets pagination (offset back to 0). Paginate the Board with "load more".
-- Every fetch hook surfaces loading, empty, and error states. Distinguish **day-zero** (`updatedAt: null`, tracking just started) from the **gated-trend** state (`gated: true`, "trend building: N of 14") — they are different designed UIs, never a blank screen.
+- `use*` hooks own fetch + loading/error state for each endpoint (`/api/board`, `/api/companies/:slug`, `/api/market`, `/api/meta`). Company detail is fetched per route by slug; `useMeta` reads the shared meta store, which fetches once and retries a failed load on navigation.
+- Every per-screen fetch hook (`useBoard`, `useCompany`, `useMarket`) guards against a stale response with a **cancelled flag** in its effect — set `let cancelled = false`, bail on `cancelled` before calling `setState`, and return `() => { cancelled = true }` so a route switch can't apply an out-of-order result.
+- The Board fetches the whole board once (`limit=BOARD_LIMIT`, no sector, search, or sort params) and reorders and narrows it locally, so rows can slide to their new places. There is no pagination; the company table shows 15 rows until expanded.
+- Every fetch hook surfaces loading, empty, and error states. Distinguish **day-zero** (`updatedAt: null`, before the first release) from the **gated** state (`gated: true`, `GatedPanel`) — they are different designed UIs, never a blank screen.
+
+## Motion hooks
+
+- Section reveals go through `Reveal` (a wrapper) and `useRevealPhase` (context) rather than per-component observers. FLIP reorders go through `useFlipReorder` on the rows container; sliding underlines through `useSlidingIndicator`; the hero's snapping through `useSnapToRules`; the ledger wave through `useRuleWave`. Do not add ad hoc `animate()` calls in components.
 
 ## Limits
 

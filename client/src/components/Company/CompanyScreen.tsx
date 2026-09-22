@@ -1,60 +1,89 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Band } from '../common/Band';
 import { NotFound } from '../common/NotFound';
+import { Rail } from '../common/Rail';
+import { Reveal } from '../common/Reveal';
 import { StatusNote } from '../common/StatusNote';
-import { CompanyHeader } from './CompanyHeader';
-import { DeptBreakdown } from './DeptBreakdown';
-import { LocationList } from './LocationList';
-import { TrajectoryChart } from './TrajectoryChart';
-import { WorkMixBar } from './WorkMixBar';
+import { Breakdowns } from './Breakdowns';
+import { CompanyFacts } from './CompanyFacts';
+import { CompanyLead } from './CompanyLead';
+import { DailyTable } from './DailyTable';
+import { TrajectorySection } from './TrajectorySection';
 
 import { useCompany } from '../../hooks/useCompany';
 
+import { formatSpokenDateYear } from '../../lib/format';
+import { seriesExtremes } from '../../lib/series';
+
+import type { CompanyResponse } from '../../types/company';
+
+/** Human-readable ATS provider names for the series line. */
+const SOURCE_LABELS: Record<CompanyResponse['company']['source'], string> = {
+  greenhouse: 'Greenhouse',
+  lever: 'Lever',
+  ashby: 'Ashby',
+};
+
 /**
- * The Company screen: the header band (open now, momentum, board link), the trajectory
- * band (live bars or the gated panel), and the department / location / work-mix breakdowns
- * band. Renders designed loading, not-found (unknown slug), and error states.
+ * The Company screen: the series line, the lead (name, sentence, and figure), the facts row,
+ * the company chart beside the daily table, and the three breakdowns. Renders designed loading, not-found, and
+ * error states; the chart, table, and changes are gated until the company has `GATING_DAYS` releases.
  * @returns The Company screen
  */
 export const CompanyScreen: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { company, loading, error, notFound } = useCompany(slug ?? '');
 
+  const series = useMemo(
+    () => (company ? company.trajectory.points.map((point) => ({ date: point.date, value: point.count })) : []),
+    [company],
+  );
+  const extremes = useMemo(() => (series.length > 0 ? seriesExtremes(series) : null), [series]);
+
   if (notFound) {
     return (
       <NotFound
         title="Company not tracked"
-        body="Rampr isn't tracking a company at that address. It may not be on the curated list yet."
+        body="Rampr is not counting a company at that address. It may not be on the tracked list yet."
       />
     );
   }
-
   if (!company) {
-    return (
-      <StatusNote>{loading ? 'Loading the company…' : (error ?? 'Something went wrong.')}</StatusNote>
-    );
+    return <StatusNote>{loading ? 'Reading the release.' : (error ?? 'Something went wrong.')}</StatusNote>;
   }
 
-  return (
-    <div>
-      <CompanyHeader data={company} />
-      <TrajectoryChart trajectory={company.trajectory} />
+  const info = company.company;
+  const board = `${info.name}’s ${SOURCE_LABELS[info.source]} board`;
 
-      <Band>
-        <div className="-mx-5 md:-mx-10 md:grid md:grid-cols-3">
-          <div className="px-5 py-[22px] md:px-10 md:py-7">
-            <DeptBreakdown departments={company.breakdowns.departments} />
-          </div>
-          <div className="border-t border-line-2 px-5 py-[22px] md:border-l md:border-t-0 md:px-10 md:py-7">
-            <LocationList locations={company.breakdowns.locations} />
-          </div>
-          <div className="border-t border-line-2 px-5 py-[22px] md:border-l md:border-t-0 md:px-10 md:py-7">
-            <WorkMixBar workMix={company.breakdowns.workMix} />
-          </div>
-        </div>
-      </Band>
-    </div>
+  return (
+    <Rail className="pb-24">
+      <p className="pt-10 text-[14px] text-ink-2">
+        Read from{' '}
+        {info.careersUrl ? (
+          <a href={info.careersUrl} target="_blank" rel="noopener noreferrer" className="link font-medium">
+            {board}
+          </a>
+        ) : (
+          <b className="font-medium text-ink">{board}</b>
+        )}{' '}
+        since {formatSpokenDateYear(info.trackedSince)}.
+      </p>
+      <CompanyLead data={company} extremes={extremes} />
+      <CompanyFacts data={company} extremes={extremes} />
+
+      <div className="grid gap-9 pt-12 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-12">
+        <Reveal>
+          <TrajectorySection key={slug} name={info.name} trajectory={company.trajectory} series={series} />
+        </Reveal>
+        <Reveal>
+          <DailyTable trajectory={company.trajectory} series={series} />
+        </Reveal>
+      </div>
+
+      <Reveal className="pt-14">
+        <Breakdowns breakdowns={company.breakdowns} />
+      </Reveal>
+    </Rail>
   );
 };

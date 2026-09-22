@@ -1,4 +1,3 @@
-/** Meta route: GET /api/meta — the last-updated stamp (`MAX(snapshot_date)`) for the nav. */
 import { Router } from 'express';
 
 import { getMeta } from '../services/meta';
@@ -16,4 +15,5 @@ router.get('/meta', async (_req, res, next) => {
   }
 });
 
+/** Meta route: GET /api/meta — the release stamp (`updatedAt`, `releaseNumber`, `firstRelease`) and the curated-list facts (`companyCount`, `sources`). */
 export { router as metaRouter };

@@ -1,9 +1,7 @@
-/** Market-wide totals shown atop the Market screen. */
+/** Market-wide totals atop the Market screen. */
 interface MarketTotals {
   totalOpen: number;
-  companyCount: number;
-  sectorCount: number;
-  /** MAX(snapshot_date) as an ISO date, or null before the first poll (day zero). */
+  /** MAX(snapshot_date) as an ISO date, or null before the first release (day zero). */
   updatedAt: string | null;
 }
 
@@ -14,10 +12,12 @@ export interface SectorTotal {
   open: number;
   /** Share relative to the largest sector (0..100), for bar geometry. */
   pct: number;
+  /** Signed 7-day change across the sector, or null while gated. */
+  delta7d: number | null;
 }
 
 /** One daily point on the market hiring index. */
-export interface IndexPoint {
+interface IndexPoint {
   /** ISO snapshot date. */
   date: string;
   totalOpen: number;
@@ -25,7 +25,7 @@ export interface IndexPoint {
 
 /**
  * The market hiring index time series. `points` is empty and `gated` is true until
- * 14 distinct snapshot dates exist; otherwise up to 90 days of daily totals.
+ * `GATING_DAYS` distinct release dates exist; otherwise the last 90 days of daily totals.
  */
 export interface MarketIndex {
   gated: boolean;
@@ -33,14 +33,28 @@ export interface MarketIndex {
   points: IndexPoint[];
 }
 
-/** One heating/cooling mover: a company and its signed 7-day delta. */
+/** One release's breadth: boards that added postings versus boards that removed them. */
+export interface BreadthPoint {
+  /** ISO snapshot date. */
+  date: string;
+  rising: number;
+  falling: number;
+}
+
+/** The breadth series, sharing the index's gate and empty while gated. */
+interface Breadth {
+  points: BreadthPoint[];
+}
+
+/** One mover: a company and its signed 7-day change. */
 export interface Mover {
   slug: string;
   name: string;
+  sectorLabel: string;
   delta: number;
 }
 
-/** Heating and cooling movers, or a gated placeholder. */
+/** The largest rises and falls, or a gated placeholder. */
 export interface Movers {
   gated: boolean;
   heating: Mover[];
@@ -52,5 +66,6 @@ export interface MarketResponse {
   totals: MarketTotals;
   sectors: SectorTotal[];
   index: MarketIndex;
+  breadth: Breadth;
   movers: Movers;
 }

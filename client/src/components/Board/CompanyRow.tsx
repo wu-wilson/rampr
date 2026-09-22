@@ -1,72 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { MomentumBadge } from '../common/MomentumBadge';
+import { Change } from '../common/Change';
+import { BOARD_COLUMNS } from './TableHeader';
 
-import { formatCount, formatPercent } from '../../lib/format';
+import { formatCount } from '../../lib/format';
 
 import { DURATION, EASING } from '../../constants/animations';
 
 import type { BoardCompany } from '../../types/board';
 
 interface CompanyRowProps {
-  /** The company to render as one leaderboard row. */
   company: BoardCompany;
 }
 
 /**
- * One leaderboard row linking to the company screen. Desktop lays rank, company, sector,
- * open roles, remote share, and momentum on a single grid line; mobile reflows into a
- * stacked block — name plus a mono meta line on the left, open and momentum stacked right.
+ * One row of the company table, linking to the company page: rank, name, sector, postings, and the
+ * 7-day and 30-day changes on one 46px line. Carries `data-key` so the table can slide it to
+ * a new place after a sort.
  * @param props - The company to render
  * @returns The row link
  */
 export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
   <Link
     to={`/company/${company.slug}`}
-    className="block border-b border-line-1 px-5 py-4 transition-colors hover:bg-raised/60 md:px-10"
-    style={{ transitionDuration: `${DURATION.fast}ms`, transitionTimingFunction: EASING }}
+    data-key={company.slug}
+    className={`grid h-[46px] items-center gap-3.5 border-b border-line-2 bg-paper text-[14px] transition-colors last:border-line hover:bg-hover ${BOARD_COLUMNS}`}
+    style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
   >
-    {/* Mobile: stacked block */}
-    <div className="flex items-center justify-between gap-3 md:hidden">
-      <div className="flex min-w-0 flex-col gap-1">
-        <span className="truncate font-display font-bold text-ink text-[15px]">
-          {company.name}
-        </span>
-        <span className="truncate font-mono text-muted-2 text-[10px]">
-          {company.rank} / {company.sectorLabel} / {formatPercent(company.remotePct)} remote
-        </span>
-      </div>
-      <div className="flex flex-col items-end gap-1">
-        <span className="font-mono font-semibold tabular-nums text-ink text-[17px]">
-          {formatCount(company.open)}
-        </span>
-        <MomentumBadge momentum={company.momentum} size={12} arrowScale={1.15} />
-      </div>
-    </div>
-
-    {/* Desktop: single grid line */}
-    <div className="hidden md:grid md:grid-cols-[48px_minmax(0,1fr)_150px_120px_100px_170px] md:items-center md:gap-4">
-      <span className="font-mono tabular-nums text-muted-3 text-[12px]">
-        {company.rank}
-      </span>
-      <span className="truncate font-display font-bold text-ink text-[16px]">
-        {company.name}
-      </span>
-      <span className="truncate font-mono text-muted-2 text-[11px]">
-        {company.sectorLabel}
-      </span>
-      <span
-        className="text-right font-mono font-semibold tabular-nums text-ink text-[17px]"
-      >
-        {formatCount(company.open)}
-      </span>
-      <span className="text-right font-mono tabular-nums text-muted-2 text-[12px]">
-        {formatPercent(company.remotePct)}
-      </span>
-      <span className="flex justify-end">
-        <MomentumBadge momentum={company.momentum} size={13} arrowScale={1.15} />
-      </span>
-    </div>
+    <span className="text-right text-[13px] text-ink-3">{company.rank}</span>
+    <span className="truncate font-medium tracking-[-0.005em]">{company.name}</span>
+    <span className="hidden truncate text-[13px] text-ink-2 md:block">{company.sectorLabel}</span>
+    <span className="text-right font-medium">{formatCount(company.open)}</span>
+    <Change delta={company.delta7d} className="text-right" />
+    <Change delta={company.delta30d} className="hidden text-right md:block" />
   </Link>
 );

@@ -1,161 +1,121 @@
-import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
-import { RamprMark } from './RamprMark';
+import { Rail } from './Rail';
+import { StepMark } from './StepMark';
 
 import { useMeta } from '../../hooks/useMeta';
 
-import { formatPollTimeLocal, formatUpdatedAtLocal } from '../../lib/format';
+import { formatLongDate, formatReleaseTimeLocal } from '../../lib/format';
 
 import { DURATION, EASING } from '../../constants/animations';
 
-/** The three primary routes, in nav order. */
+import type { Meta } from '../../types/meta';
+
+/** The interaction transition every hover and toggle in the masthead shares. */
+const MOTION = { transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING };
+
+/** The three primary routes, in nav order. `/about` carries the Method label. */
 const LINKS: Array<{ to: string; label: string }> = [
   { to: '/', label: 'Board' },
   { to: '/market', label: 'Market' },
-  { to: '/about', label: 'About' },
+  { to: '/about', label: 'Method' },
 ];
 
-/**
- * A desktop primary nav link. The active route is bold ink with a blue underline that
- * scales out from center; others are medium muted and darken on hover. An invisible bold ghost holds
- * the active width so selecting a tab never reflows the row. `end` restricts the Board match to "/".
- */
-const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
-  <NavLink to={to} end={to === '/'} className="relative grid place-items-center font-display text-[14px]">
-    {({ isActive }: { isActive: boolean }) => (
-      <>
-        <span className="invisible col-start-1 row-start-1 font-bold" aria-hidden="true">
-          {label}
-        </span>
-        <span
-          className={`col-start-1 row-start-1 transition-colors hover:text-ink ${
-            isActive ? 'font-bold text-ink' : 'font-medium text-muted-2'
-          }`}
-          style={{ transitionDuration: `${DURATION.fast}ms` }}
-        >
-          {label}
-        </span>
-        {/* Blue underline that scales out from center when the tab becomes active. */}
-        <span
-          aria-hidden="true"
-          className={`absolute inset-x-0 -bottom-[1px] h-[2px] rounded-full bg-brand origin-center transition-transform ${
-            isActive ? 'scale-x-100' : 'scale-x-0'
-          }`}
-          style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
-        />
-      </>
-    )}
-  </NavLink>
-);
+/** The release stamp's two parts (number and date), or the day-zero and failed-load stand-ins, or null while loading. */
+function stampFor(meta: Meta | null, failed: boolean): { short: string; long: string } | null {
+  if (!meta) return failed ? { short: 'Release unavailable', long: 'The release stamp could not be read.' } : null;
+  if (meta.updatedAt === null || meta.releaseNumber === null) {
+    return { short: 'Before the first release', long: `First release at ${formatReleaseTimeLocal()}` };
+  }
+  return { short: `Release ${meta.releaseNumber}`, long: formatLongDate(meta.updatedAt) };
+}
 
-/**
- * A row in the open mobile drawer: the current route bold ink with a blue underline and a "CURRENT"
- * tag, other routes medium muted. A full-width tap target.
- */
-const DrawerLink: React.FC<{ to: string; label: string; onClick: () => void }> = ({ to, label, onClick }) => (
+/** A desktop nav link: secondary ink that darkens on hover, ink when active. */
+const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
   <NavLink
     to={to}
     end={to === '/'}
-    onClick={onClick}
-    className="flex items-center justify-between border-b border-line-1 px-5 py-3"
+    className={({ isActive }: { isActive: boolean }) =>
+      `px-2.5 py-[7px] text-[14px] font-medium transition-colors hover:text-ink ${isActive ? 'text-ink' : 'text-ink-2'}`
+    }
+    style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
   >
-    {({ isActive }: { isActive: boolean }) => (
-      <>
-        <span
-          className={`font-display text-[15px] ${
-            isActive
-              ? 'font-bold text-ink underline decoration-brand decoration-2 underline-offset-[5px]'
-              : 'font-medium text-muted-1'
-          }`}
-        >
-          {label}
-        </span>
-        {isActive && (
-          <span className="font-mono uppercase tracking-[0.1em] text-muted-3 text-[10px]">
-            Current
-          </span>
-        )}
-      </>
-    )}
+    {label}
   </NavLink>
 );
 
-/**
- * The mobile menu toggle: three bars that smoothly morph between a hamburger and an X — the top and
- * bottom bars rotate to the diagonals and meet at center while the middle bar fades out.
- */
+/** The mobile menu toggle: three bars that morph into an X. */
 const ToggleGlyph: React.FC<{ open: boolean }> = ({ open }) => {
-  const bar = 'absolute left-0 h-[1.5px] w-full rounded-full bg-current origin-center transition-transform';
-  const motion = { transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING };
+  const bar = 'absolute left-0 h-[1.5px] w-full bg-current origin-center transition-transform';
   return (
     <span className="relative block h-[12px] w-[16px] shrink-0" aria-hidden="true">
-      <span className={`${bar} top-0 ${open ? 'translate-y-[5px] rotate-45' : ''}`} style={motion} />
+      <span className={`${bar} top-0 ${open ? 'translate-y-[5px] rotate-45' : ''}`} style={MOTION} />
       <span
-        className={`absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2 rounded-full bg-current transition-opacity ${
-          open ? 'opacity-0' : ''
-        }`}
-        style={motion}
+        className={`absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2 bg-current transition-opacity ${open ? 'opacity-0' : ''}`}
+        style={MOTION}
       />
-      <span className={`${bar} bottom-0 ${open ? '-translate-y-[5px] -rotate-45' : ''}`} style={motion} />
+      <span className={`${bar} bottom-0 ${open ? '-translate-y-[5px] -rotate-45' : ''}`} style={MOTION} />
     </span>
   );
 };
 
 /**
- * The persistent top navigation: the rampr mark + wordmark and the three route links
- * grouped at the left, with a desktop-only cadence stamp — the latest snapshot's moment, or
- * the daily poll time before the first poll, in the viewer's local timezone — at the right.
- * Below 760px the links collapse behind a hamburger-icon toggle (an X when open)
- * that drops a compact drawer of the three routes.
- * @returns The top nav header
+ * The masthead: the step mark and wordmark at the left, the three routes centred, and the
+ * release stamp at the right, on one 68px row over a hairline. Below `lg` the stamp keeps only
+ * the release number, and below `md` the routes collapse behind a toggle.
+ * @returns The masthead
  */
 export const AppNav: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const { meta } = useMeta();
-  const close = () => setOpen(false);
+  const { pathname } = useLocation();
+  const { meta, error } = useMeta();
+  const stamp = stampFor(meta, error !== null);
+  const handleClose = (): void => setOpen(false);
 
-  // Cadence stamp, all in the viewer's local zone: the latest snapshot's moment once a poll
-  // has run, or the daily poll time before day zero.
-  const stamp = meta?.updatedAt
-    ? `updated ${formatUpdatedAtLocal(meta.updatedAt)}`
-    : `updated daily at ${formatPollTimeLocal()}`;
+  // The drawer pushes the page down rather than covering it, so any navigation has to collapse it,
+  // not just a tap on one of its own links.
+  useEffect(handleClose, [pathname]);
 
   return (
-    <header>
-      <div className="flex items-center justify-between border-b border-line-2 px-5 py-4 md:px-10 md:py-[18px]">
-        <div className="flex items-center gap-7">
-          <Link to="/" onClick={close} className="flex items-center gap-2 text-ink" aria-label="Rampr, home">
-            <RamprMark size={24} />
-            <span className="font-display font-extrabold text-[19px] md:text-[21px] tracking-[-0.02em]">
-              Rampr
-            </span>
+    <header className="border-b border-line">
+      <Rail>
+        <div className="relative flex h-[68px] items-center justify-between gap-7">
+          <Link to="/" onClick={handleClose} className="flex items-center gap-2.5 text-ink transition-colors hover:text-ink-2" style={MOTION} aria-label="Rampr, home">
+            <StepMark className="-mr-px" />
+            <span className="relative top-px text-[21px] font-semibold leading-none tracking-[-0.025em]">Rampr</span>
           </Link>
-          <nav className="hidden items-center gap-6 md:flex">
+
+          <nav aria-label="Primary" className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 gap-1 md:flex">
             {LINKS.map((link) => (
               <NavItem key={link.to} to={link.to} label={link.label} />
             ))}
           </nav>
+
+          <div className="flex items-center gap-5">
+            {stamp && (
+              <div className="flex items-center gap-4 whitespace-nowrap text-[13px] text-ink-2">
+                <b className="font-medium text-ink">{stamp.short}</b>
+                <span aria-hidden="true" className="hidden h-3 w-px bg-line-3 lg:block" />
+                <span className="hidden lg:inline">{stamp.long}</span>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setOpen((prev) => !prev)}
+              aria-expanded={open}
+              aria-label={open ? 'Close navigation' : 'Open navigation'}
+              className="text-ink-2 transition-colors hover:text-ink md:hidden"
+              style={MOTION}
+            >
+              <ToggleGlyph open={open} />
+            </button>
+          </div>
         </div>
+      </Rail>
 
-        <span className="hidden font-mono text-muted-2 md:inline text-[12px]">
-          {stamp}
-        </span>
-
-        <button
-          type="button"
-          onClick={() => setOpen((prev) => !prev)}
-          aria-expanded={open}
-          aria-label={open ? 'Close navigation' : 'Open navigation'}
-          className="text-muted-1 transition-colors hover:text-ink md:hidden"
-          style={{ transitionDuration: `${DURATION.fast}ms` }}
-        >
-          <ToggleGlyph open={open} />
-        </button>
-      </div>
-
-      {/* Stays mounted and collapses via grid-rows (0fr → 1fr) so it animates open AND closed;
-          visibility flips only after the collapse finishes, keeping hidden links out of focus/AT order. */}
+      {/* Stays mounted and collapses via grid-rows (0fr → 1fr) so it animates open and closed;
+          visibility flips only after the collapse finishes, keeping hidden links out of focus order. */}
       <div
         className={`grid md:hidden ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr] invisible'}`}
         style={{
@@ -164,10 +124,23 @@ export const AppNav: React.FC = () => {
             : `grid-template-rows ${DURATION.normal}ms ${EASING}, visibility 0s ${DURATION.normal}ms`,
         }}
       >
-        <div className="flex flex-col overflow-hidden">
-          {LINKS.map((link) => (
-            <DrawerLink key={link.to} to={link.to} label={link.label} onClick={close} />
-          ))}
+        <div className="overflow-hidden">
+          <nav aria-label="Primary" className="flex flex-col">
+            {LINKS.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === '/'}
+                onClick={handleClose}
+                className={({ isActive }: { isActive: boolean }) =>
+                  `border-t border-line-2 px-5 py-3 text-[15px] font-medium transition-colors hover:text-ink ${isActive ? 'text-ink' : 'text-ink-2'}`
+                }
+                style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
         </div>
       </div>
     </header>

@@ -19,33 +19,26 @@ const ScrollToTop: React.FC = () => {
 };
 
 /**
- * Root application shell. The warm-paper surface (with its faint grain) fills the whole
- * viewport; content and the sectioning hairlines stay in a centered 1280px rail. Routes the
- * four screens with a catch-all not-found, framed by the persistent nav and footer.
+ * Root application shell: the masthead, the four routed screens with a catch-all not-found, and
+ * the footer, each centring its own rail so the hero band can run edge to edge between them.
  * @returns The app shell
  */
 export const App: React.FC = () => (
-  <div className="app-surface min-h-dvh">
+  <div
+    className="flex min-h-dvh flex-col bg-paper"
+    style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}
+  >
     <ScrollToTop />
-    {/* Clear the notch and home indicator; the paper surface behind fills the insets. */}
-    <div
-      className="mx-auto min-h-dvh w-full max-w-rail"
-      style={{
-        paddingTop: 'env(safe-area-inset-top)',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-      }}
-    >
-      <AppNav />
-      <main>
-        <Routes>
-          <Route path="/" element={<BoardScreen />} />
-          <Route path="/company/:slug" element={<CompanyScreen />} />
-          <Route path="/market" element={<MarketScreen />} />
-          <Route path="/about" element={<AboutScreen />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
+    <AppNav />
+    <main className="flex flex-1 flex-col">
+      <Routes>
+        <Route path="/" element={<BoardScreen />} />
+        <Route path="/company/:slug" element={<CompanyScreen />} />
+        <Route path="/market" element={<MarketScreen />} />
+        <Route path="/about" element={<AboutScreen />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </main>
+    <Footer />
   </div>
 );

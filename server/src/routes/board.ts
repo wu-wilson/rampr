@@ -1,4 +1,3 @@
-/** Board route: GET /api/board — the ranked leaderboard + market headline over `listings` + `daily_snapshots`. */
 import { Router } from 'express';
 
 import { BoardQuerySchema } from '../schemas/boardQuery';
@@ -17,11 +16,12 @@ router.get('/board', async (req, res, next) => {
       return;
     }
 
-    const response: BoardResponse = await getBoard(parsed.data);
+    const response: BoardResponse = await getBoard(parsed.data.limit);
     res.json(response);
   } catch (err) {
     next(err);
   }
 });
 
+/** Board route: GET /api/board — the market lead and the ranked company table over `listings` + `daily_snapshots`. */
 export { router as boardRouter };

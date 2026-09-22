@@ -9,7 +9,6 @@ const ashbySchema = z.object({
   jobs: z.array(
     z.object({
       id: z.string(),
-      title: z.string().nullish(),
       department: z.string().nullish(),
       team: z.string().nullish(),
       location: z.string().nullish(),
@@ -19,9 +18,8 @@ const ashbySchema = z.object({
 });
 
 /**
- * Fetch and normalize an Ashby job board. Department prefers `department`, falling back to
- * `team`; the work mix reads native `isRemote === true` as remote, otherwise it infers from
- * location. Ashby exposes no hybrid flag, so a non-remote located role resolves to onsite.
+ * Fetch and normalize an Ashby job board. Department prefers `department` over `team`, and the
+ * work mix reads `isRemote` as remote or else falls through to the shared location inference.
  * @param boardToken - The Ashby organization slug
  * @returns Normalized listings for the board
  */
@@ -34,7 +32,7 @@ export const ashbyAdapter: Adapter = async (boardToken: string): Promise<Normali
     const location = job.location ?? null;
     const nativeFlag: NativeRemoteFlag = job.isRemote === true ? 'remote' : null;
     return {
-      externalId: String(job.id),
+      externalId: job.id,
       department: cleanDepartment(job.department) ?? cleanDepartment(job.team),
       location,
       remoteType: inferRemoteType(nativeFlag, location),

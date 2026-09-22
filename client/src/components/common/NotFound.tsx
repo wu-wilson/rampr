@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { DURATION } from '../../constants/animations';
-
 interface NotFoundProps {
   /** Headline; defaults to a generic page-not-found message. */
   title?: string;
@@ -18,21 +16,13 @@ interface NotFoundProps {
  */
 export const NotFound: React.FC<NotFoundProps> = ({
   title = 'Not found',
-  body = "That page isn't on the board. It may have moved, or never existed.",
+  body = 'That page is not part of the release. It may have moved, or never existed.',
 }) => (
-  <div className="flex flex-col items-center justify-center gap-4 px-5 py-24 text-center md:px-10">
-    <h2 className="font-display font-bold text-ink text-[20px]">
-      {title}
-    </h2>
-    <p className="max-w-sm text-muted-1 text-[13px] leading-[1.6]">
-      {body}
-    </p>
-    <Link
-      to="/"
-      className="mt-1 border border-line-4 px-4 py-2 font-mono uppercase text-ink transition-colors hover:border-ink hover:bg-raised/60 text-[12px] tracking-[0.1em]"
-      style={{ transitionDuration: `${DURATION.fast}ms` }}
-    >
-      ← Back to the board
+  <div className="flex flex-1 flex-col items-center justify-center gap-3 px-5 py-24 text-center">
+    <h1 className="text-[26px] font-light tracking-[-0.02em]">{title}</h1>
+    <p className="max-w-[44ch] text-[15px] leading-[1.55] text-ink-2">{body}</p>
+    <Link to="/" className="link mt-2 text-[13px] font-medium">
+      Back to the board
     </Link>
   </div>
 );

@@ -7,7 +7,7 @@
   },
   "deploy": {
     "startCommand": "npm start",
-    "cronSchedule": "0 6 * * 0",
+    "cronSchedule": "0 9 * * 0",
     "restartPolicyType": "NEVER"
   }
 }

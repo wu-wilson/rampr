@@ -1,14 +1,16 @@
-import { Pool, QueryResult } from 'pg';
+import { Pool } from 'pg';
 
 import { config } from '../config';
 
+import type { QueryResult } from 'pg';
+
 let pool: Pool | null = null;
 
-/** Postgres SQLSTATE / Node socket codes that mean the server is unreachable, as opposed to a genuine query error. */
+/** Postgres SQLSTATE / Node socket codes that mean the server is unreachable or unresponsive, as opposed to a genuine query error. */
 const CONNECTION_ERROR_CODES = new Set([
   'ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'EHOSTUNREACH', 'EPIPE',
   '08000', '08001', '08003', '08004', '08006', '08007', '08P01',
-  '57P01', '57P02', '57P03',
+  '57014', '57P01', '57P02', '57P03',
 ]);
 
 /** Error thrown by `query` when Postgres is unreachable; carries a 503 + `isPublic` so the tail handler degrades gracefully instead of leaking a 500. */
@@ -22,28 +24,28 @@ class DatabaseUnavailableError extends Error {
   }
 }
 
-/**
- * Classify whether a thrown error is a connection-class failure (server down or restarting) rather than a SQL error.
- * @param err - The value thrown by `pg`
- * @returns True for connection failures, so the caller can map them to a 503 and let real query errors surface as 500s
- */
+/** Classify whether a thrown error is a connection-class failure (server down or restarting) rather than a SQL error. */
 function isConnectionError(err: unknown): boolean {
   if (typeof err !== 'object' || err === null) return false;
   const code = (err as { code?: unknown }).code;
   if (typeof code === 'string' && CONNECTION_ERROR_CODES.has(code)) return true;
   const message = (err as { message?: unknown }).message;
-  return typeof message === 'string' && /Connection terminated|server closed the connection|ECONNREFUSED/i.test(message);
+  return typeof message === 'string' && /Connection terminated|server closed the connection|ECONNREFUSED|timeout expired|timeout exceeded when trying to connect/i.test(message);
 }
 
 /**
- * Open the pg pool and probe the connection at boot, logging the outcome.
- * A probe failure is non-fatal — the server still starts and read routes return 503 until Postgres is reachable.
- * `config.databaseUrl` always carries a value (default localhost), so an unset env surfaces as a probe failure against localhost.
+ * Open the pg pool and probe the connection at boot, logging the outcome. A probe failure is not
+ * fatal: the server still starts, and read routes return 503 until Postgres is reachable.
  * @returns Resolves after the probe completes, whether it succeeded or failed
  */
 export async function initDb(): Promise<void> {
-  // Pin the session to UTC so CURRENT_DATE (momentum window, gating, retention) is timezone-independent.
-  pool = new Pool({ connectionString: config.databaseUrl, max: 10, options: '-c timezone=UTC' });
+  // UTC so snapshot dates read as the poller wrote them; timeouts so a hung Postgres degrades to a 503 instead of an open request.
+  pool = new Pool({
+    connectionString: config.databaseUrl,
+    max: 10,
+    connectionTimeoutMillis: 5000,
+    options: '-c timezone=UTC -c statement_timeout=10000',
+  });
 
   pool.on('error', (err) => {
     console.error('Unexpected database pool error:', err.message);
@@ -59,7 +61,7 @@ export async function initDb(): Promise<void> {
     console.log('Connected to Postgres');
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.warn(`Postgres not reachable — read endpoints will return 503 until it recovers: ${message}`);
+    console.warn(`Postgres not reachable, so read endpoints return 503 until it recovers: ${message}`);
   }
 }
 
@@ -68,7 +70,7 @@ export async function initDb(): Promise<void> {
  * Connection-class failures (Postgres down or restarting, at boot or mid-flight) are mapped to a 503 `DatabaseUnavailableError` so reads degrade gracefully; genuine SQL errors propagate to the tail handler as 500s.
  * @param text - SQL with `$1`, `$2`, ... placeholders; never interpolate input
  * @param params - Values bound to the placeholders, in order
- * @returns The raw `pg` `QueryResult`
+ * @returns The result set; `rows` is untyped and must be coerced at the call site
  */
 export async function query(text: string, params?: unknown[]): Promise<QueryResult> {
   if (!pool) {
@@ -84,7 +86,11 @@ export async function query(text: string, params?: unknown[]): Promise<QueryResu
   }
 }
 
-/** Coerce a nullable numeric pg column (integer or `null`/absent) to `number | null`. */
+/**
+ * Coerce a nullable numeric pg column to a number.
+ * @param value - The raw column value, a number, numeric string, `null`, or absent
+ * @returns The number, or `null` when the column was `null` or absent
+ */
 export function toNullableInt(value: unknown): number | null {
   return value === null || value === undefined ? null : Number(value);
 }

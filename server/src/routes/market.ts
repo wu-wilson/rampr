@@ -1,4 +1,3 @@
-/** Market route: GET /api/market — sector totals, the hiring index, and heating/cooling movers. */
 import { Router } from 'express';
 
 import { getMarket } from '../services/market';
@@ -16,4 +15,5 @@ router.get('/market', async (_req, res, next) => {
   }
 });
 
+/** Market route: GET /api/market — the hiring index, breadth per release, sector totals, and heating/cooling movers. */
 export { router as marketRouter };

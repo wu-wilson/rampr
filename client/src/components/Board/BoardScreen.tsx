@@ -1,94 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { EmptyState } from '../common/EmptyState';
+import { Rail } from '../common/Rail';
 import { StatusNote } from '../common/StatusNote';
-import { FilterBar } from './FilterBar';
-import { Leaderboard } from './Leaderboard';
-import { LoadMore } from './LoadMore';
-import { MarketHeadline } from './MarketHeadline';
+import { CompaniesStrip } from './CompaniesStrip';
+import { HeroBand } from './HeroBand';
+import { ReleaseTable } from './ReleaseTable';
 
 import { useBoard } from '../../hooks/useBoard';
 import { useFilterUrlSync } from '../../hooks/useFilterUrlSync';
-import { useFilterStore } from '../../store/filterStore';
+import { useMarket } from '../../hooks/useMarket';
 
-import { formatCount, formatPollSchedule } from '../../lib/format';
-
-import { PAGE_SIZE } from '../../constants/config';
+import { formatReleaseTimeLocal, formatReleaseTimeUtc } from '../../lib/format';
 
 /**
- * The Board screen: an editorial hero with the market total, the controls band, and the
- * ranked leaderboard with load-more pagination. Renders designed loading, error, day-zero
- * ("tracking just started"), and no-match empty states — never a blank screen. A failed
- * refetch (after a board is already shown) surfaces a non-blocking notice over the last result.
+ * The Board screen: the hero band (the figure and the hero chart), the companies strip, and the
+ * company table, with designed loading, error, and day-zero states. The market index for the
+ * hero chart loads alongside the board and fails on its own.
  * @returns The Board screen
  */
 export const BoardScreen: React.FC = () => {
   useFilterUrlSync();
-
-  const sector = useFilterStore((s) => s.sector);
-  const sort = useFilterStore((s) => s.sort);
-  const search = useFilterStore((s) => s.search);
-
-  const [pages, setPages] = useState(1);
-  // Any filter change resets pagination back to the first page.
-  useEffect(() => {
-    setPages(1);
-  }, [sector, sort, search]);
-
-  const { board, loading, error } = useBoard({
-    sector,
-    sort,
-    search,
-    limit: PAGE_SIZE * pages,
-  });
+  const { board, loading, error } = useBoard();
+  const { market, error: marketError } = useMarket();
 
   if (!board) {
-    return <StatusNote>{loading ? 'Reading the board…' : (error ?? 'Something went wrong.')}</StatusNote>;
+    return <StatusNote>{loading ? 'Reading the release.' : (error ?? 'Something went wrong.')}</StatusNote>;
   }
 
-  const isDayZero = board.updatedAt === null;
-  const shown = board.companies.length;
-  const remaining = board.total - shown;
+  if (board.updatedAt === null) {
+    return (
+      <EmptyState
+        title="Before the first release"
+        body="Rampr has not counted its first morning yet. The figures land here once it does."
+        note={`First release at ${formatReleaseTimeUtc()}, ${formatReleaseTimeLocal()} locally.`}
+      />
+    );
+  }
 
   return (
-    <div>
-      <MarketHeadline market={board.market} />
-
-      {isDayZero ? (
-        <EmptyState
-          title="Tracking just started"
-          body="Rampr hasn't run its first poll yet. Open-role counts will land here once it does."
-          note={formatPollSchedule()}
-        />
-      ) : (
-        <>
-          <FilterBar companyCount={board.total} />
-
-          {error && (
-            <p
-              className="px-5 pt-3 font-mono text-down md:px-10 text-[11px]"
-              role="status"
-            >
-              Couldn’t refresh. Showing the last result.
-            </p>
-          )}
-
-          {shown === 0 ? (
-            <EmptyState
-              title="No companies match"
-              body="Nothing on the board fits that search or sector. Clear a filter to widen the field."
-            />
-          ) : (
-            <>
-              <Leaderboard companies={board.companies} />
-              {remaining > 0 && <LoadMore remaining={remaining} onClick={() => setPages((p) => p + 1)} />}
-              <p className="px-5 pb-6 pt-5 text-center font-mono text-muted-3 md:px-10 text-[11px]">
-                showing {formatCount(shown)} of {formatCount(board.total)} companies
-              </p>
-            </>
-          )}
-        </>
-      )}
+    <div className="pb-24">
+      <HeroBand market={board.market} index={market?.index ?? null} indexFailed={marketError !== null} />
+      <Rail>
+        <CompaniesStrip companies={board.companies} companyCount={board.market.companyCount} />
+        <ReleaseTable companies={board.companies} />
+      </Rail>
     </div>
   );
 };

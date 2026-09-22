@@ -1,7 +1,10 @@
 {
   "name": "rampr-server",
   "version": "1.0.0",
-  "description": "rampr API server — serves the board, company, market, meta, and health data",
+  "engines": {
+    "node": ">=20"
+  },
+  "description": "rampr API server \u2014 serves the board, company, market, meta, and health data",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

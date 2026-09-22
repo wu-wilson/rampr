@@ -1,11 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 /**
- * Express error-handling middleware — the single tail handler for the app.
- * A numeric `.status`/`.statusCode` on the error becomes the response code (default 500). The raw `err.message`
- * is only echoed to the client when `.isPublic === true`; everything else is genericized to "Internal server error"
- * so raw pg wording never leaks. The full error (including stack) is logged server-side and never
- * returned to the client.
+ * The app's single tail error handler: a numeric `.status` on the error sets the response code
+ * (default 500), and `err.message` reaches the client only when `.isPublic` is true; any other
+ * error reads as a generic bad request or server error by status.
  * @param err - Error thrown or passed via `next(err)`; may carry `.status`/`.statusCode` and `.isPublic`
  * @param _req - Express request (unused but required by the 4-arg signature)
  * @param res - Express response, written with the resolved status + body
@@ -20,8 +18,9 @@ export function errorHandler(
   console.error('Error:', err);
 
   const typed = err as Error & { status?: number; statusCode?: number; isPublic?: boolean };
-  const status = typed.status || typed.statusCode || 500;
-  const message = typed.isPublic && err.message ? err.message : 'Internal server error';
+  const raw = typed.status ?? typed.statusCode;
+  const status = Number.isInteger(raw) && raw! >= 400 && raw! <= 599 ? raw! : 500;
+  const message = typed.isPublic && err.message ? err.message : status < 500 ? 'Bad request' : 'Internal server error';
 
   res.status(status).json({ error: message });
 }

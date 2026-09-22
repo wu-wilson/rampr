@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
-import { apiGet, toUserMessage } from '../lib/api';
+import { useMetaStore } from '../store/metaStore';
 
 import type { Meta } from '../types/meta';
 
@@ -12,40 +13,20 @@ interface UseMetaResult {
 }
 
 /**
- * Fetch market-wide metadata from `GET /api/meta` once on mount. `updatedAt` is null
- * before the first poll, which drives the app's day-zero "tracking just started" state.
- * Guards against a stale response with a cancelled flag.
+ * Read the release stamp and curated-list facts from the shared meta store, loading them on
+ * first use and retrying a failed load on each navigation.
  * @returns The meta payload (null until resolved) plus loading/error state
  */
 export function useMeta(): UseMetaResult {
-  const [meta, setMeta] = useState<Meta | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { pathname } = useLocation();
+  const meta = useMetaStore((s) => s.meta);
+  const loading = useMetaStore((s) => s.loading);
+  const error = useMetaStore((s) => s.error);
+  const load = useMetaStore((s) => s.load);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function fetchMeta(): Promise<void> {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await apiGet<Meta>('/api/meta');
-        if (!cancelled) setMeta(data);
-      } catch (err) {
-        if (!cancelled) {
-          setError(toUserMessage(err, 'Couldn’t load Rampr.'));
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    fetchMeta();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    void load();
+  }, [load, pathname]);
 
   return { meta, loading, error };
 }

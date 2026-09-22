@@ -14,10 +14,8 @@ interface UseCompanyResult {
 }
 
 /**
- * Fetch a company's detail from `GET /api/companies/:slug`, refetching when the slug
- * changes. A 404 is surfaced distinctly as `notFound` so the route can render the
- * not-found screen instead of a generic error. Guards against out-of-order responses
- * with a cancelled flag on route switches.
+ * Fetch a company's detail from `GET /api/companies/:slug`, refetching when the slug changes and
+ * surfacing a 404 as `notFound` so the route can render the not-found screen.
  * @param slug - The company slug from the route
  * @returns The company payload (null until resolved) plus loading/error/not-found state
  */
@@ -31,6 +29,7 @@ export function useCompany(slug: string): UseCompanyResult {
     let cancelled = false;
 
     async function fetchCompany(): Promise<void> {
+      setCompany(null);
       setLoading(true);
       setError(null);
       setNotFound(false);

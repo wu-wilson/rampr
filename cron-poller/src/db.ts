@@ -1,39 +1,29 @@
-import { Pool, QueryResult } from 'pg';
+import { Pool } from 'pg';
 
 import { config } from './config';
+
 import type { AtsProvider, NormalizedListing } from './adapters';
 
-/**
- * Shared connection pool. Sized to the poll concurrency so each worker's reconcile
- * transaction can hold its own dedicated client without serializing on a single connection.
- */
+/** Shared pool sized to the poll concurrency, so each worker's reconcile transaction holds its own client. */
 const pool = new Pool({
   connectionString: config.databaseUrl,
-  max: Math.max(1, config.pollConcurrency),
-  // Pin the session to UTC so the snapshot's CURRENT_DATE matches the DB's day boundary everywhere.
-  options: '-c timezone=UTC',
+  max: config.pollConcurrency,
+  connectionTimeoutMillis: 5000,
+  // UTC so the snapshot's CURRENT_DATE is the release day; a statement timeout so a hung Postgres can't stall the run.
+  options: '-c timezone=UTC -c statement_timeout=30000',
+});
+
+pool.on('error', (err) => {
+  console.error('Unexpected database pool error:', err.message);
 });
 
 /** A curated company row to poll. */
 export interface CompanyRow {
-  /** Company surrogate id. */
   id: number;
-  /** Display name. */
   name: string;
-  /** ATS provider. */
   provider: AtsProvider;
   /** Provider board token (greenhouse token / lever site / ashby org). */
   atsId: string;
-}
-
-/**
- * Run a parameterized query against the pool.
- * @param text - SQL with `$1`, `$2`, ... placeholders; never interpolate input
- * @param params - Values bound to the placeholders, in order
- * @returns The unwrapped driver result; read `.rows` for the selected records
- */
-async function query(text: string, params?: unknown[]): Promise<QueryResult> {
-  return pool.query(text, params);
 }
 
 /**
@@ -41,7 +31,7 @@ async function query(text: string, params?: unknown[]): Promise<QueryResult> {
  * @returns The companies to poll
  */
 export async function loadCompanies(): Promise<CompanyRow[]> {
-  const result = await query(
+  const result = await pool.query(
     `SELECT id, name, ats_provider, ats_id
        FROM companies
       ORDER BY id`,
@@ -59,17 +49,10 @@ export async function loadCompanies(): Promise<CompanyRow[]> {
 }
 
 /**
- * Reconcile one company's open listings and write today's snapshot, atomically.
- *
- * Runs the whole reconcile in a single transaction on a dedicated pooled client: upsert
- * every role in `listings` (refreshing the mutable breakdown fields on conflict), hard-delete
- * the rows no longer present, then snapshot the reconciled `COUNT(*)`. Either the company's
- * state advances fully or not at all — a crash or error mid-reconcile rolls back, leaving the
- * previous poll's state intact rather than a partial listing set or a missing snapshot. An
- * empty `listings` is valid: it deletes all of the company's rows and snapshots zero. The
- * snapshot counts the reconciled table (not the feed array), so duplicate feed IDs collapsed
- * by the unique key can't inflate it. `CURRENT_DATE` is UTC, so a same-day re-run overwrites
- * rather than duplicates the snapshot row.
+ * Reconcile one company's open listings and write today's snapshot in a single transaction, so
+ * an error mid-way rolls back to the previous poll's state. An empty feed is a genuine zero, the
+ * snapshot counts the reconciled table so duplicate feed IDs can't inflate it, and a same-day
+ * re-run overwrites the row.
  * @param companyId - The company being reconciled
  * @param listings - The company's current open roles, normalized from its feed
  * @returns Resolves once the transaction commits

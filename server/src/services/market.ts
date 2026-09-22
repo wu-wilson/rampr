@@ -1,19 +1,14 @@
-import { query } from './db';
+import { query, toNullableInt } from './db';
 
-import { GATING_DAYS } from '../constants';
+import { GATING_DAYS, TREND_WINDOW_DAYS } from '../constants';
 
 /** How many heating and cooling movers to surface on each side. */
 const MOVERS_LIMIT = 5;
-
-/** Trend window depth in days — the deepest the market index chart ever renders. */
-const INDEX_WINDOW_DAYS = 90;
 
 /** Top-line market figures. */
 interface MarketTotals {
   /** Live total open roles across all companies (`COUNT(listings)`). */
   totalOpen: number;
-  companyCount: number;
-  sectorCount: number;
   /** `MAX(snapshot_date)` as `YYYY-MM-DD`, or `null` before the first poll. */
   updatedAt: string | null;
 }
@@ -26,6 +21,8 @@ interface SectorTotal {
   open: number;
   /** Integer percent of the largest sector's open count (the leader is 100). */
   pct: number;
+  /** Signed 7-day change summed over the sector's companies whose own change is live; `null` while globally gated or with none. */
+  delta7d: number | null;
 }
 
 /** One point on the market hiring index. */
@@ -36,17 +33,34 @@ interface IndexPoint {
   totalOpen: number;
 }
 
-/** The market hiring index time series (up to 90 days); empty while globally gated. */
+/** The market hiring index time series (the last 90 days); empty while globally gated. */
 interface MarketIndex {
   gated: boolean;
   daysTracked: number;
   points: IndexPoint[];
 }
 
+/** One release's breadth: how many boards added postings versus removed them since the previous release. */
+interface BreadthPoint {
+  /** Snapshot date (`YYYY-MM-DD`). */
+  date: string;
+  /** Companies whose count rose from their previous snapshot. */
+  rising: number;
+  /** Companies whose count fell from their previous snapshot. */
+  falling: number;
+}
+
+/** The breadth series (the last 90 days), sharing the index's gate; empty while globally gated. */
+interface Breadth {
+  points: BreadthPoint[];
+}
+
 /** A company whose open count moved most over the last 7 days. */
 interface Mover {
   slug: string;
   name: string;
+  /** Human sector label. */
+  sectorLabel: string;
   /** Signed 7d change in open roles. */
   delta: number;
 }
@@ -63,34 +77,64 @@ export interface MarketResponse {
   totals: MarketTotals;
   sectors: SectorTotal[];
   index: MarketIndex;
+  breadth: Breadth;
   movers: Movers;
 }
 
-/**
- * Map a raw mover row to the `Mover` contract.
- * @param row - Raw pg row with `slug`, `name`, `delta` columns
- * @returns One mover entry
- */
+/** Map a raw mover row to the `Mover` contract. */
 function toMover(row: Record<string, unknown>): Mover {
-  return { slug: String(row.slug), name: String(row.name), delta: Number(row.delta) };
+  return {
+    slug: String(row.slug),
+    name: String(row.name),
+    sectorLabel: String(row.sector_label),
+    delta: Number(row.delta),
+  };
+}
+
+/** The largest 7-day moves in one direction among companies whose own change is live. */
+async function fetchMovers(direction: 'up' | 'down'): Promise<Mover[]> {
+  const rising = direction === 'up';
+  const result = await query(
+    `WITH open_now AS (
+       SELECT c.id, c.slug, c.name, s.label AS sector_label, COUNT(l.id) AS open_now
+         FROM companies c
+         JOIN sectors s ON s.slug = c.sector_slug
+         LEFT JOIN listings l ON l.company_id = c.id
+        GROUP BY c.id, s.label
+     ),
+     prior AS (
+       SELECT DISTINCT ON (company_id) company_id, open_count AS prior_open
+         FROM daily_snapshots
+        WHERE snapshot_date <= (SELECT MAX(snapshot_date) FROM daily_snapshots) - 7
+        ORDER BY company_id, snapshot_date DESC
+     ),
+     days AS (
+       SELECT company_id, COUNT(*) AS days_tracked
+         FROM daily_snapshots
+        GROUP BY company_id
+     )
+     SELECT o.slug, o.name, o.sector_label, (o.open_now - p.prior_open)::int AS delta
+       FROM open_now o
+       JOIN prior p ON p.company_id = o.id
+       JOIN days d ON d.company_id = o.id AND d.days_tracked >= $2
+      WHERE ${rising ? '(o.open_now - p.prior_open) > 0' : '(o.open_now - p.prior_open) < 0'}
+      ORDER BY delta ${rising ? 'DESC' : 'ASC'}, o.name ASC, o.slug ASC
+      LIMIT $1`,
+    [MOVERS_LIMIT, GATING_DAYS],
+  );
+  return (result.rows as Record<string, unknown>[]).map(toMover);
 }
 
 /**
- * Build the market view: live totals + per-sector open counts (never gated), and the two globally
- * gated trend surfaces — the market hiring index and the heating/cooling movers.
- *
- * Sector totals come live from `listings`; the index and movers derive from `daily_snapshots` and are
- * suppressed (empty `points` / arrays with `gated: true`) until `GATING_DAYS` distinct snapshot dates exist.
- * Movers additionally exclude any company with fewer than `GATING_DAYS` of its own snapshots, so a
- * company still gated on its own page is never surfaced as a mover.
+ * Build the market view: live totals and per-sector open counts, then the globally gated trend
+ * surfaces (the index, breadth, sector 7-day changes, and movers), all counted back from the
+ * latest release. Breadth leaves out a date where no company has a previous snapshot.
  * @returns The full `GET /api/market` response body
  */
 export async function getMarket(): Promise<MarketResponse> {
   const totalsResult = await query(
     `SELECT
        (SELECT COUNT(*)::int FROM listings)                            AS total_open,
-       (SELECT COUNT(*)::int FROM companies)                          AS company_count,
-       (SELECT COUNT(*)::int FROM sectors)                            AS sector_count,
        (SELECT COUNT(DISTINCT snapshot_date)::int FROM daily_snapshots) AS distinct_days,
        to_char((SELECT MAX(snapshot_date) FROM daily_snapshots), 'YYYY-MM-DD') AS updated_at`,
   );
@@ -100,113 +144,104 @@ export async function getMarket(): Promise<MarketResponse> {
 
   const totals: MarketTotals = {
     totalOpen: Number(totalsRow.total_open),
-    companyCount: Number(totalsRow.company_count),
-    sectorCount: Number(totalsRow.sector_count),
     updatedAt: totalsRow.updated_at === null ? null : String(totalsRow.updated_at),
   };
 
   const sectorsResult = await query(
-    `WITH sector_open AS (
-       SELECT s.slug, s.label, s.sort_order, COUNT(l.id)::int AS open
-         FROM sectors s
-         LEFT JOIN companies c ON c.sector_slug = s.slug
+    `WITH live AS (
+       SELECT c.id, c.sector_slug, COUNT(l.id)::int AS open_now
+         FROM companies c
          LEFT JOIN listings l ON l.company_id = c.id
+        GROUP BY c.id
+     ),
+     sector_open AS (
+       SELECT s.slug, s.label, s.sort_order, COALESCE(SUM(live.open_now), 0)::int AS open
+         FROM sectors s
+         LEFT JOIN live ON live.sector_slug = s.slug
         GROUP BY s.slug, s.label, s.sort_order
+     ),
+     prior AS (
+       SELECT DISTINCT ON (company_id) company_id, open_count AS prior_open
+         FROM daily_snapshots
+        WHERE snapshot_date <= (SELECT MAX(snapshot_date) FROM daily_snapshots) - 7
+        ORDER BY company_id, snapshot_date DESC
+     ),
+     tracked AS (
+       SELECT company_id FROM daily_snapshots GROUP BY company_id HAVING COUNT(*) >= $1
+     ),
+     sector_change AS (
+       SELECT live.sector_slug, SUM(live.open_now - p.prior_open)::int AS delta
+         FROM prior p
+         JOIN tracked ON tracked.company_id = p.company_id
+         JOIN live ON live.id = p.company_id
+        GROUP BY live.sector_slug
      )
      SELECT
-       slug,
-       label,
-       open,
-       CASE WHEN MAX(open) OVER () > 0
-            THEN ROUND(open::numeric / MAX(open) OVER () * 100)::int
-            ELSE 0 END AS pct
-     FROM sector_open
-     ORDER BY open DESC, sort_order ASC`,
+       so.slug,
+       so.label,
+       so.open,
+       CASE WHEN MAX(so.open) OVER () > 0
+            THEN ROUND(so.open::numeric / MAX(so.open) OVER () * 100)::int
+            ELSE 0 END AS pct,
+       sc.delta
+     FROM sector_open so
+     LEFT JOIN sector_change sc ON sc.sector_slug = so.slug
+     ORDER BY so.open DESC, so.sort_order ASC, so.slug ASC`,
+    [GATING_DAYS],
   );
   const sectors: SectorTotal[] = (sectorsResult.rows as Record<string, unknown>[]).map((row) => ({
     slug: String(row.slug),
     label: String(row.label),
     open: Number(row.open),
     pct: Number(row.pct),
+    delta7d: gated ? null : toNullableInt(row.delta),
   }));
 
   const index: MarketIndex = { gated, daysTracked: distinctDays, points: [] };
+  const breadth: Breadth = { points: [] };
   const movers: Movers = { gated, heating: [], cooling: [] };
 
   if (!gated) {
-    const indexResult = await query(
-      `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, SUM(open_count)::int AS total_open
-         FROM daily_snapshots
-        WHERE snapshot_date >= CURRENT_DATE - $1::int
-        GROUP BY snapshot_date
-        ORDER BY snapshot_date ASC`,
-      [INDEX_WINDOW_DAYS],
-    );
+    const [indexResult, breadthResult, heating, cooling] = await Promise.all([
+      query(
+        `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, SUM(open_count)::int AS total_open
+           FROM daily_snapshots
+          WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $1::int
+          GROUP BY snapshot_date
+          ORDER BY snapshot_date ASC`,
+        [TREND_WINDOW_DAYS],
+      ),
+      query(
+        `WITH stepped AS (
+           SELECT snapshot_date, open_count,
+                  LAG(open_count) OVER (PARTITION BY company_id ORDER BY snapshot_date) AS prev_count
+             FROM daily_snapshots
+         )
+         SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date,
+                COUNT(*) FILTER (WHERE open_count > prev_count)::int AS rising,
+                COUNT(*) FILTER (WHERE open_count < prev_count)::int AS falling
+           FROM stepped
+          WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $1::int
+          GROUP BY snapshot_date
+         HAVING COUNT(prev_count) > 0
+          ORDER BY snapshot_date ASC`,
+        [TREND_WINDOW_DAYS],
+      ),
+      fetchMovers('up'),
+      fetchMovers('down'),
+    ]);
     index.points = (indexResult.rows as Record<string, unknown>[]).map((row) => ({
       date: String(row.date),
       totalOpen: Number(row.total_open),
     }));
-
-    // Movers gate per-company as well: a company needs >= GATING_DAYS of its own snapshots to appear,
-    // matching the board/company momentum gate so a still-building company is never surfaced as a mover.
-    const heatingResult = await query(
-      `WITH open_now AS (
-         SELECT c.id, c.slug, c.name, COUNT(l.id) AS open_now
-           FROM companies c
-           LEFT JOIN listings l ON l.company_id = c.id
-          GROUP BY c.id
-       ),
-       prior AS (
-         SELECT DISTINCT ON (company_id) company_id, open_count AS prior_open
-           FROM daily_snapshots
-          WHERE snapshot_date <= CURRENT_DATE - 7
-          ORDER BY company_id, snapshot_date DESC
-       ),
-       days AS (
-         SELECT company_id, COUNT(*) AS days_tracked
-           FROM daily_snapshots
-          GROUP BY company_id
-       )
-       SELECT o.slug, o.name, (o.open_now - p.prior_open)::int AS delta
-         FROM open_now o
-         JOIN prior p ON p.company_id = o.id
-         JOIN days d ON d.company_id = o.id AND d.days_tracked >= $2
-        WHERE (o.open_now - p.prior_open) > 0
-        ORDER BY delta DESC, o.name ASC
-        LIMIT $1`,
-      [MOVERS_LIMIT, GATING_DAYS],
-    );
-    const coolingResult = await query(
-      `WITH open_now AS (
-         SELECT c.id, c.slug, c.name, COUNT(l.id) AS open_now
-           FROM companies c
-           LEFT JOIN listings l ON l.company_id = c.id
-          GROUP BY c.id
-       ),
-       prior AS (
-         SELECT DISTINCT ON (company_id) company_id, open_count AS prior_open
-           FROM daily_snapshots
-          WHERE snapshot_date <= CURRENT_DATE - 7
-          ORDER BY company_id, snapshot_date DESC
-       ),
-       days AS (
-         SELECT company_id, COUNT(*) AS days_tracked
-           FROM daily_snapshots
-          GROUP BY company_id
-       )
-       SELECT o.slug, o.name, (o.open_now - p.prior_open)::int AS delta
-         FROM open_now o
-         JOIN prior p ON p.company_id = o.id
-         JOIN days d ON d.company_id = o.id AND d.days_tracked >= $2
-        WHERE (o.open_now - p.prior_open) < 0
-        ORDER BY delta ASC, o.name ASC
-        LIMIT $1`,
-      [MOVERS_LIMIT, GATING_DAYS],
-    );
-    movers.heating = (heatingResult.rows as Record<string, unknown>[]).map(toMover);
-    movers.cooling = (coolingResult.rows as Record<string, unknown>[]).map(toMover);
+    breadth.points = (breadthResult.rows as Record<string, unknown>[]).map((row) => ({
+      date: String(row.date),
+      rising: Number(row.rising),
+      falling: Number(row.falling),
+    }));
+    movers.heating = heating;
+    movers.cooling = cooling;
   }
 
-  console.log(`Market served: totalOpen ${totals.totalOpen}, ${sectors.length} sectors, gated ${gated}`);
-  return { totals, sectors, index, movers };
+  return { totals, sectors, index, breadth, movers };
 }

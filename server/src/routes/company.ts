@@ -1,4 +1,3 @@
-/** Company route: GET /api/companies/:slug — per-company detail (open, breakdowns, momentum, trajectory). */
 import { Router } from 'express';
 
 import { CompanyParamsSchema } from '../schemas/companyParams';
@@ -29,4 +28,5 @@ router.get('/companies/:slug', async (req, res, next) => {
   }
 });
 
+/** Company route: GET /api/companies/:slug — per-company detail (open, breakdowns, 7-day change, trajectory). */
 export { router as companyRouter };

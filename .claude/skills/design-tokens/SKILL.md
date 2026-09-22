@@ -1,46 +1,38 @@
 ---
 name: design-tokens
-description: rampr's exact color tokens, fonts, paper texture, animation durations, and the ultra-wide rail. Read before writing any client styling.
+description: rampr's exact color tokens, the typeface, animation constants, the rail and full-bleed regions, and the fixed dimensions of the release layout. Read before writing any client styling.
 ---
 
 # rampr design tokens
 
-rampr is a **light, warm-paper editorial** board: paper surfaces, hairline borders (never shadows-as-crutch), square-ish corners, a blue accent, and mono labels/numbers. No dark mode, no theme toggle.
+rampr is a **daily statistical release**: white paper, ink, hairlines, light headings, tabular figures, titled tables and charts. No brand colour, no shadows, no radii beyond the 4px on the company marks, no gradient fills, no mono, no dark mode.
 
 ## Color tokens
 
-Store every color as **space-separated RGB channels** on `:root` in `client/src/index.css` (hex in a comment), and consume it through `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js` so Tailwind opacity modifiers (`text-ink/60`) resolve. Never hardcode hex in components.
+Store every color as **space-separated RGB channels** on `:root` in `client/src/index.css` (hex in a comment), and consume it through `rgb(var(--token) / <alpha-value>)` in `tailwind.config.js` so Tailwind opacity modifiers resolve. Never hardcode hex in components. SVG and Web Animations code wrap a token as `rgb(var(--token))` (`token()` in `lib/chart.ts`).
 
 ```css
 :root {
   /* Surfaces */
-  --paper:  252 251 247;  /* #FCFBF7  the app surface — fills the whole viewport */
-  --raised: 245 244 236;  /* #F5F4EC  stat cards, gated panels, hover */
+  --paper:   255 255 255;  /* #FFFFFF  the page */
+  --hover:   247 248 250;  /* #F7F8FA  row hover */
+  --weekend: 245 246 248;  /* #F5F6F8  weekend bands on the charts */
 
-  /* Ink */
-  --ink:        27 33 28;   /* #1B211C  primary text */
-  --ink-strong: 35 40 31;   /* #23281F  dark pills, rules, headers */
+  /* Ink, strongest to faintest */
+  --ink:   11 12 15;       /* #0B0C0F  text, lines, dots, links */
+  --ink-2: 95 102 114;     /* #5F6672  secondary text */
+  --ink-3: 154 160 170;    /* #9AA0AA  captions, axis labels, source lines */
 
-  /* Brand blue */
-  --brand:      33 115 217;  /* #2173D9 */
-  --brand-dark: 24 84 168;  /* #1854A8 */
-  --brand-soft: 158 190 236;/* #9EBEEC  work-mix hybrid slice */
+  /* Hairlines */
+  --line:   231 233 236;   /* #E7E9EC  table rules, panel borders, gridlines */
+  --line-2: 240 241 243;   /* #F0F1F3  row dividers, the ledger rules at rest */
+  --line-3: 201 204 209;   /* #C9CCD1  the zero axis, a bar that did not move, the stamp separator */
+  --wave:   154 160 170;   /* #9AA0AA  a ledger rule at the crest of the wave */
 
-  /* Muted text ramp, lightest use to faintest */
-  --muted-1: 86 91 79;      /* #565B4F  body-muted */
-  --muted-2: 117 120 108;   /* #75786C  labels */
-  --muted-3: 155 158 144;   /* #9B9E90  faint meta */
-
-  /* Borders, tightest to lightest */
-  --line-1: 234 232 221;    /* #EAE8DD  row divider */
-  --line-2: 228 226 215;    /* #E4E2D7  section rule */
-  --line-3: 216 214 203;    /* #D8D6CB  card border / onsite slice */
-  --line-4: 201 199 187;    /* #C9C7BB  control border */
-
-  /* Momentum status (always paired with a glyph + text, never color alone) */
-  --up:   31 122 72;        /* #1F7A48  ↗ ramping up */
-  --down: 160 91 34;        /* #A05B22  ↘ cooling down */
-  --flat: 155 158 144;      /* #9B9E90  → flat */
+  /* Change figures (the sign carries the direction, colour reinforces) */
+  --up:   14 122 85;       /* #0E7A55  rose */
+  --down: 196 61 47;       /* #C43D2F  fell */
+  --flat: 154 160 170;     /* #9AA0AA  held */
 }
 ```
 
@@ -48,48 +40,43 @@ Store every color as **space-separated RGB channels** on `:root` in `client/src/
 
 ```js
 const ch = (name) => `rgb(var(${name}) / <alpha-value>)`;
-// colors: paper, raised, ink, ink-strong, brand, brand-dark, brand-soft,
-//         muted: {1,2,3}, line: {1,2,3,4}, up, down, flat
+// colors: paper, hover, ink, ink-2, ink-3, line, line-2, line-3, wave, up, down, flat (weekend is read straight from its custom property by the charts)
 ```
 
-## Fonts
+## Typeface
 
-- **DM Sans** (weights 500–800) — display headings, names, and every count/number. `font-display`. **The `body` defaults to DM Sans** — it's the common case for content.
-- **Chivo Mono** (400–800) — labels, metadata, table cells, badges. Apply `font-mono` explicitly; it's the labeled exception, not the default. Chosen for its plain (undotted, unslashed) zero and UI-friendly metrics — vet any replacement's zero at large glyph size, and confirm its x-height and vertical centering hold up at label sizes.
+One stack, `font-sans`, the body default: `"Söhne", "Suisse Int'l", "Switzer", "Helvetica Neue", -apple-system, "SF Pro Text", Helvetica, Arial, sans-serif`. **Switzer** (Indian Type Foundry, ITF Free Font License) ships self-hosted as four woff2 files in `client/public/fonts/` (300, 400, 500, 600), declared with `@font-face` in `index.css` and preloaded in `index.html`. Söhne and Suisse lead the stack so a licensed face later is a file drop. No Google Fonts, no mono.
 
-Load via Google Fonts `preconnect` + stylesheet `<link>` tags in `index.html` (not a CSS `@import`, which would render-block behind the stylesheet). Base body size `14px`.
+- Body 15px, line-height 1.5, `font-variant-numeric: tabular-nums`.
+- Headings and big figures: weight **300**. Lead figure `clamp(76px, 10vw, 128px)`, tracking `-0.045em`, leading 0.92, pulled left `-0.15em` for the "1" bearing. Company name `clamp(44px, 6vw, 64px)`, tracking `-0.035em`. Company figure `clamp(64px, 8vw, 104px)`. Method heading `clamp(30px, 3.8vw, 44px)`.
+- Lead sentences 19px weight 300 in `--ink-2`, emphasis weight 500 in ink. Names, counts, column labels weight 500. Wordmark 21px weight 600 tracking `-0.025em`.
+- Captions 15px 500; table rows 14px (the company, sector, and movers tables) and 13.5px (the daily table, breakdowns) with names and counts at 500; table headers 12px 500 in `--ink-3`; axis labels 11.5px; meta and chart source lines 12.5px in `--ink-3`.
 
-## Paper texture
+## The mark
 
-The app surface carries a faint grain: `background-image: url('/assets/grain.png')` over `bg-paper`. Put `grain.png` in `client/public/assets/`. Keep it subtle (the wireframe layers it at full but low-contrast); it must never reduce text contrast.
+A single step: `M3 17.5H10.5V6.5H21` in a 24 grid, stroke 2.2, round caps and joins, `currentColor` (`components/common/StepMark.tsx`). The favicon is the white step on an ink tile (`public/favicon.svg`).
 
-## Momentum semantics
+## Layout dimensions
 
-- `↗ Ramping up` → `text-up`
-- `↘ Cooling down` → `text-down`
-- `→ flat` → `text-flat`
-
-The arrow is rendered by the `MomentumArrow` SVG component (rotated per direction) — the `↗ ↘ →` here are illustrative shorthand. On screen the glyph and the signed delta carry the meaning; the direction word rides along as the hover title, and color only reinforces.
-
-## Work-mix + sector colors
-
-- Work mix bar: Remote `--brand`, Hybrid `--brand-soft`, Onsite `--line-3`, Unknown (residual, only if > 0) `--muted-3`.
-- Sector bars: every bar the same `--brand`, ordered by count — rank reads from bar length, not from dimming a live sector.
+- Rail 1200px, gutter 20px (`px-5`) on phones and 24px (`md:px-6`) above. Masthead row 68px over a hairline; the hero band lays its first rule over it. Screens end 96px above the footer's rule.
+- Ledger rules every **48px** (`RULE_SPACING`) from the top of the hero band; the band pads 48px above and below at every width, with a 47px gap when the panels stack, so a rule sits above the first panel and below the last; panels snap so their 1px borders sit on rules (`useSnapToRules`).
+- Table rows 46px (company table), 42px (sector and movers tables), 36px (daily table), 38px (breakdowns); headers 38px on two hairlines. Section spacing `pt-14` (56px).
+- Chart heights: hero 250px, full series 320px, breadth 150px, company 280px; every plot runs to the rail's right edge, the latest figure sits in the readout above the plot, and below 480px wide a line chart runs at 72% of its height (the breadth chart keeps its height and shows the last 30 releases on phones instead). Line 1.75px, endpoint dot r4, crosshair dot r4.
+- Company marks 22px, radius 4px, 40px apart in the strip, from the 128px colour PNGs in `public/marks`.
 
 ## Animation
 
-Durations live in `client/src/constants/animations.ts` as named constants; keep everything ≤ 300ms and prefer `transform`/`opacity`.
+Constants live in `client/src/constants/animations.ts`.
 
 ```ts
-export const DURATION = { fast: 150, normal: 250, smooth: 300 } as const;
+export const DURATION = { normal: 200, smooth: 300 } as const;   // interaction motion
+export const AMBIENT = { draw: 700, wave: 1400, waveStagger: 100, waveGap: 1500, waveLead: 1000 } as const;
+export const EASING = 'cubic-bezier(0.25, 1, 0.5, 1)';          // one curve for interaction
+export const EASING_SYMMETRIC = 'cubic-bezier(0.45, 0, 0.55, 1)'; // the wave only
 ```
 
-Honor `prefers-reduced-motion` in `index.css` (disable keyframes, clamp transitions).
-
-## Ultra-wide rail
-
-The paper surface (`bg-paper` + grain) fills the whole viewport; **content and the sectioning hairlines stay in a centered 1280px rail**. Nothing marks the rail's edges — the paper simply extends past it. Implement as `.app-surface` on the full-viewport shell with a `max-w-rail mx-auto` content container inside (`rail` = `1280px`, mapped in `tailwind.config.js`); the hairlines live on the bands within that container, so they cap at the rail.
+The section rise (500ms) and the companies strip loop (150s) are CSS in `index.css`; the strip pauses under the pointer. Honor `prefers-reduced-motion` in `index.css` and via `prefersReducedMotion()` in every Web Animations path; pause ambient motion while `document.hidden`.
 
 ## Interaction
 
-Every clickable element gets a hover state, a visible focus ring (`box-shadow: 0 0 0 1px rgb(var(--ink) / 0.6)` via `:focus-visible`), and a transition. Row/link hovers use a translucent `bg-raised/60` so the paper grain still shows through.
+Every clickable element gets a hover colour at `DURATION.normal`, a visible focus ring (`outline: 2px solid rgb(var(--ink)); outline-offset: 2px` via `:focus-visible`), and no other change. Row hovers use `bg-hover`. Text links use `.link`.

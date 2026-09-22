@@ -1,7 +1,7 @@
 ---
 paths:
-  - "client/**/*.ts"
-  - "client/**/*.tsx"
+  - "client/src/**/*.ts"
+  - "client/src/**/*.tsx"
   - "server/**/*.ts"
   - "cron-poller/**/*.ts"
   - "cron-cleanup/**/*.ts"
@@ -13,7 +13,7 @@ paths:
 
 - Strict mode enabled everywhere. No `any` — use `unknown` with type narrowing. No `as` casts unless genuinely unavoidable. Parse every external ATS feed payload with Zod before use. Prefer `interface` for object shapes, `type` for unions and intersections.
 - Functional components: `const` arrow functions typed via a `{ComponentName}Props` interface defined directly above the component.
-- Named exports only — no default exports (exception: lazy-loaded route components).
+- Named exports only — no default exports.
 
 ## Docstrings
 
@@ -31,9 +31,9 @@ paths:
 
 ## Naming
 
-- Event handlers: `handle{Event}`. Hooks: `use{Name}`. Booleans: `is`/`has`/`should`.
-- PascalCase component files (`BoardRow.tsx`); camelCase for hooks, lib, util, and adapter files (`momentum.ts`, `greenhouse.ts`).
-- SCREAMING_SNAKE_CASE constants (`GATING_DAYS`, `RETENTION_DAYS`); PascalCase types.
+- Event handlers: `handle{Event}`. Hooks: `use{Name}`. Booleans read as plain adjectives or participles (`open`, `loading`, `expanded`, `gated`); prefix with `is`/`has` only when the bare word would be ambiguous.
+- PascalCase component files (`CompanyRow.tsx`); camelCase for hooks, lib, util, and adapter files (`series.ts`, `greenhouse.ts`).
+- SCREAMING_SNAKE_CASE constants (`GATING_DAYS`, `DEFAULT_RETENTION_DAYS`); PascalCase types.
 
 ## Patterns
 

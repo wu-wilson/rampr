@@ -44,10 +44,10 @@ All three are public JSON, no auth. Each adapter fetches one board token and ret
 { "jobs": [ { "id": "uuid", "title": "…", "department": "Engineering",
               "team": "Core", "location": "New York", "isRemote": true } ] }
 ```
-- `externalId` = `String(id)`
+- `externalId` = `id` (already a string)
 - `department` = `department ?? team ?? null`
 - `location` = `location ?? null`
-- `remoteType` — native `isRemote === true → remote`; else infer from `location` (Ashby has no hybrid flag, so a non-remote located role reads `onsite`).
+- `remoteType` — native `isRemote === true → remote`; else the shared location inference applies, which can still read `hybrid` or `remote` from the location string before falling to `onsite`.
 
 ## Remote-type inference (shared helper)
 
@@ -64,4 +64,4 @@ Use native `fetch` with a descriptive `User-Agent` (`config.userAgent`), an `Abo
 
 ## Workday
 
-Intentionally **not** implemented for v1. Several well-known companies use Workday/SmartRecruiters and are simply left out of the seed rather than adapted.
+Intentionally **not** implemented. Several well-known companies use Workday/SmartRecruiters and are simply left out of the seed rather than adapted.

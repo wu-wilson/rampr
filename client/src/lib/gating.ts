@@ -1,8 +1,8 @@
 import { GATING_DAYS } from '../constants/config';
 
 /**
- * Format the gating progress as an "N of 14" fraction for the trend-building panel.
- * @param daysTracked - Daily snapshots accrued so far
+ * Format the gating progress as an "N of `GATING_DAYS`" fraction for the trend-building panel.
+ * @param daysTracked - Daily releases accrued so far
  * @returns A progress label (e.g. `6 of 14`)
  */
 export function gatingLabel(daysTracked: number): string {
@@ -10,12 +10,12 @@ export function gatingLabel(daysTracked: number): string {
 }
 
 /**
- * Build the fill state of the 14-dot progress row: one boolean per gating day, true up to
+ * Build the fill state of the `GATING_DAYS`-cell progress row: one boolean per gating day, true up to
  * the number tracked so far.
- * @param daysTracked - Daily snapshots accrued so far
- * @returns An array of length GATING_DAYS where filled dots are `true`
+ * @param daysTracked - Daily releases accrued so far
+ * @returns An array of length GATING_DAYS where filled cells are `true`
  */
-export function gatingDots(daysTracked: number): boolean[] {
+export function gatingCells(daysTracked: number): boolean[] {
   const filled = clampDays(daysTracked);
   return Array.from({ length: GATING_DAYS }, (_, index) => index < filled);
 }

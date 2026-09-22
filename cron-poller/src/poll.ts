@@ -1,4 +1,5 @@
 import { adapters, type NormalizedListing } from './adapters';
+import { delay } from './adapters/fetchJson';
 import { config } from './config';
 import { loadCompanies, reconcileCompany, type CompanyRow } from './db';
 
@@ -17,19 +18,7 @@ interface PollTotals {
   errored: number;
 }
 
-/** Pause for the given number of milliseconds. */
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/**
- * Run `tasks` with bounded concurrency via a tiny inline limiter (no `p-limit`): up to
- * `limit` workers drain a shared cursor, staggering every request past the first batch
- * by `POLITE_DELAY_MS` to stay polite to upstream hosts.
- * @param tasks - The unit-of-work functions to run
- * @param limit - Maximum number running at once
- * @returns Resolves once every task settles
- */
+/** Run tasks with bounded concurrency, staggering every request past the first batch by `POLITE_DELAY_MS`. */
 async function runWithConcurrency(
   tasks: Array<() => Promise<void>>,
   limit: number,
@@ -58,16 +47,7 @@ interface CompanyOutcome {
   listingsSeen: number;
 }
 
-/**
- * Fetch one company's feed and reconcile it against `listings`. A fetch that throws
- * (network error, non-2xx, or unparseable body) is isolated and skipped, so an ATS outage
- * can never delete a company's listings or write a bogus count. A successful fetch —
- * including one that returns zero roles — is a real observation: upsert every listing,
- * hard-delete the departed ones, and write today's snapshot at the reconciled count
- * (`0` when the feed is empty).
- * @param company - The company to poll
- * @returns The company's outcome — polled with its listing count, or a skip on fetch failure
- */
+/** Fetch one company's feed and reconcile it against `listings`. */
 async function pollCompany(company: CompanyRow): Promise<CompanyOutcome> {
   const adapter = adapters[company.provider];
 
@@ -77,7 +57,7 @@ async function pollCompany(company: CompanyRow): Promise<CompanyOutcome> {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.warn(
-      `Skipping ${company.name} (${company.provider}): feed fetch failed — ${message}`,
+      `Skipping ${company.name} (${company.provider}): feed fetch failed: ${message}`,
     );
     return { polled: false, listingsSeen: 0 };
   }
@@ -88,12 +68,8 @@ async function pollCompany(company: CompanyRow): Promise<CompanyOutcome> {
 }
 
 /**
- * Run one full poll across all curated companies.
- *
- * Companies run with bounded concurrency and a small per-host delay. Each company is isolated
- * in its own try/catch — a feed 404/timeout/parse failure is counted as `skipped` (no reconcile,
- * no snapshot), and a reconcile transaction that fails after a successful fetch is rolled back and
- * counted as `errored`; neither aborts the run. A failure to load companies still throws (fatal).
+ * Run one full poll across all curated companies with bounded concurrency. A failed feed is
+ * counted as `skipped` and a failed reconcile as `errored`, and neither aborts the run.
  * @returns The recorded run totals
  */
 export async function runPoll(): Promise<PollTotals> {

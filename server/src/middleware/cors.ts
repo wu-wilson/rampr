@@ -9,14 +9,10 @@ import type { CorsOptions } from 'cors';
  * @returns Configured `cors` middleware — reflects the specific allowlist, or `*` when unset
  */
 export const createCorsMiddleware = () => {
-  const parsedOrigins = config.allowedOrigins === '*'
-    ? ['*']
-    : config.allowedOrigins.split(',').map((o) => o.trim()).filter((o) => o.length > 0);
-
-  const origin = parsedOrigins.length === 1 && parsedOrigins[0] === '*'
-    ? '*'
-    : parsedOrigins;
-
+  const origin =
+    config.allowedOrigins === '*'
+      ? '*'
+      : config.allowedOrigins.split(',').map((o) => o.trim()).filter((o) => o.length > 0);
   const options: CorsOptions = { origin };
   return cors(options);
 };

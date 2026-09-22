@@ -1,6 +1,9 @@
 {
   "name": "rampr-cron-poller",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=20"
+  },
   "description": "A daily ATS poll for rampr",
   "main": "dist/index.js",
   "scripts": {

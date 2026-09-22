@@ -28,7 +28,7 @@ if [ ! -d "$ROOT_DIR/client/node_modules" ]; then
   (cd "$ROOT_DIR/client" && npm install)
 fi
 
-# Optionally apply the schema if a database is reachable (idempotent enough for a fresh DB).
+# Optionally apply the schema if a database is reachable (safe to re-run).
 if [ -n "$DATABASE_URL" ] && command -v psql >/dev/null 2>&1; then
   echo "Applying schema.sql to $DATABASE_URL..."
   psql "$DATABASE_URL" -f "$ROOT_DIR/schema.sql" >/dev/null 2>&1 || echo "Skipping schema (already applied or DB unreachable)."

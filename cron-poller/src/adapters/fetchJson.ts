@@ -6,8 +6,12 @@ const MAX_RETRIES = 2;
 /** Base backoff in milliseconds, doubled per retry. */
 const BACKOFF_BASE_MS = 500;
 
-/** Pause for the given number of milliseconds. */
-function delay(ms: number): Promise<void> {
+/**
+ * Pause for a number of milliseconds.
+ * @param ms - How long to wait
+ * @returns Resolves after the pause
+ */
+export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 

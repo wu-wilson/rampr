@@ -1,18 +1,12 @@
 import type { RemoteType } from './adapters/types';
 
-/**
- * Normalized native workplace flags an ATS may expose. Greenhouse has none; Lever
- * exposes `workplaceType`; Ashby exposes a boolean `isRemote` (mapped to 'remote' or
- * left null). A null flag means "the feed gave no native signal — fall back to location".
- */
+/** A feed's own workplace signal (Lever's `workplaceType`, Ashby's `isRemote`), or null to fall back to the location. */
 export type NativeRemoteFlag = 'remote' | 'hybrid' | 'onsite' | null;
 
 /**
- * Infer a role's work mix from an optional native provider flag and its location string,
- * per the shared ats-feeds rules: a native flag wins; otherwise the location is matched
- * case-insensitively (`hybrid` → hybrid, `remote` → remote, any non-empty string →
- * onsite); an absent flag and empty location yield 'unknown'. Kept conservative so
- * 'unknown' stays an honest residual rather than a guess that skews the remote share.
+ * Infer a role's work mix: a native provider flag wins, otherwise the location is matched
+ * case-insensitively for `hybrid` or `remote` and any other non-empty string reads as onsite.
+ * With neither signal the role stays 'unknown', so no guess skews the remote share.
  * @param nativeFlag - The provider's native workplace signal, or null when none is given
  * @param location - The role's location string, or null when the feed omitted it
  * @returns The inferred work mix classification

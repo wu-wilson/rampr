@@ -6,15 +6,13 @@ interface StatusNoteProps {
 }
 
 /**
- * A centered status line for the pre-data loading and error states — kept within a readable
- * measure and clear of the rail edges on mobile via the standard gutter.
+ * A status line for the pre-data loading and error states, centred in the space between
+ * masthead and footer and kept to a readable measure.
  * @param props - The status text
  * @returns The status note
  */
 export const StatusNote: React.FC<StatusNoteProps> = ({ children }) => (
-  <p
-    className="mx-auto max-w-md px-5 py-24 text-center text-muted-2 text-[13px] leading-[1.6]"
-  >
-    {children}
+  <p className="flex flex-1 items-center justify-center px-5 py-24 text-center text-[14px] leading-[1.6] text-ink-2">
+    <span className="max-w-md">{children}</span>
   </p>
 );

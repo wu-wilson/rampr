@@ -1,15 +1,19 @@
-import type { Momentum } from './common';
-
 /** ATS provider a company's roles are polled from. */
 type AtsSource = 'greenhouse' | 'lever' | 'ashby';
 
 /** Identity and placement of a company on the board. */
 interface CompanyInfo {
-  slug: string;
   name: string;
-  sector: string;
   sectorLabel: string;
   rank: number;
+  /** Companies tracked in all, the denominator for `rank`. */
+  companyCount: number;
+  /** Position by open-role count within the sector (1 = most). */
+  sectorRank: number;
+  /** Companies tracked in the same sector. */
+  sectorCompanyCount: number;
+  /** Live open roles across the whole sector, for the share figure. */
+  sectorOpen: number;
   /** ISO date tracking began for this company. */
   trackedSince: string;
   /** The company's own public careers/board URL, or null when unknown. */
@@ -17,43 +21,37 @@ interface CompanyInfo {
   source: AtsSource;
 }
 
-/** One department breakdown row. */
-export interface DeptCount {
+/** One department or location breakdown row. */
+export interface BreakdownEntry {
   name: string;
   count: number;
 }
 
-/** One location breakdown row. */
-export interface LocationCount {
-  name: string;
-  count: number;
-}
-
-/** A single share of the work-mix bar. */
-export interface WorkMixSlice {
+/** A single share of the work arrangement split. */
+interface WorkMixSlice {
   /** Whole-number percent of open roles. */
   pct: number;
   count: number;
 }
 
 /** Remote / hybrid / onsite / unknown split of a company's open roles. */
-export interface WorkMix {
+interface WorkMix {
   remote: WorkMixSlice;
   hybrid: WorkMixSlice;
   onsite: WorkMixSlice;
-  /** Residual bucket; rendered only when its count is greater than zero. */
+  /** Residual bucket for postings that state no arrangement. */
   unknown: WorkMixSlice;
 }
 
 /** Live breakdowns over the company's currently-open roles. */
-interface Breakdowns {
-  departments: DeptCount[];
-  locations: LocationCount[];
+export interface Breakdowns {
+  departments: BreakdownEntry[];
+  locations: BreakdownEntry[];
   workMix: WorkMix;
 }
 
 /** One daily point on the trajectory chart. */
-export interface TrajectoryPoint {
+interface TrajectoryPoint {
   /** ISO snapshot date. */
   date: string;
   count: number;
@@ -61,7 +59,7 @@ export interface TrajectoryPoint {
 
 /**
  * The company's open-count time series. `points` is empty and `gated` is true until
- * 14 daily snapshots exist; otherwise up to 90 days of daily points.
+ * `GATING_DAYS` releases exist; otherwise the last 90 days of daily points.
  */
 export interface Trajectory {
   gated: boolean;
@@ -73,7 +71,8 @@ export interface Trajectory {
 export interface CompanyResponse {
   company: CompanyInfo;
   open: number;
-  momentum: Momentum;
+  /** Signed 7-day change in open roles, or null when gated or without a release that old. */
+  delta7d: number | null;
   breakdowns: Breakdowns;
   trajectory: Trajectory;
 }
