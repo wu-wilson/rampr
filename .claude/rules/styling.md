@@ -20,9 +20,9 @@ rampr reads as a daily statistical release: white paper, ink, hairlines, light h
 ## Visual Language
 
 - One typeface: the `font-sans` stack (Söhne, Suisse Int'l, then the self-hosted **Switzer** in 300/400/500/600 from `public/fonts`, then Helvetica Neue and the system faces). No mono, no display face, no Google Fonts. Body 15px, line-height 1.5, `tabular-nums` on `body`.
-- Headings and the big figures are **weight 300** with tight tracking (the lead figure `clamp(76px, 10vw, 128px)` at `-0.045em`; company name `clamp(44px, 6vw, 64px)`; Method heading `clamp(30px, 3.8vw, 44px)`). Names, counts, and column labels are weight 500. Captions are 15px at weight 500 in ink; source lines are 12.5px in `--ink-3`.
+- Headings and the big figures are **weight 300** with tight tracking (the lead figure `clamp(76px, 10vw, 128px)` at `-0.045em`; company name `clamp(44px, 6vw, 64px)`; Method heading `clamp(30px, 3.8vw, 44px)`). Names, counts, and column labels are weight 500. Captions are 15px at weight 500 in ink; source lines are 12.5px in `--ink-3`. A figure or name that a line of secondary text turns on goes through `components/common/Emphasis.tsx` (weight 500 in ink).
 - Tables and charts carry a titled caption via `Caption`, except the hero chart and the breakdown lists, which carry their own inline headings. All three render an `h2`, so every visible section title sits in the page's heading outline under its one `h1`. Explanations live on the Method page.
-- Each screen renders exactly one `h1`: the Board's eyebrow above the figure, the company name, the Method heading, or a visually hidden one on Market. The day-zero and not-found states carry their own, and they replace a screen rather than sit inside it, so the two never both render.
+- Each screen renders exactly one `h1`: the Board's eyebrow above the figure, the company name, the Method heading, or a visually hidden one on Market. The empty states (day-zero, not yet counted, not found) carry their own, and they replace a screen rather than sit inside it, so the two never both render.
 - **No shadows, no radius, no gradient fills, no pills, no chips.** (The strip's fade mask and the select chevron are drawn with hard-edged gradients, which is not a fill.) Sections are separated by space and hairlines only. The one radius on the site is 4px on the company marks in the strip. Controls are text on a hairline: the sector select, the search field, the range tabs with a sliding underline, and sortable column headers with a 10px chevron.
 - Charts: a 1.75px ink line with an ink endpoint dot, hairline gridlines, weekend columns in `--weekend`, a value axis fitted to the series (never forced to zero), and a text readout above the plot that shows the latest release until the pointer picks another, when a crosshair follows it. No figure is drawn on the plot itself. Breadth bars are `--up`/`--down`/`--line-3` on a `--line-3` zero axis. Sector bars are a 6px ink bar. Nothing on a chart is any colour but ink, the two change colours, and the hairline greys.
 - Company marks in the strip (`public/marks`, 128px PNGs) render in colour at 22px.
@@ -37,7 +37,7 @@ rampr reads as a daily statistical release: white paper, ink, hairlines, light h
 
 ## Interactive States
 
-- Every clickable element has a hover state via `transition-colors` at `DURATION.normal` on `EASING`, and a visible focus ring (`:focus-visible` 2px ink outline, 2px offset). Row hovers use `bg-hover`, the width of the row's rules so the highlight never overhangs. Text links use the `.link` class (ink text, grey underline that darkens).
+- Every clickable element has a hover state via `transition-colors` at `DURATION.normal` on `EASING` (the shared `TRANSITION` style), and a visible focus ring (`:focus-visible` 2px ink outline, 2px offset). Row hovers use `bg-hover`, the width of the row's rules so the highlight never overhangs. Text links use the `.link` class (ink text, grey underline that darkens).
 
 ## Animation
 

@@ -10,10 +10,11 @@ import { useFlipReorder } from '../../hooks/useFlipReorder';
 import { useFilterStore } from '../../store/filterStore';
 
 import { formatCount } from '../../lib/format';
+import { naturalAscending } from '../../lib/sort';
 
 import { TABLE_PREVIEW_ROWS } from '../../constants/config';
 
-import { naturalAscending, type BoardCompany, type BoardSort } from '../../types/board';
+import type { BoardCompany, BoardSort } from '../../types/board';
 
 interface ReleaseTableProps {
   /** Every company on the board. */

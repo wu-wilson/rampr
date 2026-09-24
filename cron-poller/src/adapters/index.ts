@@ -1,6 +1,7 @@
 import { ashbyAdapter } from './ashby';
 import { greenhouseAdapter } from './greenhouse';
 import { leverAdapter } from './lever';
+
 import type { Adapter } from './types';
 
 /** Supported ATS providers — mirrors the `companies.ats_provider` check. */

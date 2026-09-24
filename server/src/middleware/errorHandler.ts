@@ -19,7 +19,7 @@ export function errorHandler(
 
   const typed = err as Error & { status?: number; statusCode?: number; isPublic?: boolean };
   const raw = typed.status ?? typed.statusCode;
-  const status = Number.isInteger(raw) && raw! >= 400 && raw! <= 599 ? raw! : 500;
+  const status = typeof raw === 'number' && Number.isInteger(raw) && raw >= 400 && raw <= 599 ? raw : 500;
   const message = typed.isPublic && err.message ? err.message : status < 500 ? 'Bad request' : 'Internal server error';
 
   res.status(status).json({ error: message });

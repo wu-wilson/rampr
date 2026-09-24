@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Change } from '../common/Change';
+import { Emphasis } from '../common/Emphasis';
 
 import { formatCount } from '../../lib/format';
 import { changeVerb } from '../../lib/series';
@@ -16,26 +17,24 @@ interface CompanyLeadProps {
   extremes: SeriesExtremes | null;
 }
 
-/** Emphasis inside the lead sentence. */
-const B: React.FC<{ children: React.ReactNode }> = ({ children }) => <b className="font-medium text-ink">{children}</b>;
-
 /** The company's lead sentences: the seven-day move, whether it landed at a series high or low, then how many postings are remote. */
 const LeadSentence: React.FC<CompanyLeadProps> = ({ data, extremes }) => {
   const { open, delta7d, breakdowns } = data;
   const remote = breakdowns.workMix.remote.count;
+  // With nothing open there is nothing to split, so the remote clause drops out.
   const remoteClause =
-    remote === 0 ? (
+    open === 0 ? null : remote === 0 ? (
       <>None are listed as remote.</>
     ) : (
       <>
-        Of those, <B>{formatCount(remote)}</B> {remote === 1 ? 'is' : 'are'} listed as remote.
+        Of those, <Emphasis>{formatCount(remote)}</Emphasis> {remote === 1 ? 'is' : 'are'} listed as remote.
       </>
     );
 
   if (delta7d === null) {
     return (
       <>
-        <B>{formatCount(open)}</B> open postings this release. {remoteClause}{' '}
+        <Emphasis>{formatCount(open)}</Emphasis> open postings this release. {remoteClause}{' '}
         {data.trajectory.gated ? `Changes appear once the series has ${GATING_DAYS} releases.` : 'No release seven days back to compare with yet.'}
       </>
     );
@@ -49,12 +48,12 @@ const LeadSentence: React.FC<CompanyLeadProps> = ({ data, extremes }) => {
   const move =
     delta7d === 0 ? (
       <>
-        Open postings held at <B>{formatCount(open)}</B> over the last seven days{standing}.
+        Open postings held at <Emphasis>{formatCount(open)}</Emphasis> over the last seven days{standing}.
       </>
     ) : (
       <>
-        Open postings {changeVerb(delta7d)} by <B>{formatCount(Math.abs(delta7d))}</B> over the last seven days to{' '}
-        <B>{formatCount(open)}</B>
+        Open postings {changeVerb(delta7d)} by <Emphasis>{formatCount(Math.abs(delta7d))}</Emphasis> over the last seven days to{' '}
+        <Emphasis>{formatCount(open)}</Emphasis>
         {standing}.
       </>
     );

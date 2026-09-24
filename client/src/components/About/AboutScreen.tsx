@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Emphasis } from '../common/Emphasis';
 import { Rail } from '../common/Rail';
 import { StatusNote } from '../common/StatusNote';
 
@@ -7,10 +8,7 @@ import { useMeta } from '../../hooks/useMeta';
 
 import { formatCount, formatReleaseTimeUtc, formatSpokenDateYear } from '../../lib/format';
 
-import { GATING_DAYS } from '../../constants/config';
-
-/** Emphasis inside a method row. */
-const B: React.FC<{ children: React.ReactNode }> = ({ children }) => <b className="font-medium text-ink">{children}</b>;
+import { GATING_DAYS, SERIES_DAYS } from '../../constants/config';
 
 /** One method row: a short key on the left, the explanation on the right. */
 interface MethodRow {
@@ -36,7 +34,7 @@ export const AboutScreen: React.FC = () => {
       body: (
         <>
           The open roles on each company’s public job board, read straight from its Greenhouse, Lever, or Ashby feed.{' '}
-          <B>Every posting counts as one role</B>, exactly as the company listed it. When a posting comes down, it leaves the
+          <Emphasis>Every posting counts as one role</Emphasis>, exactly as the company listed it. When a posting comes down, it leaves the
           next morning’s count.
         </>
       ),
@@ -45,7 +43,7 @@ export const AboutScreen: React.FC = () => {
       key: 'Cadence',
       body: (
         <>
-          Rampr reads every board once a day at <B>{formatReleaseTimeUtc()}</B> and records one count per company. If a board can’t
+          Rampr reads every board once a day at <Emphasis>{formatReleaseTimeUtc()}</Emphasis> and records one count per company. If a board can’t
           be read one morning, Rampr skips it rather than guess, and that company’s count stands until the next good
           read.
         </>
@@ -56,7 +54,7 @@ export const AboutScreen: React.FC = () => {
       body: (
         <>
           A change is simply the difference between two releases. Rampr shows it over 1, 7, 30, and 90 days, always as a
-          signed figure. Changes appear once a series has <B>{GATING_DAYS} releases</B> behind it, enough for the comparison to mean
+          signed figure. Changes appear once a series has <Emphasis>{GATING_DAYS} releases</Emphasis> behind it, enough for the comparison to mean
           something.
         </>
       ),
@@ -65,8 +63,8 @@ export const AboutScreen: React.FC = () => {
       key: 'History',
       body: (
         <>
-          The series {meta.firstRelease ? <>began on <B>{formatSpokenDateYear(meta.firstRelease)}</B> and</> : 'begins with the first release and'} only runs
-          forward. Nothing before that day was reconstructed, and nothing is ever estimated. Rampr keeps the last 90 days, which is as far back as any chart
+          The series {meta.firstRelease ? <>began on <Emphasis>{formatSpokenDateYear(meta.firstRelease)}</Emphasis> and</> : 'begins with the first release and'} only runs
+          forward. Nothing before that day was reconstructed, and nothing is ever estimated. Rampr keeps the last {SERIES_DAYS} days, which is as far back as any chart
           reaches.
         </>
       ),

@@ -22,7 +22,10 @@ export const BOARD_LIMIT = 250;
 /** Rows the company table shows before "Show all" expands it. */
 export const TABLE_PREVIEW_ROWS = 15;
 
-/** Days of history a series can hold, the server's window; a high or low is called 90-day only once a series covers it. */
+/**
+ * Days of history a series can hold, the server's window; a high or low is called 90-day only once a
+ * series covers it. Keep in sync with the server's TREND_WINDOW_DAYS.
+ */
 export const SERIES_DAYS = 90;
 
 /** Releases the hero chart plots (the tail of the market index). */

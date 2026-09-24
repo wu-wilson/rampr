@@ -6,7 +6,7 @@ import { BOARD_COLUMNS } from './TableHeader';
 
 import { formatCount } from '../../lib/format';
 
-import { DURATION, EASING } from '../../constants/animations';
+import { TRANSITION } from '../../constants/animations';
 
 import type { BoardCompany } from '../../types/board';
 
@@ -26,7 +26,7 @@ export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
     to={`/company/${company.slug}`}
     data-key={company.slug}
     className={`grid h-[46px] items-center gap-3.5 border-b border-line-2 bg-paper text-[14px] transition-colors last:border-line hover:bg-hover ${BOARD_COLUMNS}`}
-    style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+    style={TRANSITION}
   >
     <span className="text-right text-[13px] text-ink-3">{company.rank}</span>
     <span className="truncate font-medium tracking-[-0.005em]">{company.name}</span>

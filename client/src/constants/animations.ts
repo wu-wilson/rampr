@@ -28,3 +28,6 @@ export const EASING = 'cubic-bezier(0.25, 1, 0.5, 1)' as const;
 
 /** A symmetric ease-in-out for motion that rises and returns, like the ledger wave. */
 export const EASING_SYMMETRIC = 'cubic-bezier(0.45, 0, 0.55, 1)' as const;
+
+/** The inline style every hover and toggle transition shares: `DURATION.normal` on `EASING`. */
+export const TRANSITION = { transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING } as const;

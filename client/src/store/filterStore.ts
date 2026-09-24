@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 
-import { DEFAULT_BOARD_SORT, naturalAscending, type BoardSort, type BoardSortKey } from '../types/board';
+import { DEFAULT_BOARD_SORT, naturalAscending } from '../lib/sort';
+
+import type { BoardSort, BoardSortKey } from '../types/board';
 
 /** The company table's shared state: sector, sort, and search, plus their setters. */
 interface FilterStore {

@@ -25,8 +25,9 @@ const BREADTH_HEIGHT = 150;
 
 /**
  * The Market screen: the full series chart, the breadth chart (the last `NARROW_BREADTH_RELEASES`
- * releases on phones), then the sector table beside the movers tables. Sector totals are always
- * live, while the charts and changes are gated until `GATING_DAYS` releases exist.
+ * releases on phones), then the sector table and the movers tables, side by side when the rail has
+ * room. Sector totals are always live, while the charts and changes are gated until `GATING_DAYS`
+ * releases exist.
  * @returns The Market screen
  */
 export const MarketScreen: React.FC = () => {
@@ -94,7 +95,8 @@ export const MarketScreen: React.FC = () => {
         )}
       </Reveal>
 
-      <div className="grid gap-9 pt-2 lg:grid-cols-2 lg:gap-12">
+      {/* Side by side only once each table can have 520px, the least the sector names and movers need. */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,520px),1fr))] gap-x-12">
         <Reveal className="pt-14">
           <Caption title="Open postings by sector" />
           <SectorTable sectors={market.sectors} totalOpen={market.totals.totalOpen} />

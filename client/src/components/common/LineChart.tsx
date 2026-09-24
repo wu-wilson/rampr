@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Change } from './Change';
+import { Emphasis } from './Emphasis';
 import { useRevealPhase } from './Reveal';
 
 import { useDrawReveal } from '../../hooks/useDrawReveal';
@@ -107,7 +108,7 @@ export const LineChart: React.FC<LineChartProps> = ({ points, height, minPad, ar
       {geometry && (
         <div className="pointer-events-none absolute -top-1.5 flex gap-3 whitespace-nowrap text-[12.5px] text-ink-2" style={{ left: geometry.plotLeft }}>
           <span>{formatDayDate(activePoint.date)}</span>
-          <b className="font-medium text-ink">{formatCount(activePoint.value)}</b>
+          <Emphasis>{formatCount(activePoint.value)}</Emphasis>
           {active > 0 && <Change delta={activePoint.value - points[active - 1].value} />}
         </div>
       )}

@@ -2,8 +2,8 @@
 # Launches both the rampr server and client for local development.
 #
 # The crons are NOT started here — they're scheduled jobs (Railway daily poll +
-# weekly cleanup). Run a one-off locally: cd cron-poller && npm start
-#                                          cd cron-cleanup && npm start
+# weekly cleanup). Run a one-off locally from its package:
+#   npm install && npm run build && npm start
 
 set -e
 

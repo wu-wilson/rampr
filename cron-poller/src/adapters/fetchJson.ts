@@ -38,7 +38,7 @@ export async function fetchJson(url: string): Promise<unknown> {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status} for ${url}`);
       }
-      return (await response.json()) as unknown;
+      return await response.json();
     } catch (err) {
       lastError = err;
       if (attempt < MAX_RETRIES) {

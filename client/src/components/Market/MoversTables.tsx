@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Change } from '../common/Change';
 import { GatedPanel } from '../common/GatedPanel';
 
-import { DURATION, EASING } from '../../constants/animations';
+import { TRANSITION } from '../../constants/animations';
 import { GATING_DAYS } from '../../constants/config';
 
 import type { Mover, Movers } from '../../types/market';
@@ -24,7 +24,7 @@ const MoverTable: React.FC<{ title: string; movers: Mover[]; emptyNote: string }
         key={mover.slug}
         to={`/company/${mover.slug}`}
         className={`grid h-[42px] items-center gap-3.5 border-b border-line-2 text-[14px] transition-colors last:border-line hover:bg-hover ${COLUMNS}`}
-        style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+        style={TRANSITION}
       >
         <span className="truncate font-medium tracking-[-0.005em]">
           {mover.name}

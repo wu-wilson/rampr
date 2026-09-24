@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { useFilterStore } from '../store/filterStore';
 
-import { parseBoardSort, serializeBoardSort } from '../types/board';
+import { parseBoardSort, serializeBoardSort } from '../lib/sort';
 
 /**
  * Two-way sync between the company table store and the URL query string, so a filtered or sorted

@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { Emphasis } from '../common/Emphasis';
+import { EmptyState } from '../common/EmptyState';
 import { NotFound } from '../common/NotFound';
 import { Rail } from '../common/Rail';
 import { Reveal } from '../common/Reveal';
@@ -13,7 +15,7 @@ import { TrajectorySection } from './TrajectorySection';
 
 import { useCompany } from '../../hooks/useCompany';
 
-import { formatSpokenDateYear } from '../../lib/format';
+import { formatReleaseTimeLocal, formatReleaseTimeUtc, formatSpokenDateYear } from '../../lib/format';
 import { seriesExtremes } from '../../lib/series';
 
 import type { CompanyResponse } from '../../types/company';
@@ -27,8 +29,9 @@ const SOURCE_LABELS: Record<CompanyResponse['company']['source'], string> = {
 
 /**
  * The Company screen: the series line, the lead (name, sentence, and figure), the facts row,
- * the company chart beside the daily table, and the three breakdowns. Renders designed loading, not-found, and
- * error states; the chart, table, and changes are gated until the company has `GATING_DAYS` releases.
+ * the company chart beside the daily table, and the three breakdowns. Renders designed loading, not-found,
+ * error, and not-yet-counted states; the chart, table, and changes are gated until the company has
+ * `GATING_DAYS` releases.
  * @returns The Company screen
  */
 export const CompanyScreen: React.FC = () => {
@@ -54,6 +57,17 @@ export const CompanyScreen: React.FC = () => {
   }
 
   const info = company.company;
+  // No release has read this board yet (before the first release, or seeded since the last one), so there is no count to show.
+  if (company.trajectory.daysTracked === 0 && company.open === 0) {
+    return (
+      <EmptyState
+        title="Not counted yet"
+        body={`Rampr has not read ${info.name}’s board yet. Its figures land here after the next release.`}
+        note={`Next release at ${formatReleaseTimeUtc()}, ${formatReleaseTimeLocal()} locally.`}
+      />
+    );
+  }
+
   const board = `${info.name}’s ${SOURCE_LABELS[info.source]} board`;
 
   return (
@@ -65,7 +79,7 @@ export const CompanyScreen: React.FC = () => {
             {board}
           </a>
         ) : (
-          <b className="font-medium text-ink">{board}</b>
+          <Emphasis>{board}</Emphasis>
         )}{' '}
         since {formatSpokenDateYear(info.trackedSince)}.
       </p>

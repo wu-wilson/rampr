@@ -73,6 +73,7 @@ export const DURATION = { normal: 200, smooth: 300 } as const;   // interaction 
 export const AMBIENT = { draw: 700, wave: 1400, waveStagger: 100, waveGap: 1500, waveLead: 1000 } as const;
 export const EASING = 'cubic-bezier(0.25, 1, 0.5, 1)';          // one curve for interaction
 export const EASING_SYMMETRIC = 'cubic-bezier(0.45, 0, 0.55, 1)'; // the wave only
+export const TRANSITION = { transitionDuration: '200ms', transitionTimingFunction: EASING }; // inline style for hovers and toggles
 ```
 
 The section rise (500ms) and the companies strip loop (150s) are CSS in `index.css`; the strip pauses under the pointer. Honor `prefers-reduced-motion` in `index.css` and via `prefersReducedMotion()` in every Web Animations path; pause ambient motion while `document.hidden`.

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Change } from '../common/Change';
+import { Emphasis } from '../common/Emphasis';
 
 import { formatCount, formatPercent, formatReleaseTimeUtc, formatSignedPercent } from '../../lib/format';
 import { changeVerb } from '../../lib/series';
@@ -24,7 +25,7 @@ const WINDOWS: Array<{ key: keyof MarketSummary['changes']; label: string }> = [
   { key: 'day90', label: '90 days' },
 ];
 
-/** The lead sentences beneath the figure: the seven-day move, then how many boards sit at a high, named for the series depth, and how concentrated the postings are. */
+/** The lead sentences beneath the figure: the seven-day move, then how many boards sit at a series high and how concentrated the postings are. */
 const LeadSentence: React.FC<LeadPanelProps> = ({ market }) => {
   const delta = market.changes.day7;
   if (delta === null) {
@@ -39,7 +40,7 @@ const LeadSentence: React.FC<LeadPanelProps> = ({ market }) => {
       <>Held steady over the last seven days.</>
     ) : (
       <>
-        {capitalize(changeVerb(delta))} by <b className="font-medium text-ink">{formatCount(Math.abs(delta))}</b> over the last seven days.
+        {capitalize(changeVerb(delta))} by <Emphasis>{formatCount(Math.abs(delta))}</Emphasis> over the last seven days.
       </>
     );
   const high = market.atHigh90;
@@ -48,8 +49,8 @@ const LeadSentence: React.FC<LeadPanelProps> = ({ market }) => {
       {move}{' '}
       {high !== null && (
         <>
-          <b className="font-medium text-ink">{formatCount(high)}</b> {high === 1 ? 'board is' : 'boards are'} at a series high, and the ten
-          largest hold <b className="font-medium text-ink">{formatPercent(market.topTenShare)}</b> of all postings.
+          <Emphasis>{formatCount(high)}</Emphasis> {high === 1 ? 'board is' : 'boards are'} at a series high, and the ten
+          largest hold <Emphasis>{formatPercent(market.topTenShare)}</Emphasis> of all postings.
         </>
       )}
     </>
@@ -59,7 +60,7 @@ const LeadSentence: React.FC<LeadPanelProps> = ({ market }) => {
 /**
  * The lead: the page heading naming the count, the figure itself, the sentences, and the facts
  * row of changes over 1, 7, 30, and 90 days with their percentages.
- * @param props - The market summary and how many releases the series holds
+ * @param props - The market summary
  * @returns The lead content
  */
 export const LeadPanel: React.FC<LeadPanelProps> = ({ market }) => (
@@ -82,15 +83,15 @@ export const LeadPanel: React.FC<LeadPanelProps> = ({ market }) => (
         return (
           <div key={range.key} className="pr-4 pt-3.5">
             <dt className="text-[12.5px] font-medium text-ink-3">{range.label}</dt>
-            <dd className="mt-[3px] whitespace-nowrap text-[20px] font-medium tracking-[-0.02em]">
+            <dd className="mt-[3px] text-[20px] font-medium tracking-[-0.02em]">
               {delta === null ? (
-                <span className="text-[13px] font-normal text-ink-3">{market.changes.day7 === null ? `at ${GATING_DAYS} releases` : 'no release that far back'}</span>
+                <span className="inline-block text-[13px] font-normal leading-snug text-ink-3">
+                  {market.changes.day7 === null ? `at ${GATING_DAYS} releases` : 'no release that far back'}
+                </span>
               ) : (
                 <>
-                  <Change delta={delta} />
-                  <small className="ml-1.5 text-[12.5px] font-medium tracking-normal text-ink-3">
-                    {formatSignedPercent(delta, market.totalOpen)}
-                  </small>
+                  <Change delta={delta} />{' '}
+                  <small className="text-[12.5px] font-medium tracking-normal text-ink-3">{formatSignedPercent(delta, market.totalOpen)}</small>
                 </>
               )}
             </dd>

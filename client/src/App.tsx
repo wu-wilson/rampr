@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import { AboutScreen } from './components/About/AboutScreen';
@@ -9,11 +9,14 @@ import { AppNav } from './components/common/AppNav';
 import { Footer } from './components/common/Footer';
 import { NotFound } from './components/common/NotFound';
 
-/** Scroll the window to the top whenever the route path changes. */
+/**
+ * Jump the window to the top whenever the route path changes. Instant, overriding the page's smooth
+ * scrolling, and in a layout effect so the new screen measures what is in view from the top.
+ */
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [pathname]);
   return null;
 };

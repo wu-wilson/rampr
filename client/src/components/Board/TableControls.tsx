@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { useFilterStore } from '../../store/filterStore';
 
-import { DURATION, EASING } from '../../constants/animations';
+import { TRANSITION } from '../../constants/animations';
 
 /** Idle time (ms) before a keystroke commits to shared state, so the table re-sorts once per pause. */
 const SEARCH_DEBOUNCE_MS = 200;
@@ -67,7 +67,7 @@ export const TableControls: React.FC<TableControlsProps> = ({ sectors }) => {
           onChange={(event) => setSector(event.target.value === '' ? null : event.target.value)}
           aria-label="Sector"
           className="select-plain cursor-pointer border-0 bg-transparent pr-4 text-[13px] text-ink transition-colors hover:text-ink-2"
-          style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+          style={TRANSITION}
         >
           <option value="">All</option>
           {sectors.map((option) => (
@@ -87,7 +87,7 @@ export const TableControls: React.FC<TableControlsProps> = ({ sectors }) => {
           aria-label="Find a company"
           className="w-[170px] border-0 bg-transparent text-[13px] text-ink placeholder:text-ink-3"
         />
-        <kbd className="border border-line px-[5px] font-sans text-[11px] leading-4 text-ink-3">/</kbd>
+        <kbd className="border border-line px-[5px] font-sans text-[11px] leading-4 text-ink-3 [@media(pointer:coarse)]:hidden">/</kbd>
       </label>
     </div>
   );

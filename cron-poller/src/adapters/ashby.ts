@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { fetchJson } from './fetchJson';
 import { cleanDepartment, inferRemoteType, type NativeRemoteFlag } from '../normalize';
+
 import type { Adapter, NormalizedListing } from './types';
 
 /** Defensive schema for the Ashby job-board payload. */

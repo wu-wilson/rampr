@@ -4,13 +4,18 @@ import { RELEASE_HOUR_UTC } from '../constants/config';
 const MINUS = '−';
 
 /**
- * Parse an ISO date (`YYYY-MM-DD`) as UTC noon so the calendar day never shifts across the
- * viewer's timezone.
+ * Parse an ISO date (`YYYY-MM-DD`) as the start of that day in UTC, the timezone every release is
+ * dated in. Read it back with UTC getters or the formatters below, never the viewer's local time.
  * @param iso - An ISO date string
- * @returns The date at 12:00 UTC
+ * @returns The date at 00:00 UTC
  */
 export function parseIsoDate(iso: string): Date {
-  return new Date(`${iso}T12:00:00Z`);
+  return new Date(`${iso}T00:00:00Z`);
+}
+
+/** Format an ISO date in UTC, so a viewer far from UTC never sees a release land on the wrong day. */
+function formatIsoDate(iso: string, options: Intl.DateTimeFormatOptions): string {
+  return parseIsoDate(iso).toLocaleDateString('en-US', { ...options, timeZone: 'UTC' });
 }
 
 /**
@@ -74,7 +79,7 @@ export function formatSignedPercent(delta: number, current: number): string {
  * @returns A short label (e.g. `Jun 28, 2026`)
  */
 export function formatDate(iso: string): string {
-  return parseIsoDate(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return formatIsoDate(iso, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 /**
@@ -83,16 +88,16 @@ export function formatDate(iso: string): string {
  * @returns A short label (e.g. `Sep 21`)
  */
 export function formatShortDate(iso: string): string {
-  return parseIsoDate(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return formatIsoDate(iso, { month: 'short', day: 'numeric' });
 }
 
 /**
  * Format an ISO date with its weekday, for the daily table and the chart readout.
  * @param iso - An ISO date string
- * @returns A label like `Mon Sep 21`
+ * @returns A label like `Mon, Sep 21`
  */
 export function formatDayDate(iso: string): string {
-  return parseIsoDate(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  return formatIsoDate(iso, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 /**
@@ -101,12 +106,7 @@ export function formatDayDate(iso: string): string {
  * @returns A label like `Monday, September 21, 2026`
  */
 export function formatLongDate(iso: string): string {
-  return parseIsoDate(iso).toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  return formatIsoDate(iso, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 /**
@@ -115,7 +115,7 @@ export function formatLongDate(iso: string): string {
  * @returns A label like `September 21`
  */
 export function formatSpokenDate(iso: string): string {
-  return parseIsoDate(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  return formatIsoDate(iso, { month: 'long', day: 'numeric' });
 }
 
 /**
@@ -124,7 +124,7 @@ export function formatSpokenDate(iso: string): string {
  * @returns A label like `July 5, 2026`
  */
 export function formatSpokenDateYear(iso: string): string {
-  return parseIsoDate(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  return formatIsoDate(iso, { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 /**

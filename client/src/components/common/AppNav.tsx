@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
+import { Emphasis } from './Emphasis';
 import { Rail } from './Rail';
 import { StepMark } from './StepMark';
 
 import { useMeta } from '../../hooks/useMeta';
 
-import { formatLongDate, formatReleaseTimeLocal } from '../../lib/format';
+import { formatLongDate } from '../../lib/format';
 
-import { DURATION, EASING } from '../../constants/animations';
+import { DURATION, EASING, TRANSITION } from '../../constants/animations';
 
 import type { Meta } from '../../types/meta';
-
-/** The interaction transition every hover and toggle in the masthead shares. */
-const MOTION = { transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING };
 
 /** The three primary routes, in nav order. `/about` carries the Method label. */
 const LINKS: Array<{ to: string; label: string }> = [
@@ -22,12 +20,10 @@ const LINKS: Array<{ to: string; label: string }> = [
   { to: '/about', label: 'Method' },
 ];
 
-/** The release stamp's two parts (number and date), or the day-zero and failed-load stand-ins, or null while loading. */
-function stampFor(meta: Meta | null, failed: boolean): { short: string; long: string } | null {
-  if (!meta) return failed ? { short: 'Release unavailable', long: 'The release stamp could not be read.' } : null;
-  if (meta.updatedAt === null || meta.releaseNumber === null) {
-    return { short: 'Before the first release', long: `First release at ${formatReleaseTimeLocal()}` };
-  }
+/** The release stamp: the number with its long date, or a lone stand-in on day zero or after a failed load (the screen explains either), or null while loading. */
+function stampFor(meta: Meta | null, failed: boolean): { short: string; long: string | null } | null {
+  if (!meta) return failed ? { short: 'Release unavailable', long: null } : null;
+  if (meta.updatedAt === null || meta.releaseNumber === null) return { short: 'Before the first release', long: null };
   return { short: `Release ${meta.releaseNumber}`, long: formatLongDate(meta.updatedAt) };
 }
 
@@ -36,10 +32,10 @@ const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
   <NavLink
     to={to}
     end={to === '/'}
-    className={({ isActive }: { isActive: boolean }) =>
+    className={({ isActive }) =>
       `px-2.5 py-[7px] text-[14px] font-medium transition-colors hover:text-ink ${isActive ? 'text-ink' : 'text-ink-2'}`
     }
-    style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+    style={TRANSITION}
   >
     {label}
   </NavLink>
@@ -50,12 +46,12 @@ const ToggleGlyph: React.FC<{ open: boolean }> = ({ open }) => {
   const bar = 'absolute left-0 h-[1.5px] w-full bg-current origin-center transition-transform';
   return (
     <span className="relative block h-[12px] w-[16px] shrink-0" aria-hidden="true">
-      <span className={`${bar} top-0 ${open ? 'translate-y-[5px] rotate-45' : ''}`} style={MOTION} />
+      <span className={`${bar} top-0 ${open ? 'translate-y-[5px] rotate-45' : ''}`} style={TRANSITION} />
       <span
         className={`absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2 bg-current transition-opacity ${open ? 'opacity-0' : ''}`}
-        style={MOTION}
+        style={TRANSITION}
       />
-      <span className={`${bar} bottom-0 ${open ? '-translate-y-[5px] -rotate-45' : ''}`} style={MOTION} />
+      <span className={`${bar} bottom-0 ${open ? '-translate-y-[5px] -rotate-45' : ''}`} style={TRANSITION} />
     </span>
   );
 };
@@ -81,7 +77,7 @@ export const AppNav: React.FC = () => {
     <header className="border-b border-line">
       <Rail>
         <div className="relative flex h-[68px] items-center justify-between gap-7">
-          <Link to="/" onClick={handleClose} className="flex items-center gap-2.5 text-ink transition-colors hover:text-ink-2" style={MOTION} aria-label="Rampr, home">
+          <Link to="/" onClick={handleClose} className="flex items-center gap-2.5 text-ink transition-colors hover:text-ink-2" style={TRANSITION} aria-label="Rampr, home">
             <StepMark className="-mr-px" />
             <span className="relative top-px text-[21px] font-semibold leading-none tracking-[-0.025em]">Rampr</span>
           </Link>
@@ -95,9 +91,13 @@ export const AppNav: React.FC = () => {
           <div className="flex items-center gap-5">
             {stamp && (
               <div className="flex items-center gap-4 whitespace-nowrap text-[13px] text-ink-2">
-                <b className="font-medium text-ink">{stamp.short}</b>
-                <span aria-hidden="true" className="hidden h-3 w-px bg-line-3 lg:block" />
-                <span className="hidden lg:inline">{stamp.long}</span>
+                <Emphasis>{stamp.short}</Emphasis>
+                {stamp.long && (
+                  <>
+                    <span aria-hidden="true" className="hidden h-3 w-px bg-line-3 lg:block" />
+                    <span className="hidden lg:inline">{stamp.long}</span>
+                  </>
+                )}
               </div>
             )}
             <button
@@ -106,7 +106,7 @@ export const AppNav: React.FC = () => {
               aria-expanded={open}
               aria-label={open ? 'Close navigation' : 'Open navigation'}
               className="text-ink-2 transition-colors hover:text-ink md:hidden"
-              style={MOTION}
+              style={TRANSITION}
             >
               <ToggleGlyph open={open} />
             </button>
@@ -132,10 +132,10 @@ export const AppNav: React.FC = () => {
                 to={link.to}
                 end={link.to === '/'}
                 onClick={handleClose}
-                className={({ isActive }: { isActive: boolean }) =>
+                className={({ isActive }) =>
                   `border-t border-line-2 px-5 py-3 text-[15px] font-medium transition-colors hover:text-ink ${isActive ? 'text-ink' : 'text-ink-2'}`
                 }
-                style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+                style={TRANSITION}
               >
                 {link.label}
               </NavLink>

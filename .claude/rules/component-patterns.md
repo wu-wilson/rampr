@@ -24,7 +24,7 @@ paths:
 - `use*` hooks own fetch + loading/error state for each endpoint (`/api/board`, `/api/companies/:slug`, `/api/market`, `/api/meta`). Company detail is fetched per route by slug; `useMeta` reads the shared meta store, which fetches once and retries a failed load on navigation.
 - Every per-screen fetch hook (`useBoard`, `useCompany`, `useMarket`) guards against a stale response with a **cancelled flag** in its effect — set `let cancelled = false`, bail on `cancelled` before calling `setState`, and return `() => { cancelled = true }` so a route switch can't apply an out-of-order result.
 - The Board fetches the whole board once (`limit=BOARD_LIMIT`, no sector, search, or sort params) and reorders and narrows it locally, so rows can slide to their new places. There is no pagination; the company table shows 15 rows until expanded.
-- Every fetch hook surfaces loading, empty, and error states. Distinguish **day-zero** (`updatedAt: null`, before the first release) from the **gated** state (`gated: true`, `GatedPanel`) — they are different designed UIs, never a blank screen.
+- Every fetch hook surfaces loading, empty, and error states. Distinguish **day-zero** (`updatedAt: null`, before the first release) from the **gated** state (`gated: true`, `GatedPanel`) — they are different designed UIs, never a blank screen. A company no release has read yet (no snapshot and no open postings) gets its own "Not counted yet" state rather than a count of zero.
 
 ## Motion hooks
 

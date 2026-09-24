@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 
 import { INDICATOR_BASE_WIDTH, useSlidingIndicator } from '../../hooks/useSlidingIndicator';
 
-import { DURATION, EASING } from '../../constants/animations';
+import { TRANSITION } from '../../constants/animations';
 
 /** One selectable tab. */
 export interface RangeTab {
@@ -44,7 +44,7 @@ export const RangeTabs: React.FC<RangeTabsProps> = ({ tabs, value, onChange, ari
             className={`-mb-px whitespace-nowrap border-b-2 border-transparent text-[13px] font-medium transition-colors hover:text-ink ${
               active ? 'text-ink' : 'text-ink-2'
             }`}
-            style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+            style={TRANSITION}
           >
             {tab.label}
           </button>
@@ -53,7 +53,7 @@ export const RangeTabs: React.FC<RangeTabsProps> = ({ tabs, value, onChange, ari
       <span
         aria-hidden="true"
         className="pointer-events-none absolute -bottom-px left-0 h-[2px] origin-left bg-ink transition-transform"
-        style={{ width: INDICATOR_BASE_WIDTH, transform, transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}
+        style={{ width: INDICATOR_BASE_WIDTH, transform, ...TRANSITION }}
       />
     </div>
   );

@@ -2,13 +2,13 @@ import React from 'react';
 
 import { useFilterStore } from '../../store/filterStore';
 
-import { DURATION, EASING } from '../../constants/animations';
+import { TRANSITION } from '../../constants/animations';
 
 import type { BoardSortKey } from '../../types/board';
 
 /** The company table's grid: rank, company, sector, postings, 7 days, 30 days, inset 16px from the rule ends from `md` and set at the gutter below it, where the rules run edge to edge. Sector and 30 days hide on phones. */
 export const BOARD_COLUMNS =
-  'grid-cols-[28px_minmax(0,1fr)_80px_84px] px-5 md:grid-cols-[32px_minmax(0,1fr)_120px_100px_100px_100px] md:px-4';
+  'grid-cols-[28px_minmax(0,1fr)_64px_56px] px-5 md:grid-cols-[32px_minmax(0,1fr)_120px_100px_100px_100px] md:px-4';
 
 interface SortButtonProps {
   column: BoardSortKey;
@@ -24,7 +24,6 @@ const SortButton: React.FC<SortButtonProps> = ({ column, label, right, className
   const sort = useFilterStore((s) => s.sort);
   const toggleSort = useFilterStore((s) => s.toggleSort);
   const active = sort.key === column;
-  const motion = { transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING };
   const chevron = (
     <svg
       viewBox="0 0 10 10"
@@ -32,7 +31,7 @@ const SortButton: React.FC<SortButtonProps> = ({ column, label, right, className
       className={`h-[10px] w-[10px] transition-[opacity,transform] ${active ? 'opacity-100' : 'opacity-0'} ${
         active && sort.ascending ? 'rotate-180' : ''
       }`}
-      style={motion}
+      style={TRANSITION}
     >
       <path d="M2.5 4 5 6.5 7.5 4" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -47,7 +46,7 @@ const SortButton: React.FC<SortButtonProps> = ({ column, label, right, className
       className={`inline-flex items-center gap-1 transition-colors hover:text-ink ${active ? 'text-ink' : ''} ${
         right ? 'justify-end' : ''
       } ${className ?? ''}`}
-      style={motion}
+      style={TRANSITION}
     >
       {right && chevron}
       {label}

@@ -60,8 +60,9 @@ export async function initDb(): Promise<void> {
     }
     console.log('Connected to Postgres');
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.warn(`Postgres not reachable, so read endpoints return 503 until it recovers: ${message}`);
+    // A refused connection to a host with several addresses (localhost) is an AggregateError with an empty message, so fall back to its code.
+    const reason = err instanceof Error ? err.message || ('code' in err ? String(err.code) : err.name) : String(err);
+    console.warn(`Postgres not reachable, so read endpoints return 503 until it recovers: ${reason}`);
   }
 }
 

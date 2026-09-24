@@ -8,7 +8,7 @@ import { RangeTabs, type RangeTab } from '../common/RangeTabs';
 import { formatCount, formatDate } from '../../lib/format';
 import { prefersReducedMotion } from '../../lib/motion';
 
-import { DURATION, EASING } from '../../constants/animations';
+import { DURATION, TRANSITION } from '../../constants/animations';
 
 import type { SeriesPoint } from '../../lib/series';
 import type { Trajectory } from '../../types/company';
@@ -77,7 +77,7 @@ export const TrajectorySection: React.FC<TrajectorySectionProps> = ({ name, traj
         <GatedPanel daysTracked={trajectory.daysTracked} label="The trend" note="Every count is already live." />
       ) : (
         <>
-          <div className={`transition-opacity ${fading ? 'opacity-0' : 'opacity-100'}`} style={{ transitionDuration: `${DURATION.normal}ms`, transitionTimingFunction: EASING }}>
+          <div className={`transition-opacity ${fading ? 'opacity-0' : 'opacity-100'}`} style={TRANSITION}>
             <LineChart
               points={points}
               height={HEIGHT}

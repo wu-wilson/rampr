@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
+import { useLayoutEffect, useRef, type RefObject } from 'react';
 
 import { prefersReducedMotion } from '../lib/motion';
 
@@ -9,70 +9,31 @@ const ENTER_DELAY = 100;
 
 /**
  * Slide rows to their new places after a sort or filter, fading in rows that just appeared.
- * Children are matched by their `data-key` attribute inside a `position: relative` container.
+ * Children are matched by their `data-key` attribute inside a `position: relative` container. The
+ * motion runs as Web Animations, so it never touches the rows' own inline styles.
  * @param containerRef - The element whose keyed children reorder
  */
 export function useFlipReorder<T extends HTMLElement>(containerRef: RefObject<T>): void {
   const previous = useRef<Map<string, number> | null>(null);
-  const settle = useRef<number | null>(null);
 
-  // Clear a pending settle on unmount only; a re-render mid-slide must not cancel it, or the
-  // transition styles would stay on the rows.
-  useEffect(() => () => {
-    if (settle.current !== null) window.clearTimeout(settle.current);
-  }, []);
-
-  // FLIP: record each row's offset on every commit, and when one moved, invert it back to where
-  // it was, force a reflow, then let the transform transition away.
+  // FLIP: record each row's offset on every commit, and animate a row that moved from where it was
+  // back to where it now sits.
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const before = previous.current;
     const rows = Array.from(container.querySelectorAll<HTMLElement>('[data-key]'));
-    const next = new Map<string, number>();
-    const moving: Array<{ row: HTMLElement; dy: number }> = [];
-    const entering: HTMLElement[] = [];
+    previous.current = new Map(rows.map((row) => [row.dataset.key ?? '', row.offsetTop]));
+    if (before === null || prefersReducedMotion()) return;
 
     rows.forEach((row) => {
-      const key = row.dataset.key ?? '';
-      next.set(key, row.offsetTop);
-      const before = previous.current?.get(key);
-      if (before === undefined) entering.push(row);
-      else if (before !== row.offsetTop) moving.push({ row, dy: before - row.offsetTop });
+      const was = before.get(row.dataset.key ?? '');
+      if (was === undefined) {
+        row.animate([{ opacity: 0 }, { opacity: 1 }], { duration: DURATION.normal, delay: ENTER_DELAY, easing: EASING, fill: 'backwards' });
+      } else if (was !== row.offsetTop) {
+        row.animate([{ transform: `translateY(${was - row.offsetTop}px)` }, { transform: 'none' }], { duration: DURATION.smooth, easing: EASING });
+      }
     });
-
-    const firstCommit = previous.current === null;
-    previous.current = next;
-    if (firstCommit || prefersReducedMotion() || (moving.length === 0 && entering.length === 0)) return;
-    if (settle.current !== null) window.clearTimeout(settle.current);
-
-    moving.forEach(({ row, dy }) => {
-      row.style.transition = 'none';
-      row.style.transform = `translateY(${dy}px)`;
-    });
-    entering.forEach((row) => {
-      row.style.transition = 'none';
-      row.style.opacity = '0';
-    });
-
-    // Force a reflow so the inverted positions paint before the transition begins.
-    void container.offsetHeight;
-
-    const animated = [...moving.map((entry) => entry.row), ...entering];
-    animated.forEach((row) => {
-      row.style.transition = [
-        `transform ${DURATION.smooth}ms ${EASING}`,
-        `opacity ${DURATION.normal}ms ${EASING} ${ENTER_DELAY}ms`,
-        `background-color ${DURATION.normal}ms ${EASING}`,
-      ].join(', ');
-      row.style.transform = '';
-      row.style.opacity = '';
-    });
-    settle.current = window.setTimeout(() => {
-      animated.forEach((row) => {
-        row.style.transition = '';
-      });
-      settle.current = null;
-    }, DURATION.smooth + ENTER_DELAY);
   });
 }
