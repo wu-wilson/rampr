@@ -13,16 +13,18 @@ Probe every company in the seed politely: User-Agent `rampr (+https://rampr.dev)
 
 1. Fetch the configured feed (`ats_provider` + `ats_id`), count its postings, and find its newest posting: Greenhouse `first_published` (not `updated_at`, which Greenhouse refreshes routinely), Lever `createdAt` (epoch ms), Ashby `publishedAt`. A board with postings but none first published in the last 60 days is **stale**. A company that moves away often leaves its old board live and frozen.
 2. Probe all three providers, the configured one included, with each candidate token: `ats_id`, the slug, the slug without hyphens, and the name lowercased to letters and digits.
-3. Before trusting a board found under a candidate token, read its sample titles and locations. Tokens can belong to a different company.
+3. Confirm every board you rely on is the company's, the configured one included: its titles and locations, and on Greenhouse the board's `name` (`GET /v1/boards/<token>`). Tokens can belong to a different company with the same name.
 
 | Configured board | Postings on another supported board | Verdict |
 |---|---|---|
 | Live and fresh | No | Fine. |
 | Live and fresh | Yes | Ambiguous. Report it, change nothing. |
-| 404, empty, or stale | Yes | **Moved**: re-point it. |
-| 404, empty, or stale | No | The company's own careers page decides. A supported board under another token is a **move**. Workday, SmartRecruiters, and the like are unsupported: **replace** it. The configured board itself means it's quiet: keep it (an empty board is a genuine `0`). |
+| 404, empty, stale, or another company's | Yes | **Moved**: re-point it. |
+| 404, empty, stale, or another company's | No | The company's own careers page decides. A supported board under another token is a **move**. Workday, SmartRecruiters, and the like are unsupported: **replace** it. The configured board itself means it's quiet: keep it (an empty board is a genuine `0`). |
 
 Empty boards on other providers are common leftovers from earlier moves. Ignore them.
+
+Careers pages often embed their board (a Greenhouse `embed/job_board/js?for=<token>` script names the token) or build the job list in the browser. When a page shows no board or blocks fetchers, search the web for the company's recent postings and where they link, and for news of an acquisition.
 
 ## Trends
 
@@ -49,7 +51,7 @@ Any change to `ats_provider` or `ats_id` resets the company to a first-time trac
 
 Replace it with a well-known company in the **same sector** whose board is live on Greenhouse, Lever, or Ashby, with a healthy number of postings, and whose slug and `(provider, token)` aren't already seeded. Propose the pick, with an alternate, and confirm with the user before editing.
 
-- **Codebase:** replace the seed row in place in `schema.sql`, keeping the company count unchanged. Add the new mark at `client/public/marks/<slug>.png` (a 128×128 colour PNG of the company's icon, e.g. its apple-touch-icon or `https://www.google.com/s2/favicons?domain=<domain>&sz=128`), and delete the old company's mark. The companies strip loads marks by slug, so a missing file leaves an empty slot.
+- **Codebase:** replace the seed row in place in `schema.sql`, keeping the company count unchanged. Add the new mark at `client/public/marks/<slug>.png` (a 128×128 colour PNG of the company's icon, e.g. its apple-touch-icon or `https://www.google.com/s2/favicons?domain=<domain>&sz=128`, checked to be the logo rather than the service's default globe), and delete the old company's mark. The companies strip loads marks by slug, so a missing file leaves an empty slot.
 - **Commit:** `fix: swap <old> for <new>`.
 
 Before committing either change, load `schema.sql` into a throwaway database (`createdb seedcheck && psql -v ON_ERROR_STOP=1 -d seedcheck -f schema.sql`, then `dropdb seedcheck`) and check it seeds the same number of companies as before.
