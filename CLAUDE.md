@@ -50,8 +50,9 @@ rampr is a public, read-only hiring board presented as a daily statistical relea
 - `.claude/rules/responsive.md` — Mobile-first breakpoints, the ultra-wide rail, viewport units, safe-area handling. Loads for `client/src/**/*.{tsx,css}`.
 - `.claude/rules/server-patterns.md` — Route handlers, Zod validation, service layer, security hardening. Loads for `server/src/**/*.ts`.
 
-## Skills (reference knowledge)
+## Skills
 
 - `.claude/skills/design-tokens/` — Exact color tokens, the typeface, animation durations, the rail and full-bleed regions.
 - `.claude/skills/data-model/` — The four tables, how each board/company/market number is derived, gating, changes, work mix, and the JSON contract for every endpoint.
 - `.claude/skills/ats-feeds/` — Greenhouse / Lever / Ashby public endpoints, fields, quirks, and remote-type inference (Workday intentionally not implemented).
+- `.claude/skills/seed-audit/` — Checking the seed list for companies that changed ATS or whose trend looks off, re-pointing or replacing them, and the production SQL to apply.
