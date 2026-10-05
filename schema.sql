@@ -148,7 +148,7 @@ INSERT INTO companies (slug, name, sector_slug, ats_provider, ats_id, careers_ur
   ('poshmark',        'Poshmark',        'ecomm',        'ashby',      'poshmark',     'https://jobs.ashbyhq.com/poshmark'),
   ('smartsheet',      'Smartsheet',      'productivity', 'greenhouse', 'smartsheet',   'https://boards.greenhouse.io/smartsheet'),
   ('dropbox',         'Dropbox',         'productivity', 'greenhouse', 'dropbox',      'https://boards.greenhouse.io/dropbox'),
-  ('amplitude',       'Amplitude',       'productivity', 'greenhouse', 'amplitude',    'https://boards.greenhouse.io/amplitude'),
+  ('amplitude',       'Amplitude',       'productivity', 'ashby',      'amplitude',    'https://jobs.ashbyhq.com/amplitude'),
   ('zapier',          'Zapier',          'productivity', 'ashby',      'zapier',       'https://jobs.ashbyhq.com/zapier'),
   ('roblox',          'Roblox',          'other',        'greenhouse', 'roblox',       'https://boards.greenhouse.io/roblox'),
   ('airbnb',          'Airbnb',          'other',        'greenhouse', 'airbnb',       'https://boards.greenhouse.io/airbnb'),
