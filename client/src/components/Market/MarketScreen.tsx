@@ -24,10 +24,7 @@ const INDEX_MIN_PAD = 200;
 const BREADTH_HEIGHT = 150;
 
 /**
- * The Market screen: the full series chart, the breadth chart (the last `NARROW_BREADTH_RELEASES`
- * releases on phones), then the sector table and the movers tables, side by side when the rail has
- * room. Sector totals are always live, while the charts and changes are gated until `GATING_DAYS`
- * releases exist.
+ * The Market screen: the full series, breadth, sector table, and movers, or a loading, error, or day-zero state.
  * @returns The Market screen
  */
 export const MarketScreen: React.FC = () => {

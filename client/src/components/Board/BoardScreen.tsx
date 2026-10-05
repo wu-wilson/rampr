@@ -14,9 +14,7 @@ import { useMarket } from '../../hooks/useMarket';
 import { formatReleaseTimeLocal, formatReleaseTimeUtc } from '../../lib/format';
 
 /**
- * The Board screen: the hero band (the figure and the hero chart), the companies strip, and the
- * company table, with designed loading, error, and day-zero states. The market index for the
- * hero chart loads alongside the board and fails on its own.
+ * The Board screen: the hero, the companies strip, and the company table, with loading, error, and day-zero states.
  * @returns The Board screen
  */
 export const BoardScreen: React.FC = () => {

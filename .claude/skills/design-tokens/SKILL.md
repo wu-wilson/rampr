@@ -27,7 +27,7 @@ Store every color as **space-separated RGB channels** on `:root` in `client/src/
   --line:   231 233 236;   /* #E7E9EC  table rules, panel borders, gridlines */
   --line-2: 240 241 243;   /* #F0F1F3  row dividers, the ledger rules at rest */
   --line-3: 201 204 209;   /* #C9CCD1  the zero axis, a bar that did not move, the stamp separator */
-  --wave:   154 160 170;   /* #9AA0AA  a ledger rule at the crest of the wave */
+  --wave:   188 192 199;   /* #BCC0C7  a ledger rule at the crest of the wave */
 
   /* Change figures (the sign carries the direction, colour reinforces) */
   --up:   14 122 85;       /* #0E7A55  rose */
@@ -59,9 +59,10 @@ A single step: `M3 17.5H10.5V6.5H21` in a 24 grid, stroke 2.2, round caps and jo
 ## Layout dimensions
 
 - Rail 1200px, gutter 20px (`px-5`) on phones and 24px (`md:px-6`) above. Masthead row 68px over a hairline; the hero band lays its first rule over it. Screens end 96px above the footer's rule.
-- Ledger rules every **48px** (`RULE_SPACING`) from the top of the hero band; the band pads 48px above and below at every width, with a 47px gap when the panels stack, so a rule sits above the first panel and below the last; panels snap so their 1px borders sit on rules (`useSnapToRules`).
+- Ledger rules every **32px** (`RULE_SPACING`) from the top of the hero band, which pads 32px and is sized to whole rule gaps. Panel edges sit at least **8px** (`RULE_CLEARANCE`) from a rule: side by side the panels share one height, and stacked (31px apart) each grows to `32k + 1`px so every edge sits halfway between two rules. A panel only grows, its extra going to the chart's plot or between the lead's blocks.
+- Hero panel padding is even on all four sides: 40px for the lead from `lg`, 24px otherwise, with the vertical values trimmed by the half-leading of the first and last lines.
 - Table rows 46px (company table), 42px (sector and movers tables), 36px (daily table), 38px (breakdowns); headers 38px on two hairlines. Section spacing `pt-14` (56px).
-- Chart heights: hero 250px, full series 320px, breadth 150px, company 280px; every plot runs to the rail's right edge, the latest figure sits in the readout above the plot, and below 480px wide a line chart runs at 72% of its height (the breadth chart keeps its height and shows the last 30 releases on phones instead). Line 1.75px, endpoint dot r4, crosshair dot r4.
+- Chart heights: hero fills its panel, full series 320px, breadth 150px, company 280px; every plot runs to the rail's right edge, the latest figure sits in the readout above the plot, and below 480px wide a line chart runs at 72% of its height (the breadth chart keeps its height and shows the last 30 releases on phones instead). Line 1.75px, endpoint dot r4, crosshair dot r4.
 - Company marks 22px, radius 4px, 40px apart in the strip, from the 128px colour PNGs in `public/marks`.
 
 ## Animation
@@ -70,7 +71,7 @@ Constants live in `client/src/constants/animations.ts`.
 
 ```ts
 export const DURATION = { normal: 200, smooth: 300 } as const;   // interaction motion
-export const AMBIENT = { draw: 700, wave: 1400, waveStagger: 100, waveGap: 1500, waveLead: 1000 } as const;
+export const AMBIENT = { draw: 700, wave: 1400, waveStagger: 67, waveGap: 1500, waveLead: 1000 } as const;
 export const EASING = 'cubic-bezier(0.25, 1, 0.5, 1)';          // one curve for interaction
 export const EASING_SYMMETRIC = 'cubic-bezier(0.45, 0, 0.55, 1)'; // the wave only
 export const TRANSITION = { transitionDuration: '200ms', transitionTimingFunction: EASING }; // inline style for hovers and toggles

@@ -12,9 +12,7 @@ export class ApiError extends Error {
 }
 
 /**
- * Fetch and parse a JSON payload from a rampr API path. Throws an {@link ApiError}
- * carrying the HTTP status on any non-2xx response so callers can distinguish a 404
- * (unknown company slug) from a transport failure.
+ * Fetch and parse JSON from a rampr API path, throwing an `ApiError` with the status on any non-2xx response.
  * @param path - API path beginning with `/api`, e.g. `/api/meta`
  * @returns The parsed JSON body typed as `T`
  */
@@ -28,8 +26,7 @@ export async function apiGet<T>(path: string): Promise<T> {
 }
 
 /**
- * Turn a thrown fetch or API error into a short message safe to show a general reader, never a
- * URL, status code, or stack.
+ * Turn a thrown fetch or API error into a short reader-safe message, never a URL, status, or stack.
  * @param err - The value thrown by {@link apiGet} (usually an {@link ApiError}) or the fetch layer
  * @param fallback - A friendly, screen-specific default for otherwise-unclassified errors
  * @returns A user-facing message

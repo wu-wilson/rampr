@@ -8,8 +8,7 @@ interface CaptionProps {
 }
 
 /**
- * The caption row above every table and chart: the title on the left and the figure's controls,
- * if any, on the right. Wraps on narrow screens.
+ * The caption row above a table or chart: the title, with any controls on the right.
  * @param props - The title and any right-side controls
  * @returns The caption row
  */

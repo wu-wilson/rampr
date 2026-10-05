@@ -56,8 +56,7 @@ const SortButton: React.FC<SortButtonProps> = ({ column, label, right, className
 };
 
 /**
- * The company table's header row on two hairlines: rank, then the four sortable columns, with sector
- * as a plain label.
+ * The company table's header row: rank, sector, and the four sortable columns.
  * @returns The header row
  */
 export const TableHeader: React.FC = () => (

@@ -12,9 +12,7 @@ interface UseMarketResult {
 }
 
 /**
- * Fetch the market rollup from `GET /api/market` once on mount: sector totals (always
- * live) plus the index, breadth, and movers (gated until `GATING_DAYS` releases exist). Guards
- * against a stale response with a cancelled flag.
+ * Fetch the market rollup from `GET /api/market` once on mount.
  * @returns The market payload (null until resolved) plus loading/error state
  */
 export function useMarket(): UseMarketResult {

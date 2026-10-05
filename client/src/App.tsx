@@ -9,10 +9,7 @@ import { AppNav } from './components/common/AppNav';
 import { Footer } from './components/common/Footer';
 import { NotFound } from './components/common/NotFound';
 
-/**
- * Jump the window to the top whenever the route path changes. Instant, overriding the page's smooth
- * scrolling, and in a layout effect so the new screen measures what is in view from the top.
- */
+/** Jump to the top, instantly and before paint, whenever the route path changes. */
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
   useLayoutEffect(() => {
@@ -22,8 +19,7 @@ const ScrollToTop: React.FC = () => {
 };
 
 /**
- * Root application shell: the masthead, the four routed screens with a catch-all not-found, and
- * the footer, each centring its own rail so the hero band can run edge to edge between them.
+ * The app shell: the masthead, the four routed screens with a catch-all not-found, and the footer.
  * @returns The app shell
  */
 export const App: React.FC = () => (

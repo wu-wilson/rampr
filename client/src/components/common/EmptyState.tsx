@@ -12,8 +12,7 @@ interface EmptyStateProps {
 }
 
 /**
- * A purely typographic state that replaces a screen, centred between masthead and footer: a light
- * headline, a supporting line, and an optional note or link. Used for day-zero, not-yet-counted, and not-found.
+ * A typographic state that replaces a screen: a light headline, a supporting line, and an optional note or link.
  * @param props - Headline, supporting body copy, an optional note, and an optional closing element
  * @returns The empty state
  */

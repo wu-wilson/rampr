@@ -18,10 +18,10 @@ paths:
 ## Docstrings
 
 - Every exported function, hook, component, and type must have a JSDoc docstring.
-- **Functions, hooks, components:** one-sentence overview (extend to a second sentence when extra context helps), then `@param name - description` for each parameter, then `@returns description` (omit `@returns` only on void functions). Both tags are mandatory — never "as appropriate".
+- **Functions, hooks, components:** a one-line, concise overview, then `@param name - description` for each parameter, then `@returns description` (omit `@returns` only on void functions). Both tags are mandatory — never "as appropriate".
 - **Types/interfaces:** one-line overview is sufficient. Add inline `/** one-line description */` on individual fields that need explanation; leave self-evident fields untagged.
 - `@param`/`@returns` descriptions are prose only — don't restate the TypeScript type. Add semantic info the signature doesn't carry (units, ISO date format, UTC, null-vs-empty semantics, gated-vs-live, retry behavior).
-- Don't use `@throws` — describe error/failure semantics in the prose overview or via a result shape.
+- Don't use `@throws` — describe error/failure semantics in the overview, the `@returns` description, or via a result shape.
 - Internal (non-exported) helpers: one-line `/** … */` only when the name doesn't carry the whole meaning.
 
 ## Imports

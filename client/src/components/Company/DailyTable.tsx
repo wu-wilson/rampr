@@ -21,8 +21,7 @@ interface DailyTableProps {
 }
 
 /**
- * The daily table: the last `DAILY_TABLE_ROWS` releases, latest first, each with its count and the
- * change from the release before. Shows the building panel while gated.
+ * The last `DAILY_TABLE_ROWS` releases, latest first, with each count and its change, or the building panel.
  * @param props - The trajectory and the series
  * @returns The table section
  */

@@ -23,10 +23,7 @@ interface IndexPoint {
   totalOpen: number;
 }
 
-/**
- * The market hiring index time series. `points` is empty and `gated` is true until
- * `GATING_DAYS` distinct release dates exist; otherwise the last 90 days of daily totals.
- */
+/** The market index series: the last 90 days of daily totals, or none while `gated`. */
 export interface MarketIndex {
   gated: boolean;
   daysTracked: number;

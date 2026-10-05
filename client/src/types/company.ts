@@ -57,10 +57,7 @@ interface TrajectoryPoint {
   count: number;
 }
 
-/**
- * The company's open-count time series. `points` is empty and `gated` is true until
- * `GATING_DAYS` releases exist; otherwise the last 90 days of daily points.
- */
+/** The company's open-count series: the last 90 days of points, or none while `gated`. */
 export interface Trajectory {
   gated: boolean;
   daysTracked: number;

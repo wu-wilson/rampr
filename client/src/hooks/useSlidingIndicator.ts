@@ -4,9 +4,7 @@ import { useLayoutEffect, useState, type RefObject } from 'react';
 export const INDICATOR_BASE_WIDTH = 60;
 
 /**
- * Position the single underline that travels between a row of tabs. Measures the active tab
- * (marked `data-tab`) against its container and returns a transform that moves and stretches
- * the indicator under it, re-measuring on resize and once the fonts have loaded.
+ * Measure the transform that slides a tab row's underline under its active tab.
  * @param containerRef - The row of tab buttons
  * @param active - The `data-tab` value of the active tab
  * @returns The indicator's `transform` value

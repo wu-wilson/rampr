@@ -5,11 +5,7 @@ import { useFilterStore } from '../store/filterStore';
 
 import { parseBoardSort, serializeBoardSort } from '../lib/sort';
 
-/**
- * Two-way sync between the company table store and the URL query string, so a filtered or sorted
- * board is linkable. The URL seeds the store on mount and on back/forward, and store changes are
- * written back with `replace`, touching only the `sector`, `sort`, and `q` keys.
- */
+/** Two-way sync between the company table store and the URL's `sector`, `sort`, and `q` params. */
 export function useFilterUrlSync(): void {
   const [searchParams, setSearchParams] = useSearchParams();
   const sector = useFilterStore((s) => s.sector);

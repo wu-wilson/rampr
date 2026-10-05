@@ -20,8 +20,7 @@ interface RevealProps {
 }
 
 /**
- * A section that rises 10px into place the first time it scrolls into view, never when already in
- * view on mount. Charts inside read the phase through context and draw as the section appears.
+ * A section that rises into place the first time it scrolls into view, sharing its phase with charts inside.
  * @param props - The section content and wrapper classes
  * @returns The wrapped section
  */

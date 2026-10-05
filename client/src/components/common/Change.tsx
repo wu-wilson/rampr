@@ -13,9 +13,7 @@ interface ChangeProps {
 }
 
 /**
- * A signed change figure: a plus, a true minus, or a grey zero, in the rise or fall colour so the
- * sign carries the direction. While no comparison can be made yet, gated or without a release
- * that far back, the figure reads "new".
+ * A signed change figure, its sign carrying the direction, reading "new" until a comparison exists.
  * @param props - The signed change and extra classes
  * @returns The figure
  */

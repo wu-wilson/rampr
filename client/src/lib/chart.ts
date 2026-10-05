@@ -136,9 +136,7 @@ function weekendBands(
 }
 
 /**
- * Lay out a daily line chart: an index-based x scale, a value axis fitted to the series (floored
- * at zero) with nice gridlines, the series path, evenly spaced date ticks, and the weekend bands.
- * The left inset grows to fit the widest value label.
+ * Lay out a daily line chart: x and fitted y scales, the path, date ticks, and weekend bands.
  * @param points - The series, oldest first; must not be empty
  * @param width - Chart width in pixels
  * @param height - Chart height in pixels
@@ -189,8 +187,7 @@ export function lineGeometry(
 }
 
 /**
- * Lay out the breadth chart: one column per release and a value axis symmetric about zero,
- * rounded up to the nearest ten, with the weekend bands.
+ * Lay out the breadth chart: a column per release, a zero-centred value axis rounded up to tens, and weekend bands.
  * @param points - Net breadth per release (rising minus falling), oldest first; must not be empty
  * @param width - Chart width in pixels
  * @param height - Chart height in pixels

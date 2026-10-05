@@ -6,9 +6,7 @@ import { useRuleWave } from '../../hooks/useRuleWave';
 import { RULE_SPACING } from '../../constants/config';
 
 /**
- * The ledger rules behind the hero: a hairline every `RULE_SPACING` px, edge to edge, starting at the top of
- * the band so the panels can snap to them. Each rule carries a hidden overlay in a darker grey
- * that the wave fades in and out, so the colours stay tokens and only opacity moves.
+ * The ledger rules behind the hero, one hairline every `RULE_SPACING` px with an overlay the wave fades.
  * @returns The ruled backdrop, filling its positioned parent
  */
 export const RulingBackdrop: React.FC = () => {

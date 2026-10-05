@@ -1,13 +1,5 @@
-/**
- * Minimum days of daily history required before trend surfaces (trajectory, changes, market
- * index, breadth, movers) unlock; below this they return `null` or `gated: true`. Keep in sync
- * with the client's copy of this constant.
- */
+/** Releases a trend surface needs before it unlocks (keep in sync with the client's `GATING_DAYS`). */
 export const GATING_DAYS = 14;
 
-/**
- * Depth (days, counting back from the latest release) of every trend window: the company and
- * market charts, breadth, and the high watermark. Matches the cleanup worker's retention, so
- * nothing a surface reads has been pruned. Keep in sync with the client's copy of this constant.
- */
+/** Days each trend window counts back from the latest release (keep in sync with the client and the cleanup). */
 export const TREND_WINDOW_DAYS = 90;

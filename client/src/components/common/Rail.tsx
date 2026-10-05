@@ -7,8 +7,7 @@ interface RailProps {
 }
 
 /**
- * The centred 1200px content rail with the page gutter: 20px on phones, 24px from the `md`
- * breakpoint. Everything but the full-bleed hero band sits inside one.
+ * The centred 1200px content rail with the page gutter.
  * @param props - The rail content and extra classes
  * @returns The rail
  */

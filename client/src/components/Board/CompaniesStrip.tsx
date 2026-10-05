@@ -32,9 +32,7 @@ interface CompaniesStripProps {
 }
 
 /**
- * The companies strip: a centred caption over a slow marquee of every tracked company's mark
- * and name. The marquee itself is hidden from assistive technology, since the company table
- * carries the same information.
+ * The companies strip: a caption over a slow marquee of every tracked company, the marquee hidden from screen readers.
  * @param props - The tracked companies and how many boards are tracked
  * @returns The strip section
  */

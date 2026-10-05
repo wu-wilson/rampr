@@ -44,8 +44,7 @@ interface MoversTablesProps {
 }
 
 /**
- * The movers tables: the largest rises and the largest falls over seven days, side by side.
- * While globally gated, one building panel stands in for both.
+ * The largest seven-day rises and falls side by side, or one building panel while gated.
  * @param props - The movers and the release count for the gated panel
  * @returns The two tables, or the gated panel
  */

@@ -58,21 +58,22 @@ const LeadSentence: React.FC<LeadPanelProps> = ({ market }) => {
 };
 
 /**
- * The lead: the page heading naming the count, the figure itself, the sentences, and the facts
- * row of changes over 1, 7, 30, and 90 days with their percentages.
+ * The lead: the heading and figure, the sentences, and the facts row, as three blocks a taller panel spaces evenly.
  * @param props - The market summary
  * @returns The lead content
  */
 export const LeadPanel: React.FC<LeadPanelProps> = ({ market }) => (
   <>
-    <h1 className="text-[13px] font-medium text-ink-2">
-      Open postings on {formatCount(market.companyCount)} company boards
-    </h1>
-    <div
-      className="-ml-[0.15em] mt-2.5 font-light leading-[0.92] tracking-[-0.045em]"
-      style={{ fontSize: 'clamp(76px, 10vw, 128px)' }}
-    >
-      {formatCount(market.totalOpen)}
+    <div>
+      <h1 className="text-[13px] font-medium text-ink-2">
+        Open postings on {formatCount(market.companyCount)} company boards
+      </h1>
+      <div
+        className="-ml-[0.15em] mt-2.5 font-light leading-[0.92] tracking-[-0.045em]"
+        style={{ fontSize: 'clamp(76px, 10vw, 128px)' }}
+      >
+        {formatCount(market.totalOpen)}
+      </div>
     </div>
     <p className="mt-[22px] max-w-[30em] text-[19px] font-light leading-[1.45] text-ink-2 [text-wrap:pretty]">
       <LeadSentence market={market} />

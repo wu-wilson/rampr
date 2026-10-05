@@ -9,8 +9,7 @@ interface StepMarkProps {
 const SIZE = 22;
 
 /**
- * The Rampr mark: one step up, drawn as a single monoline stroke in `currentColor`, so it sits
- * at the weight and colour of the type beside it.
+ * The Rampr mark: one step up, a single monoline stroke in `currentColor`.
  * @param props - Extra classes
  * @returns The mark svg
  */

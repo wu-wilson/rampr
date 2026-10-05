@@ -17,8 +17,7 @@ interface SectorTableProps {
 }
 
 /**
- * The sector table: open postings by sector, with each sector's share of all postings, a bar
- * scaled to the largest sector, and its seven-day change.
+ * The sector table: postings, share of all postings, a bar scaled to the largest sector, and the seven-day change.
  * @param props - The sector totals and the market total
  * @returns The table
  */

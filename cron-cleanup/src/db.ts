@@ -15,9 +15,7 @@ pool.on('error', (err) => {
 });
 
 /**
- * Prune `daily_snapshots` rows more than a day past `retentionDays` behind the latest release, the
- * same anchor every read query counts back from, so a 90-day change keeps its prior even after a
- * missed morning.
+ * Delete `daily_snapshots` rows more than `retentionDays` plus one day behind the latest release.
  * @param retentionDays - Days of history to keep behind the latest release
  * @returns The count of rows deleted (`0` when nothing is past the window)
  */
@@ -30,7 +28,7 @@ export async function deleteOldSnapshots(retentionDays: number): Promise<number>
 }
 
 /**
- * Close the connection pool. Call once at process shutdown.
+ * Close the connection pool at process shutdown.
  * @returns Resolves once the pool has drained
  */
 export async function closePool(): Promise<void> {

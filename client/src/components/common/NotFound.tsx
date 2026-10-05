@@ -11,8 +11,7 @@ interface NotFoundProps {
 }
 
 /**
- * The 404 screen for unknown routes and unknown company slugs. Offers a route back to
- * the Board so the viewer is never stranded.
+ * The not-found screen for unknown routes and company slugs, with a link back to the board.
  * @param props - Optional headline and body overrides
  * @returns The not-found screen
  */

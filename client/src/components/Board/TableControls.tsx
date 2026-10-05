@@ -19,9 +19,7 @@ interface TableControlsProps {
 }
 
 /**
- * The company table's controls, on the caption row: a sector select and a company search, each drawn as
- * text on a hairline. Typing updates a local draft and commits once typing pauses; pressing
- * "/" anywhere on the page focuses the search.
+ * The company table's sector select and debounced search, which "/" focuses from anywhere on the page.
  * @param props - The sector options
  * @returns The controls
  */

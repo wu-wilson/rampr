@@ -15,8 +15,8 @@ import type { SeriesPoint } from '../../lib/series';
 interface LineChartProps {
   /** The daily series, oldest first; must not be empty. */
   points: SeriesPoint[];
-  /** Chart height in pixels on desktop, shortened on narrow widths; the width follows the container. */
-  height: number;
+  /** Desktop plot height (px), shortened on narrow widths, or `fill` to cover its positioned parent. */
+  height: number | 'fill';
   /** The least vertical padding, in series units, above and below the line. */
   minPad: number;
   /** Accessible one-line summary of the series. */
@@ -27,14 +27,12 @@ interface LineChartProps {
 const MARGINS = { top: 14, right: 0, bottom: 24, left: 40 };
 
 /**
- * A daily line chart: weekend bands, a value axis fitted to the series, the line, and an endpoint
- * dot. A readout above the plot names the day, the count, and the change from the day before,
- * following the pointer and resting on the latest release.
- * @param props - The series, desktop plot height, vertical padding, and an accessible summary
+ * A daily line chart with weekend bands, a fitted value axis, and a readout that follows the pointer.
+ * @param props - The series, desktop plot height (or `fill`), vertical padding, and an accessible summary
  * @returns The chart, sized to its container
  */
 export const LineChart: React.FC<LineChartProps> = ({ points, height, minPad, ariaLabel }) => {
-  const [ref, { width }] = useElementSize<HTMLDivElement>();
+  const [ref, { width, height: filled }] = useElementSize<HTMLDivElement>();
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const [hovered, setHovered] = useState<number | null>(null);
@@ -47,9 +45,10 @@ export const LineChart: React.FC<LineChartProps> = ({ points, height, minPad, ar
 
   const last = points.length - 1;
   const active = hovered ?? last;
-  const plotHeight = chartHeight(width, height);
+  const fill = height === 'fill';
+  const plotHeight = fill ? filled : chartHeight(width, height);
   const geometry = useMemo(() => {
-    if (width <= 0 || points.length === 0) return null;
+    if (width <= 0 || plotHeight <= 0 || points.length === 0) return null;
     return lineGeometry(points, width, plotHeight, MARGINS, minPad);
   }, [points, width, plotHeight, minPad]);
 
@@ -65,9 +64,13 @@ export const LineChart: React.FC<LineChartProps> = ({ points, height, minPad, ar
   const activePoint = points[active];
 
   // Inline-size containment keeps the svg's explicit pixel width from becoming the container's
-  // minimum, so the chart can always shrink with the viewport.
+  // minimum, so the chart can always shrink with the viewport. A filling chart covers its parent.
   return (
-    <div ref={ref} className="relative w-full [contain:inline-size]" style={{ height: plotHeight }}>
+    <div
+      ref={ref}
+      className={`w-full [contain:inline-size] ${fill ? 'absolute inset-0' : 'relative'}`}
+      style={fill ? undefined : { height: plotHeight }}
+    >
       {geometry && (
         <svg
           ref={svgRef}

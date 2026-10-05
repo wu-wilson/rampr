@@ -1,6 +1,5 @@
 /**
- * Whether the viewer has asked for reduced motion. Checked by the Web Animations code paths,
- * which the CSS media query cannot reach.
+ * Whether the viewer prefers reduced motion, for the Web Animations paths CSS cannot reach.
  * @returns True when `prefers-reduced-motion: reduce` matches
  */
 export function prefersReducedMotion(): boolean {

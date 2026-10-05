@@ -57,9 +57,7 @@ const ToggleGlyph: React.FC<{ open: boolean }> = ({ open }) => {
 };
 
 /**
- * The masthead: the step mark and wordmark at the left, the three routes centred, and the
- * release stamp at the right, on one 68px row over a hairline. Below `lg` the stamp keeps only
- * the release number, and below `md` the routes collapse behind a toggle.
+ * The masthead: the mark, the routes (behind a toggle below `md`), and the release stamp.
  * @returns The masthead
  */
 export const AppNav: React.FC = () => {

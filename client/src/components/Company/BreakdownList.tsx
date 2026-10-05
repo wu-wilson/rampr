@@ -20,8 +20,7 @@ interface BreakdownListProps {
 }
 
 /**
- * One breakdown column: a titled list of name and count rows on hairlines. Given a noun, a long
- * list shows its first `BREAKDOWN_PREVIEW_ROWS` rows with a link to see the rest.
+ * One titled column of name and count rows, collapsed to `BREAKDOWN_PREVIEW_ROWS` when given a noun.
  * @param props - The title, the row noun, and the rows
  * @returns The column
  */

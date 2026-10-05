@@ -7,9 +7,7 @@ import { AMBIENT, EASING } from '../constants/animations';
 import type { RevealPhase } from './useReveal';
 
 /**
- * Reveal a chart line left to right with a clip-path animation as its section enters view. Runs
- * once, only when the section goes from `pending` to `shown`, so a chart already in view on
- * mount is drawn complete.
+ * Draw a chart line left to right as its section first enters view.
  * @param pathRef - The line's `path` element
  * @param phase - The enclosing section's reveal phase
  */

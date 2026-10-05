@@ -25,9 +25,7 @@ const Fact: React.FC<{ label: string; value: React.ReactNode; small?: string }> 
 );
 
 /**
- * The facts row beneath the company lead: rank across all boards, rank and share within the
- * sector, and the high and low (named for `SERIES_DAYS` once the series covers it) with the day
- * each was recorded. Two columns on phones, five from `sm`.
+ * The facts row under the company lead: overall and sector rank, sector share, and the series high and low.
  * @param props - The company payload and the series extremes
  * @returns The facts row
  */

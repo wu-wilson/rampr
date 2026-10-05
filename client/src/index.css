@@ -54,7 +54,7 @@
   --line: 231 233 236; /* #E7E9EC  table rules, panel borders, gridlines */
   --line-2: 240 241 243; /* #F0F1F3  row dividers, the ledger rules at rest */
   --line-3: 201 204 209; /* #C9CCD1  the zero axis, a bar that did not move, the stamp separator */
-  --wave: 154 160 170; /* #9AA0AA  a ledger rule at the crest of the wave */
+  --wave: 188 192 199; /* #BCC0C7  a ledger rule at the crest of the wave */
 
   /* Change figures (the sign carries the direction, colour reinforces) */
   --up: 14 122 85; /* #0E7A55  rose */

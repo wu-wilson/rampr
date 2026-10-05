@@ -65,8 +65,7 @@ const LeadSentence: React.FC<CompanyLeadProps> = ({ data, extremes }) => {
 };
 
 /**
- * The company lead: the name and sentence on the left, the open-postings figure with its
- * seven-day change on the right. Stacks on phones with the figure beneath the sentence.
+ * The company lead: the name and sentence beside the open-postings figure and its seven-day change.
  * @param props - The company payload and the series extremes
  * @returns The lead
  */

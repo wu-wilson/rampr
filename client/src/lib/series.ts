@@ -24,8 +24,7 @@ export function isWeekend(iso: string): boolean {
 }
 
 /**
- * Find the high and low of a series. Ties resolve to the most recent day, so "today" wins
- * when it matches an earlier high.
+ * Find a series' high and low, ties going to the most recent day.
  * @param points - The series, oldest first; must not be empty
  * @returns The high and low points
  */

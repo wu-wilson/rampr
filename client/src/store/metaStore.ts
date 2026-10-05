@@ -17,8 +17,7 @@ interface MetaStore {
 let request: Promise<void> | null = null;
 
 /**
- * Zustand store for `GET /api/meta`. One fetch serves every caller, and a failed fetch can be
- * retried by calling `load` again.
+ * Zustand store for `GET /api/meta`, sharing one request and retrying a failed load on the next call.
  * @returns The meta payload (null until resolved), loading and error state, and the loader
  */
 export const useMetaStore = create<MetaStore>((set, get) => ({

@@ -17,8 +17,7 @@ interface MethodRow {
 }
 
 /**
- * The Method screen (at `/about`): what Rampr counts and how, as a light heading and
- * introduction beside six rows. The dates and counts in the rows come from the release itself.
+ * The Method screen at `/about`: what Rampr counts and how, citing figures from the release.
  * @returns The Method screen
  */
 export const AboutScreen: React.FC = () => {

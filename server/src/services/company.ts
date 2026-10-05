@@ -95,8 +95,7 @@ function toWorkMixSlice(count: number, total: number): WorkMixSlice {
 }
 
 /**
- * Load a company's full detail: profile and ranks, the live open count and breakdowns from
- * `listings`, and the 7-day change and gated trajectory from `daily_snapshots`.
+ * Load a company's detail: profile and ranks, live count and breakdowns, and the gated change and trajectory.
  * @param slug - The company slug from the route param
  * @returns The full response body, or `null` when no company has that slug (the route maps `null` to 404)
  */
@@ -145,7 +144,7 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
   if (baseResult.rows.length === 0) {
     return null;
   }
-  const base = baseResult.rows[0] as Record<string, unknown>;
+  const base = baseResult.rows[0];
   const companyId = Number(base.id);
   const open = Number(base.open_now);
   const daysTracked = Number(base.days_tracked);
@@ -189,7 +188,7 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
         ),
   ]);
 
-  const mixRow = workMixResult.rows[0] as Record<string, unknown>;
+  const mixRow = workMixResult.rows[0];
   const remote = Number(mixRow.remote);
   const hybrid = Number(mixRow.hybrid);
   const onsite = Number(mixRow.onsite);
@@ -199,7 +198,7 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
     gated,
     daysTracked,
     points: trajectoryResult
-      ? (trajectoryResult.rows as Record<string, unknown>[]).map((row) => ({
+      ? trajectoryResult.rows.map((row) => ({
           date: String(row.date),
           count: Number(row.count),
         }))
@@ -223,8 +222,8 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
     open,
     delta7d: changeSince(open, toNullableInt(base.prior_open), daysTracked),
     breakdowns: {
-      departments: (departmentsResult.rows as Record<string, unknown>[]).map(toBreakdownEntry),
-      locations: (locationsResult.rows as Record<string, unknown>[]).map(toBreakdownEntry),
+      departments: departmentsResult.rows.map(toBreakdownEntry),
+      locations: locationsResult.rows.map(toBreakdownEntry),
       workMix: {
         remote: toWorkMixSlice(remote, open),
         hybrid: toWorkMixSlice(hybrid, open),

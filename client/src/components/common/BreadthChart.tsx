@@ -25,11 +25,8 @@ const BAR_INSET = 0.22;
 const BAR_SHARE = 0.56;
 
 /**
- * The breadth chart: one bar per release above or below a zero line, green when more boards added
- * postings than removed them, red for the reverse, grey for even, with weekends shaded. A readout
- * above the plot names the day, the net figure, and how many boards rose and fell, following the
- * pointer and resting on the latest release.
- * @param props - The breadth series, desktop plot height, and an accessible summary
+ * The breadth chart: one bar per release for boards rising minus falling, with a pointer-following readout.
+ * @param props - The breadth series, plot height, and an accessible summary
  * @returns The chart, sized to its container
  */
 export const BreadthChart: React.FC<BreadthChartProps> = ({ points, height, ariaLabel }) => {

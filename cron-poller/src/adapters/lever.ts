@@ -37,9 +37,7 @@ function mapWorkplaceType(workplaceType: string | null | undefined): NativeRemot
 }
 
 /**
- * Fetch and normalize a Lever site. Department prefers `categories.department`, falling
- * back to `categories.team`; the work mix prefers the native `workplaceType` and infers
- * from location only when the native flag is absent.
+ * Fetch and normalize a Lever site, preferring its native `workplaceType` for the work mix.
  * @param boardToken - The Lever site slug
  * @returns Normalized listings for the site
  */

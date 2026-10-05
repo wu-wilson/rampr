@@ -11,10 +11,7 @@ interface SourceCounts {
 export interface MetaResponse {
   /** `MAX(snapshot_date)` as `YYYY-MM-DD`, or `null` before the first poll (client day-zero). */
   updatedAt: string | null;
-  /**
-   * Ordinal of the latest release: days from the earliest `tracked_since` to `updatedAt`, plus one.
-   * `null` before the first poll.
-   */
+  /** The latest release's number (days since the earliest `tracked_since`, plus one), or `null` before the first poll. */
   releaseNumber: number | null;
   /** `MIN(tracked_since)` as `YYYY-MM-DD`: the day the series began, or `null` with no companies seeded. */
   firstRelease: string | null;
@@ -23,9 +20,7 @@ export interface MetaResponse {
 }
 
 /**
- * Read the site-wide release stamp that drives the masthead and the day-zero state, plus the
- * curated-list facts the Method page cites: when the series began, how many boards, and how many
- * sit on each provider.
+ * Read the release stamp and the curated-list facts the Method page cites.
  * @returns The `GET /api/meta` response body
  */
 export async function getMeta(): Promise<MetaResponse> {
@@ -40,7 +35,7 @@ export async function getMeta(): Promise<MetaResponse> {
        (SELECT COUNT(*)::int FROM companies WHERE ats_provider = 'lever')      AS lever,
        (SELECT COUNT(*)::int FROM companies WHERE ats_provider = 'ashby')      AS ashby`,
   );
-  const row = result.rows[0] as Record<string, unknown>;
+  const row = result.rows[0];
 
   const response: MetaResponse = {
     updatedAt: row.updated_at === null ? null : String(row.updated_at),

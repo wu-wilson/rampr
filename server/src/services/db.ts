@@ -27,16 +27,17 @@ class DatabaseUnavailableError extends Error {
 /** Classify whether a thrown error is a connection-class failure (server down or restarting) rather than a SQL error. */
 function isConnectionError(err: unknown): boolean {
   if (typeof err !== 'object' || err === null) return false;
-  const code = (err as { code?: unknown }).code;
-  if (typeof code === 'string' && CONNECTION_ERROR_CODES.has(code)) return true;
-  const message = (err as { message?: unknown }).message;
-  return typeof message === 'string' && /Connection terminated|server closed the connection|ECONNREFUSED|timeout expired|timeout exceeded when trying to connect/i.test(message);
+  if ('code' in err && typeof err.code === 'string' && CONNECTION_ERROR_CODES.has(err.code)) return true;
+  return (
+    'message' in err &&
+    typeof err.message === 'string' &&
+    /Connection terminated|server closed the connection|ECONNREFUSED|timeout expired|timeout exceeded when trying to connect/i.test(err.message)
+  );
 }
 
 /**
- * Open the pg pool and probe the connection at boot, logging the outcome. A probe failure is not
- * fatal: the server still starts, and read routes return 503 until Postgres is reachable.
- * @returns Resolves after the probe completes, whether it succeeded or failed
+ * Open the pg pool and probe the connection, starting the server even when Postgres is down.
+ * @returns Resolves after the probe, whether it succeeded or failed; reads return 503 until Postgres is reachable
  */
 export async function initDb(): Promise<void> {
   // UTC so snapshot dates read as the poller wrote them; timeouts so a hung Postgres degrades to a 503 instead of an open request.
@@ -67,18 +68,17 @@ export async function initDb(): Promise<void> {
 }
 
 /**
- * Run a parameterized query against the pool.
- * Connection-class failures (Postgres down or restarting, at boot or mid-flight) are mapped to a 503 `DatabaseUnavailableError` so reads degrade gracefully; genuine SQL errors propagate to the tail handler as 500s.
+ * Run a parameterized query, mapping connection failures to a 503 so reads degrade gracefully.
  * @param text - SQL with `$1`, `$2`, ... placeholders; never interpolate input
  * @param params - Values bound to the placeholders, in order
- * @returns The result set; `rows` is untyped and must be coerced at the call site
+ * @returns The result set, each row a column map whose values the caller coerces; a SQL error rejects as a 500
  */
-export async function query(text: string, params?: unknown[]): Promise<QueryResult> {
+export async function query(text: string, params?: unknown[]): Promise<QueryResult<Record<string, unknown>>> {
   if (!pool) {
     throw new DatabaseUnavailableError();
   }
   try {
-    return await pool.query(text, params);
+    return await pool.query<Record<string, unknown>>(text, params);
   } catch (err) {
     if (isConnectionError(err)) {
       throw new DatabaseUnavailableError();

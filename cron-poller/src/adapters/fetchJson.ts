@@ -16,12 +16,9 @@ export function delay(ms: number): Promise<void> {
 }
 
 /**
- * Fetch a public JSON endpoint with a descriptive User-Agent, an AbortController
- * timeout, and a couple of retries with exponential backoff. Non-2xx responses are
- * treated as retryable failures; a request that still fails after all retries throws
- * so the poller can isolate and count it per company.
+ * Fetch a public JSON endpoint with a User-Agent, a timeout, and exponential-backoff retries on any failure.
  * @param url - The absolute URL to fetch
- * @returns The parsed JSON body as `unknown` (caller must Zod-validate it)
+ * @returns The parsed body as `unknown` for the caller to validate; rejects once the last retry fails
  */
 export async function fetchJson(url: string): Promise<unknown> {
   let lastError: unknown;

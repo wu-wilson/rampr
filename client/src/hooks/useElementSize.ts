@@ -7,8 +7,7 @@ interface ElementSize {
 }
 
 /**
- * Track an element's content-box size via `ResizeObserver`, re-rendering on resize. Lets a
- * chart derive pixel-exact geometry from the real container.
+ * Track an element's content-box size with a `ResizeObserver`.
  * @returns A tuple of the ref to attach and the current `{ width, height }` (both 0 until first measured)
  */
 export function useElementSize<T extends HTMLElement>(): [RefObject<T>, ElementSize] {

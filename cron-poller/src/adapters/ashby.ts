@@ -19,8 +19,7 @@ const ashbySchema = z.object({
 });
 
 /**
- * Fetch and normalize an Ashby job board. Department prefers `department` over `team`, and the
- * work mix reads `isRemote` as remote or else falls through to the shared location inference.
+ * Fetch and normalize an Ashby job board, reading `isRemote` as remote.
  * @param boardToken - The Ashby organization slug
  * @returns Normalized listings for the board
  */

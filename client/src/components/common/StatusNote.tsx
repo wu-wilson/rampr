@@ -6,9 +6,7 @@ interface StatusNoteProps {
 }
 
 /**
- * A status line for the pre-data loading and error states, centred in the space between
- * masthead and footer and kept to a readable measure. A live region, so a load that fails is
- * announced, not only shown.
+ * A centred status line for the loading and error states, announced to assistive technology.
  * @param props - The status text
  * @returns The status note
  */

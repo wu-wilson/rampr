@@ -13,9 +13,7 @@ export function naturalAscending(key: BoardSortKey): boolean {
 }
 
 /**
- * Narrow a URL `sort` value to a {@link BoardSort}. The value is the column key, with `-asc` or
- * `-desc` appended only when the direction departs from the column's natural order; anything
- * unrecognized falls back to the default sort.
+ * Narrow a URL `sort` value to a sort, falling back to the default when unrecognized.
  * @param value - The raw string to narrow (or null, e.g. a missing URL param)
  * @returns The matching sort, or the default
  */
@@ -28,8 +26,7 @@ export function parseBoardSort(value: string | null): BoardSort {
 }
 
 /**
- * Serialize a {@link BoardSort} for the URL, omitting the default entirely and the direction
- * suffix whenever it matches the column's natural order.
+ * Serialize a sort for the URL, omitting the default and any direction that matches the column's natural order.
  * @param sort - The active sort
  * @returns The `sort` param value, or null when the sort is the default
  */

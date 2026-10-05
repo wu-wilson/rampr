@@ -5,8 +5,7 @@ import { prefersReducedMotion } from '../lib/motion';
 import { AMBIENT, EASING_SYMMETRIC } from '../constants/animations';
 
 /**
- * Run the ledger wave: a darkening that passes down the rules behind the hero, rests, then passes
- * again, skipped under reduced motion and while the tab is hidden.
+ * Run the ledger wave down the hero's rules on a loop, skipped under reduced motion and while the tab is hidden.
  * @param ref - The element holding the rule overlays, each marked `data-rule`
  * @param count - How many rules there are (restarts the clock when it changes)
  */

@@ -4,8 +4,7 @@ import { RELEASE_HOUR_UTC } from '../constants/config';
 const MINUS = '−';
 
 /**
- * Parse an ISO date (`YYYY-MM-DD`) as the start of that day in UTC, the timezone every release is
- * dated in. Read it back with UTC getters or the formatters below, never the viewer's local time.
+ * Parse an ISO date (`YYYY-MM-DD`) as the start of that day in UTC.
  * @param iso - An ISO date string
  * @returns The date at 00:00 UTC
  */
@@ -58,10 +57,9 @@ export function formatDelta(delta: number): string {
 }
 
 /**
- * Format a change as a signed percent of the value it started from. A base at or below zero has
- * no percentage and reads `0.0%`.
+ * Format a change as a signed one-decimal percent of the value it started from.
  * @param delta - The signed change
- * @param current - The value after the change; the base is `current − delta`
+ * @param current - The value after the change; the base is `current − delta`, and a base at or below zero reads `0.0%`
  * @returns A signed one-decimal percent (e.g. `+1.4%`, `−0.3%`, `0.0%`)
  */
 export function formatSignedPercent(delta: number, current: number): string {

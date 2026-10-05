@@ -8,9 +8,7 @@ import { DURATION, EASING } from '../constants/animations';
 const ENTER_DELAY = 100;
 
 /**
- * Slide rows to their new places after a sort or filter, fading in rows that just appeared.
- * Children are matched by their `data-key` attribute inside a `position: relative` container. The
- * motion runs as Web Animations, so it never touches the rows' own inline styles.
+ * Slide keyed rows to their new places after a sort or filter, fading in rows that appear.
  * @param containerRef - The element whose keyed children reorder
  */
 export function useFlipReorder<T extends HTMLElement>(containerRef: RefObject<T>): void {

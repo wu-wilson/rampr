@@ -6,17 +6,14 @@ export const DURATION = {
   smooth: 300,
 } as const;
 
-/**
- * Ambient motion, in milliseconds, which runs on its own clock or once as a section enters and
- * never in response to a pointer, so it may run longer than interaction motion.
- */
+/** Ambient motion (ms), which runs on its own clock or once as a section enters, never in response to a pointer. */
 export const AMBIENT = {
   /** A chart line revealing left to right as its section enters. */
   draw: 700,
   /** One ledger rule brightening and settling during the wave. */
   wave: 1400,
   /** Delay between one rule starting and the next, top to bottom. */
-  waveStagger: 100,
+  waveStagger: 67,
   /** Rest between the end of one wave and the start of the next. */
   waveGap: 1500,
   /** Delay before the first wave after the band appears. */

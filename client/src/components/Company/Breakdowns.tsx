@@ -17,9 +17,7 @@ function relabel(entries: BreakdownEntry[]): BreakdownRow[] {
 }
 
 /**
- * The three breakdowns of the company's open postings: by department, by location, and by work
- * arrangement, as three columns divided by hairlines from `lg` and stacked beneath that.
- * Live from the same rows as the count, so each column sums to it.
+ * The department, location, and work arrangement breakdowns, in three columns from `lg`.
  * @param props - The breakdowns
  * @returns The breakdown columns
  */

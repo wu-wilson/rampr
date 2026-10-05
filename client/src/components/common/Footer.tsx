@@ -5,8 +5,7 @@ import { Rail } from './Rail';
 import { GITHUB_URL } from '../../constants/config';
 
 /**
- * The page footer: where the counts come from on the left and the source link on the right, on
- * one hairline, stacking on phones.
+ * The page footer: where the counts come from and the source link, on one hairline.
  * @returns The footer
  */
 export const Footer: React.FC = () => (

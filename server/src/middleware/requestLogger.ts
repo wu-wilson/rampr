@@ -1,8 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 
 /**
- * Log one line per request once its response is sent: method, path, status, and duration. Paths
- * only, never query strings, bodies, or headers.
+ * Log one line per finished request (method, path, status, and duration), never queries, bodies, or headers.
  * @param req - The incoming request
  * @param res - The response, logged when it finishes
  * @param next - Passes control to the next middleware

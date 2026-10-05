@@ -21,8 +21,7 @@ interface RangeTabsProps {
 }
 
 /**
- * A row of text tabs on a hairline with one ink underline that slides to the active word, purely
- * presentational since the parent slices the series.
+ * A row of text tabs on a hairline with one underline that slides to the active tab.
  * @param props - The tabs, the active key, its change handler, and the group's accessible name
  * @returns The tab row
  */

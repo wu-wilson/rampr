@@ -68,9 +68,8 @@ async function pollCompany(company: CompanyRow): Promise<CompanyOutcome> {
 }
 
 /**
- * Run one full poll across all curated companies with bounded concurrency. A failed feed is
- * counted as `skipped` and a failed reconcile as `errored`, and neither aborts the run.
- * @returns The recorded run totals
+ * Poll every curated company with bounded concurrency, isolating each company's failure.
+ * @returns The run totals, a failed feed counted as `skipped` and a failed reconcile as `errored`
  */
 export async function runPoll(): Promise<PollTotals> {
   const companies = await loadCompanies();

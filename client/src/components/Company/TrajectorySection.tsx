@@ -28,9 +28,7 @@ const MIN_PAD = 8;
 const WINDOWS = [14, 30];
 
 /**
- * The company chart: the company's open postings per release over the chosen window, with range
- * tabs for each window shorter than the series and a crossfade between them. Shows the building
- * panel while the company's changes are gated.
+ * The company chart with range tabs that crossfade between windows, or the building panel while gated.
  * @param props - The company name, its trajectory, and the series
  * @returns The chart section
  */

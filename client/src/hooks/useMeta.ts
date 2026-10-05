@@ -13,8 +13,7 @@ interface UseMetaResult {
 }
 
 /**
- * Read the release stamp and curated-list facts from the shared meta store, loading them on
- * first use and retrying a failed load on each navigation.
+ * Read the shared `/api/meta` payload, loading it on first use and retrying a failed load on each navigation.
  * @returns The meta payload (null until resolved) plus loading/error state
  */
 export function useMeta(): UseMetaResult {

@@ -20,9 +20,8 @@ interface FilterStore {
 }
 
 /**
- * Zustand store for the company table's controls. The whole board is held client-side, so these only
- * reorder and narrow rows that are already loaded.
- * @returns The shared sector / sort / search state and their setters.
+ * Zustand store for the company table's sector, sort, and search.
+ * @returns The shared sector, sort, and search state and their setters
  */
 export const useFilterStore = create<FilterStore>((set) => ({
   sector: null,

@@ -10,8 +10,7 @@ export function gatingLabel(daysTracked: number): string {
 }
 
 /**
- * Build the fill state of the `GATING_DAYS`-cell progress row: one boolean per gating day, true up to
- * the number tracked so far.
+ * The fill state of the `GATING_DAYS` progress cells, true up to the releases tracked so far.
  * @param daysTracked - Daily releases accrued so far
  * @returns An array of length GATING_DAYS where filled cells are `true`
  */

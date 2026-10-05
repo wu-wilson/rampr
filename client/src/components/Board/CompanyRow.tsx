@@ -15,9 +15,7 @@ interface CompanyRowProps {
 }
 
 /**
- * One row of the company table, linking to the company page: rank, name, sector, postings, and the
- * 7-day and 30-day changes on one 46px line. Carries `data-key` so the table can slide it to
- * a new place after a sort.
+ * One company table row, linking to the company page and keyed by `data-key` so a sort can slide it.
  * @param props - The company to render
  * @returns The row link
  */

@@ -121,13 +121,11 @@ async function fetchMovers(direction: 'up' | 'down'): Promise<Mover[]> {
       LIMIT $1`,
     [MOVERS_LIMIT, GATING_DAYS, direction === 'up' ? 1 : -1],
   );
-  return (result.rows as Record<string, unknown>[]).map(toMover);
+  return result.rows.map(toMover);
 }
 
 /**
- * Build the market view: live totals and per-sector open counts, then the globally gated trend
- * surfaces (the index, breadth, sector 7-day changes, and movers), all counted back from the
- * latest release. Breadth leaves out a date where no company has a previous snapshot.
+ * Build the market view: live sector totals, plus the gated index, breadth, sector changes, and movers.
  * @returns The full `GET /api/market` response body
  */
 export async function getMarket(): Promise<MarketResponse> {
@@ -181,7 +179,7 @@ export async function getMarket(): Promise<MarketResponse> {
       [GATING_DAYS],
     ),
   ]);
-  const totalsRow = totalsResult.rows[0] as Record<string, unknown>;
+  const totalsRow = totalsResult.rows[0];
   const distinctDays = Number(totalsRow.distinct_days);
   const gated = distinctDays < GATING_DAYS;
 
@@ -190,7 +188,7 @@ export async function getMarket(): Promise<MarketResponse> {
     updatedAt: totalsRow.updated_at === null ? null : String(totalsRow.updated_at),
   };
 
-  const sectors: SectorTotal[] = (sectorsResult.rows as Record<string, unknown>[]).map((row) => ({
+  const sectors: SectorTotal[] = sectorsResult.rows.map((row) => ({
     slug: String(row.slug),
     label: String(row.label),
     open: Number(row.open),
@@ -231,11 +229,11 @@ export async function getMarket(): Promise<MarketResponse> {
       fetchMovers('up'),
       fetchMovers('down'),
     ]);
-    index.points = (indexResult.rows as Record<string, unknown>[]).map((row) => ({
+    index.points = indexResult.rows.map((row) => ({
       date: String(row.date),
       totalOpen: Number(row.total_open),
     }));
-    breadth.points = (breadthResult.rows as Record<string, unknown>[]).map((row) => ({
+    breadth.points = breadthResult.rows.map((row) => ({
       date: String(row.date),
       rising: Number(row.rising),
       falling: Number(row.falling),

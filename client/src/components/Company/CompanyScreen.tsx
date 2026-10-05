@@ -28,10 +28,7 @@ const SOURCE_LABELS: Record<CompanyResponse['company']['source'], string> = {
 };
 
 /**
- * The Company screen: the series line, the lead (name, sentence, and figure), the facts row,
- * the company chart beside the daily table, and the three breakdowns. Renders designed loading, not-found,
- * error, and not-yet-counted states; the chart, table, and changes are gated until the company has
- * `GATING_DAYS` releases.
+ * The Company screen: the lead, facts, chart, daily table, and breakdowns, or a loading, error, or empty state.
  * @returns The Company screen
  */
 export const CompanyScreen: React.FC = () => {

@@ -42,8 +42,7 @@ function orderRows(rows: BoardCompany[], sort: BoardSort): BoardCompany[] {
 }
 
 /**
- * The company table: open postings by company, held locally so the sector select, the search,
- * and the sortable headers reorder rows in place. Shows `TABLE_PREVIEW_ROWS` rows until expanded.
+ * The company table, sorted and filtered locally and showing `TABLE_PREVIEW_ROWS` rows until expanded.
  * @param props - Every company on the board
  * @returns The table section
  */

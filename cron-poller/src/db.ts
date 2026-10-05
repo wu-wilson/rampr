@@ -31,31 +31,25 @@ export interface CompanyRow {
  * @returns The companies to poll
  */
 export async function loadCompanies(): Promise<CompanyRow[]> {
-  const result = await pool.query(
+  const result = await pool.query<Record<string, unknown>>(
     `SELECT id, name, ats_provider, ats_id
        FROM companies
       ORDER BY id`,
   );
-  return result.rows.map((r) => {
-    const row = r as Record<string, unknown>;
-    return {
-      id: Number(row.id),
-      name: String(row.name),
-      // `ats_provider` is DB-constrained to the provider enum, so the union narrowing is safe.
-      provider: String(row.ats_provider) as AtsProvider,
-      atsId: String(row.ats_id),
-    };
-  });
+  return result.rows.map((row) => ({
+    id: Number(row.id),
+    name: String(row.name),
+    // `ats_provider` is DB-constrained to the provider enum, so the union narrowing is safe.
+    provider: String(row.ats_provider) as AtsProvider,
+    atsId: String(row.ats_id),
+  }));
 }
 
 /**
- * Reconcile one company's open listings and write today's snapshot in a single transaction, so
- * an error mid-way rolls back to the previous poll's state. An empty feed is a genuine zero, the
- * snapshot counts the reconciled table so duplicate feed IDs can't inflate it, and a same-day
- * re-run overwrites the row.
+ * Reconcile a company's open listings and write today's snapshot in one transaction.
  * @param companyId - The company being reconciled
- * @param listings - The company's current open roles, normalized from its feed
- * @returns Resolves once the transaction commits
+ * @param listings - The company's open roles from its feed; an empty list is a genuine zero
+ * @returns Resolves once committed; any error rolls back to the previous poll's state
  */
 export async function reconcileCompany(
   companyId: number,
@@ -86,6 +80,7 @@ export async function reconcileCompany(
       [companyId, presentExternalIds],
     );
 
+    // Count the reconciled rows, not the feed, so duplicate feed IDs can't inflate it; a same-day re-run overwrites the row.
     await client.query(
       `INSERT INTO daily_snapshots (company_id, snapshot_date, open_count)
        SELECT $1, CURRENT_DATE, COUNT(*) FROM listings WHERE company_id = $1
@@ -109,7 +104,7 @@ export async function reconcileCompany(
 }
 
 /**
- * Close the connection pool. Call once at process shutdown.
+ * Close the connection pool at process shutdown.
  * @returns Resolves once the pool has drained
  */
 export async function closePool(): Promise<void> {

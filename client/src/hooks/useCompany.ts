@@ -14,8 +14,7 @@ interface UseCompanyResult {
 }
 
 /**
- * Fetch a company's detail from `GET /api/companies/:slug`, refetching when the slug changes and
- * surfacing a 404 as `notFound` so the route can render the not-found screen.
+ * Fetch a company's detail from `GET /api/companies/:slug`, refetching on slug change and surfacing a 404 as `notFound`.
  * @param slug - The company slug from the route
  * @returns The company payload (null until resolved) plus loading/error/not-found state
  */

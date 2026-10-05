@@ -106,15 +106,13 @@ async function marketChanges(): Promise<MarketChanges> {
       GROUP BY prior.days`,
     [[1, 7, 30, 90], GATING_DAYS],
   );
-  const deltas = new Map((result.rows as Record<string, unknown>[]).map((row) => [Number(row.days), toNullableInt(row.delta)]));
+  const deltas = new Map(result.rows.map((row) => [Number(row.days), toNullableInt(row.delta)]));
   const over = (days: number): number | null => deltas.get(days) ?? null;
   return { day1: over(1), day7: over(7), day30: over(30), day90: over(90) };
 }
 
 /**
- * Build the board: the market lead and the ranked company table, with the `updatedAt` stamp.
- * Open counts and rank come live from `listings`; every change counts back from the latest
- * release and is gated per company, and the lead's changes and high count are gated globally too.
+ * Build the board: the market lead, the ranked company table, and the `updatedAt` stamp.
  * @param limit - The most companies to return, by rank
  * @returns The full `GET /api/board` response body
  */
@@ -196,7 +194,7 @@ export async function getBoard(limit: number): Promise<BoardResponse> {
       [limit],
     ),
   ]);
-  const marketRow = marketResult.rows[0] as Record<string, unknown>;
+  const marketRow = marketResult.rows[0];
 
   const totalOpen = Number(marketRow.total_open);
   const marketGated = Number(marketRow.distinct_days) < GATING_DAYS;
@@ -210,7 +208,7 @@ export async function getBoard(limit: number): Promise<BoardResponse> {
   };
   const updatedAt = marketRow.updated_at === null ? null : String(marketRow.updated_at);
 
-  const companies = (rowsResult.rows as Record<string, unknown>[]).map(toBoardCompany);
+  const companies = rowsResult.rows.map(toBoardCompany);
 
   return { market, companies, updatedAt };
 }

@@ -14,9 +14,7 @@ interface UseBoardResult {
 }
 
 /**
- * Fetch the whole board from `GET /api/board` once on mount: every company in one page, so
- * sorting and filtering happen locally and rows can slide to their new places. Guards
- * against a stale response with a cancelled flag.
+ * Fetch the whole board from `GET /api/board` once on mount, for local sorting and filtering.
  * @returns The board payload (null until resolved) plus loading/error state
  */
 export function useBoard(): UseBoardResult {

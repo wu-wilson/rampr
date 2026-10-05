@@ -33,9 +33,7 @@ function pickDepartment(
 }
 
 /**
- * Fetch and normalize a Greenhouse board. Department is taken from the first meaningful
- * entry in the job's inline `departments[]` (skipping the "No Department" placeholder);
- * Greenhouse carries no native workplace flag, so the work mix is inferred from location.
+ * Fetch and normalize a Greenhouse board, inferring the work mix from location.
  * @param boardToken - The Greenhouse board token
  * @returns Normalized listings for the board
  */

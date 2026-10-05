@@ -16,9 +16,7 @@ interface GatedPanelProps {
 }
 
 /**
- * The panel shown wherever a trend surface is still building: a row of `GATING_DAYS` cells filling one
- * per release, over a plain statement of what unlocks and when. Same hairline box as a chart
- * panel, so it holds the figure's place without pretending to be one.
+ * The stand-in for a trend surface still building: `GATING_DAYS` cells filling one per release, over a note.
  * @param props - Releases so far, the surface's name, a closing note, and whether to draw the box
  * @returns The gated panel
  */

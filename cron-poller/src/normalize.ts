@@ -4,9 +4,7 @@ import type { RemoteType } from './adapters/types';
 export type NativeRemoteFlag = 'remote' | 'hybrid' | 'onsite' | null;
 
 /**
- * Infer a role's work mix: a native provider flag wins, otherwise the location is matched
- * case-insensitively for `hybrid` or `remote` and any other non-empty string reads as onsite.
- * With neither signal the role stays 'unknown', so no guess skews the remote share.
+ * Classify a role's work mix: a native flag wins, else the location string, else `unknown`.
  * @param nativeFlag - The provider's native workplace signal, or null when none is given
  * @param location - The role's location string, or null when the feed omitted it
  * @returns The inferred work mix classification
@@ -33,8 +31,7 @@ export function inferRemoteType(
 }
 
 /**
- * Clean a raw department/team value: trim surrounding whitespace and coalesce an empty
- * or missing string to null, so breakdowns never accrue a blank department bucket.
+ * Trim a raw department or team name, coalescing a blank or missing one to null.
  * @param raw - The raw department/team value from a feed, or null/undefined
  * @returns The trimmed department name, or null when absent or blank
  */
