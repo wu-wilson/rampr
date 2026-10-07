@@ -1,12 +1,9 @@
 import React from 'react';
 
-import { BreakdownList, type BreakdownRow } from './BreakdownList';
+import { BreakdownList } from './BreakdownList';
 
 import type { BreakdownEntry, Breakdowns as BreakdownsData } from '../../types/company';
-
-interface BreakdownsProps {
-  breakdowns: BreakdownsData;
-}
+import type { BreakdownRow } from './BreakdownList';
 
 /** Postings with no department or location come back as `Unknown`; the page says "Not stated". */
 const NOT_STATED = 'Not stated';
@@ -14,6 +11,10 @@ const NOT_STATED = 'Not stated';
 /** Rename the server's `Unknown` bucket for the page. */
 function relabel(entries: BreakdownEntry[]): BreakdownRow[] {
   return entries.map((entry) => ({ name: entry.name === 'Unknown' ? NOT_STATED : entry.name, count: entry.count }));
+}
+
+interface BreakdownsProps {
+  breakdowns: BreakdownsData;
 }
 
 /**
@@ -31,7 +32,7 @@ export const Breakdowns: React.FC<BreakdownsProps> = ({ breakdowns }) => {
   ];
 
   return (
-    <div className="grid gap-7 lg:-mx-6 lg:grid-cols-3 lg:gap-0">
+    <div className="grid grid-cols-1 gap-7 lg:-mx-6 lg:grid-cols-3 lg:gap-0">
       <div className="lg:px-6">
         <BreakdownList title="By department" noun="departments" rows={relabel(breakdowns.departments)} />
       </div>

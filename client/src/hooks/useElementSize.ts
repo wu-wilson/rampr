@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+import type { RefObject } from 'react';
 
 /** The measured content-box size of an element, in CSS pixels. */
 interface ElementSize {

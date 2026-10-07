@@ -41,9 +41,9 @@ const SortButton: React.FC<SortButtonProps> = ({ column, label, right, className
     <button
       type="button"
       onClick={() => toggleSort(column)}
-      aria-label={`Sort by ${label}`}
+      aria-label={active ? `Sort by ${label}, ${sort.ascending ? 'ascending' : 'descending'}` : `Sort by ${label}`}
       aria-pressed={active}
-      className={`inline-flex items-center gap-1 transition-colors hover:text-ink ${active ? 'text-ink' : ''} ${
+      className={`inline-flex items-center gap-1 self-stretch transition-colors focus-visible:relative focus-visible:z-[1] ${active ? 'text-ink hover:text-ink-2' : 'hover:text-ink'} ${
         right ? 'justify-end' : ''
       } ${className ?? ''}`}
       style={TRANSITION}

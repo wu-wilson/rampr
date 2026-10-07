@@ -7,7 +7,7 @@ import { GATING_DAYS } from '../../constants/config';
 interface GatedPanelProps {
   /** Daily releases accrued so far for this surface. */
   daysTracked: number;
-  /** What unlocks, e.g. `The trend` or `Changes`. */
+  /** What unlocks, e.g. `The trend` or `The series`. */
   label: string;
   /** A closing sentence, e.g. what is already live. */
   note: string;

@@ -1,6 +1,8 @@
-import { useLayoutEffect, useState, type RefObject } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 import { prefersReducedMotion } from '../lib/motion';
+
+import type { RefObject } from 'react';
 
 /** A revealed section's life: `static` never animates, `pending` waits below the fold, `shown` has risen once. */
 export type RevealPhase = 'static' | 'pending' | 'shown';

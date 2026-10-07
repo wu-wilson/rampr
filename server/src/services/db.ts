@@ -1,10 +1,14 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { Pool } from 'pg';
 
 import { config } from '../config';
 
-import type { QueryResult } from 'pg';
+import type { PoolClient, QueryResult } from 'pg';
 
 let pool: Pool | null = null;
+
+/** The connection holding the current request's snapshot, which `query` reads through while `withSnapshot` runs. */
+const snapshot = new AsyncLocalStorage<PoolClient>();
 
 /** Postgres SQLSTATE / Node socket codes that mean the server is unreachable or unresponsive, as opposed to a genuine query error. */
 const CONNECTION_ERROR_CODES = new Set([
@@ -13,7 +17,7 @@ const CONNECTION_ERROR_CODES = new Set([
   '57014', '57P01', '57P02', '57P03',
 ]);
 
-/** Error thrown by `query` when Postgres is unreachable; carries a 503 + `isPublic` so the tail handler degrades gracefully instead of leaking a 500. */
+/** Error thrown by `query` and `withSnapshot` when Postgres is unreachable; carries a 503 + `isPublic` so the tail handler degrades gracefully instead of leaking a 500. */
 class DatabaseUnavailableError extends Error {
   readonly status = 503;
   readonly isPublic = true;
@@ -53,12 +57,7 @@ export async function initDb(): Promise<void> {
   });
 
   try {
-    const client = await pool.connect();
-    try {
-      await client.query('SELECT 1');
-    } finally {
-      client.release();
-    }
+    await pool.query('SELECT 1');
     console.log('Connected to Postgres');
   } catch (err) {
     // A refused connection to a host with several addresses (localhost) is an AggregateError with an empty message, so fall back to its code.
@@ -78,12 +77,50 @@ export async function query(text: string, params?: unknown[]): Promise<QueryResu
     throw new DatabaseUnavailableError();
   }
   try {
-    return await pool.query<Record<string, unknown>>(text, params);
+    return await (snapshot.getStore() ?? pool).query<Record<string, unknown>>(text, params);
   } catch (err) {
     if (isConnectionError(err)) {
       throw new DatabaseUnavailableError();
     }
     throw err;
+  }
+}
+
+/**
+ * Run a request's reads against one read-only database snapshot, so separate queries agree even while the poller commits mid-request.
+ * @param read - The reads, made through `query` as usual
+ * @returns Whatever `read` resolves to
+ */
+export async function withSnapshot<T>(read: () => Promise<T>): Promise<T> {
+  if (!pool) {
+    throw new DatabaseUnavailableError();
+  }
+  let client: PoolClient;
+  try {
+    client = await pool.connect();
+  } catch (err) {
+    throw isConnectionError(err) ? new DatabaseUnavailableError() : err;
+  }
+  // A checked-out client has no pool listener, so a dropped connection would otherwise crash the process; the next
+  // query fails instead and the request degrades to a 503.
+  let broken = false;
+  const handleError = (): void => {
+    broken = true;
+  };
+  client.on('error', handleError);
+  try {
+    await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
+    const result = await snapshot.run(client, read);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    broken = broken || isConnectionError(err) || err instanceof DatabaseUnavailableError;
+    if (!broken) await client.query('ROLLBACK').catch(() => undefined);
+    throw broken ? new DatabaseUnavailableError() : err;
+  } finally {
+    // A connection that failed mid-request is discarded rather than returned to the pool.
+    client.off('error', handleError);
+    client.release(broken);
   }
 }
 

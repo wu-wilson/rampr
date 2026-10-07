@@ -49,8 +49,8 @@ export const BreakdownList: React.FC<BreakdownListProps> = ({ title, noun, rows 
       ))}
       {rows.length === 0 && <p className="border-b border-line-2 px-5 py-2.5 text-[13.5px] text-ink-3 md:px-0">None listed.</p>}
       {noun && rows.length > BREAKDOWN_PREVIEW_ROWS && (
-        <div className="px-5 pt-2.5 text-[13px] md:px-0">
-          <button type="button" onClick={() => setExpanded((prev) => !prev)} className="link font-medium">
+        <div className="px-5 pt-1 text-[13px] md:px-0">
+          <button type="button" onClick={() => setExpanded((prev) => !prev)} className="link h-[34px] font-medium">
             {expanded ? `Show the first ${BREAKDOWN_PREVIEW_ROWS} ${noun}` : `See all ${formatCount(rows.length)} ${noun}`}
           </button>
         </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { Change } from './Change';
 
@@ -9,6 +9,12 @@ import { formatCount, formatDayDate, formatDelta } from '../../lib/format';
 
 import type { BreadthPoint } from '../../types/market';
 
+/** Plot insets (px). `left` is a floor that widens for the value labels, `right` is zero so the plot runs to the edge. */
+const MARGINS = { top: 14, right: 0, bottom: 24, left: 40 };
+/** Each column's bar starts this share of the column in and spans this share of it. */
+const BAR_INSET = 0.22;
+const BAR_SHARE = 0.56;
+
 interface BreadthChartProps {
   /** Breadth per release (boards rising and falling), oldest first; must not be empty. */
   points: BreadthPoint[];
@@ -18,12 +24,6 @@ interface BreadthChartProps {
   ariaLabel: string;
 }
 
-/** Plot insets (px). `left` is a floor that widens for the value labels, `right` is zero so the plot runs to the edge. */
-const MARGINS = { top: 10, right: 0, bottom: 24, left: 40 };
-/** Each column's bar starts this share of the column in and spans this share of it. */
-const BAR_INSET = 0.22;
-const BAR_SHARE = 0.56;
-
 /**
  * The breadth chart: one bar per release for boards rising minus falling, with a pointer-following readout.
  * @param props - The breadth series, plot height, and an accessible summary
@@ -32,13 +32,10 @@ const BAR_SHARE = 0.56;
 export const BreadthChart: React.FC<BreadthChartProps> = ({ points, height, ariaLabel }) => {
   const [ref, { width }] = useElementSize<HTMLDivElement>();
   const svgRef = useRef<SVGSVGElement>(null);
-  const [hovered, setHovered] = useState<number | null>(null);
+  // The hovered index stays with the series it was read from, so a new series renders unhovered.
+  const [hover, setHover] = useState<{ points: BreadthPoint[]; index: number } | null>(null);
+  const hovered = hover?.points === points ? hover.index : null;
   const active = hovered ?? points.length - 1;
-
-  // Drop the hover selection when the series changes so a retained index can't pin a stale day.
-  useEffect(() => {
-    setHovered(null);
-  }, [points]);
 
   const net = useMemo(() => points.map((point) => ({ date: point.date, value: point.rising - point.falling })), [points]);
   const geometry = useMemo(() => {
@@ -50,9 +47,9 @@ export const BreadthChart: React.FC<BreadthChartProps> = ({ points, height, aria
     if (!geometry || !svgRef.current) return;
     const px = event.clientX - svgRef.current.getBoundingClientRect().left;
     const index = Math.floor((px - geometry.plotLeft) / geometry.band);
-    setHovered(Number.isFinite(index) && index >= 0 && index < points.length ? index : null);
+    setHover(Number.isFinite(index) && index >= 0 && index < points.length ? { points, index } : null);
   };
-  const handlePointerLeave = (): void => setHovered(null);
+  const handlePointerLeave = (): void => setHover(null);
 
   const activePoint = points[active];
 

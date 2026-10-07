@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Emphasis } from './Emphasis';
 import { Rail } from './Rail';
 import { StepMark } from './StepMark';
+import { ToggleGlyph } from './ToggleGlyph';
 
 import { useMeta } from '../../hooks/useMeta';
 
@@ -27,8 +28,13 @@ function stampFor(meta: Meta | null, failed: boolean): { short: string; long: st
   return { short: `Release ${meta.releaseNumber}`, long: formatLongDate(meta.updatedAt) };
 }
 
+interface NavItemProps {
+  to: string;
+  label: string;
+}
+
 /** A desktop nav link: secondary ink that darkens on hover, ink when active. */
-const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
+const NavItem: React.FC<NavItemProps> = ({ to, label }) => (
   <NavLink
     to={to}
     end={to === '/'}
@@ -40,21 +46,6 @@ const NavItem: React.FC<{ to: string; label: string }> = ({ to, label }) => (
     {label}
   </NavLink>
 );
-
-/** The mobile menu toggle: three bars that morph into an X. */
-const ToggleGlyph: React.FC<{ open: boolean }> = ({ open }) => {
-  const bar = 'absolute left-0 h-[1.5px] w-full bg-current origin-center transition-transform';
-  return (
-    <span className="relative block h-[12px] w-[16px] shrink-0" aria-hidden="true">
-      <span className={`${bar} top-0 ${open ? 'translate-y-[5px] rotate-45' : ''}`} style={TRANSITION} />
-      <span
-        className={`absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2 bg-current transition-opacity ${open ? 'opacity-0' : ''}`}
-        style={TRANSITION}
-      />
-      <span className={`${bar} bottom-0 ${open ? '-translate-y-[5px] -rotate-45' : ''}`} style={TRANSITION} />
-    </span>
-  );
-};
 
 /**
  * The masthead: the mark, the routes (behind a toggle below `md`), and the release stamp.
@@ -103,7 +94,7 @@ export const AppNav: React.FC = () => {
               onClick={() => setOpen((prev) => !prev)}
               aria-expanded={open}
               aria-label={open ? 'Close navigation' : 'Open navigation'}
-              className="text-ink-2 transition-colors hover:text-ink md:hidden"
+              className="-mx-3.5 -my-4 px-3.5 py-4 text-ink-2 transition-colors hover:text-ink md:hidden"
               style={TRANSITION}
             >
               <ToggleGlyph open={open} />
@@ -131,7 +122,8 @@ export const AppNav: React.FC = () => {
                 end={link.to === '/'}
                 onClick={handleClose}
                 className={({ isActive }) =>
-                  `border-t border-line-2 px-5 py-3 text-[15px] font-medium transition-colors hover:text-ink ${isActive ? 'text-ink' : 'text-ink-2'}`
+                  `border-t border-line-2 py-3 pl-[max(20px,env(safe-area-inset-left))] pr-[max(20px,env(safe-area-inset-right))] text-[15px] font-medium transition-colors
+                  hover:text-ink focus-visible:outline-offset-[-2px] ${isActive ? 'text-ink' : 'text-ink-2'}`
                 }
                 style={TRANSITION}
               >

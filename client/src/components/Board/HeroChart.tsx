@@ -10,15 +10,15 @@ import { HERO_RELEASES } from '../../constants/config';
 
 import type { MarketIndex } from '../../types/market';
 
+/** The least vertical padding, in postings, around the hero line. */
+const MIN_PAD = 100;
+
 interface HeroChartProps {
   /** The market index, or null while it is still loading or after a failed load. */
   index: MarketIndex | null;
   /** True when the index could not be read, so the chart slot says so. */
   failed: boolean;
 }
-
-/** The least vertical padding, in postings, around the hero line. */
-const MIN_PAD = 100;
 
 /**
  * The hero chart: the last `HERO_RELEASES` market totals filling its panel, or a loading, failed, or building state.
@@ -48,7 +48,7 @@ export const HeroChart: React.FC<HeroChartProps> = ({ index, failed }) => {
       </div>
       <div className="relative flex min-h-[180px] flex-1 flex-col justify-center sm:min-h-[250px] lg:min-h-[180px]">
         {index === null ? (
-          <p className="text-center text-[12.5px] text-ink-3">{failed && 'The series could not be read this time.'}</p>
+          <p className="text-center text-[12.5px] text-ink-3">{failed ? 'The series could not be read this time.' : 'Reading the series.'}</p>
         ) : !live ? (
           <GatedPanel daysTracked={index.daysTracked} label="The series" note="Every count is already live." framed={false} />
         ) : (
@@ -61,7 +61,7 @@ export const HeroChart: React.FC<HeroChartProps> = ({ index, failed }) => {
         )}
       </div>
       {live && (
-        <div className="text-[12.5px] text-ink-3">Each point is the sum of the boards read at that morning’s release. The shaded columns are weekends.</div>
+        <div className="text-[12.5px] text-ink-3">Each point sums every board’s latest count as of that morning’s release. The shaded columns are weekends.</div>
       )}
     </>
   );

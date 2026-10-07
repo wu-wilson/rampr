@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { Change } from './Change';
 import { Emphasis } from './Emphasis';
@@ -12,6 +12,9 @@ import { formatCount, formatDayDate } from '../../lib/format';
 
 import type { SeriesPoint } from '../../lib/series';
 
+/** Plot insets (px). `left` is a floor that widens for the value labels, `right` is zero so the plot runs to the edge. */
+const MARGINS = { top: 14, right: 0, bottom: 24, left: 40 };
+
 interface LineChartProps {
   /** The daily series, oldest first; must not be empty. */
   points: SeriesPoint[];
@@ -23,9 +26,6 @@ interface LineChartProps {
   ariaLabel: string;
 }
 
-/** Plot insets (px). `left` is a floor that widens for the value labels, `right` is zero so the plot runs to the edge. */
-const MARGINS = { top: 14, right: 0, bottom: 24, left: 40 };
-
 /**
  * A daily line chart with weekend bands, a fitted value axis, and a readout that follows the pointer.
  * @param props - The series, desktop plot height (or `fill`), vertical padding, and an accessible summary
@@ -35,15 +35,12 @@ export const LineChart: React.FC<LineChartProps> = ({ points, height, minPad, ar
   const [ref, { width, height: filled }] = useElementSize<HTMLDivElement>();
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
-  const [hovered, setHovered] = useState<number | null>(null);
+  // The hovered index stays with the series it was read from, so a new series (a range switch) renders unhovered.
+  const [hover, setHover] = useState<{ points: SeriesPoint[]; index: number } | null>(null);
   useDrawReveal(pathRef, useRevealPhase());
 
-  // Drop the hover selection when the series changes so a retained index can't pin a stale day.
-  useEffect(() => {
-    setHovered(null);
-  }, [points]);
-
   const last = points.length - 1;
+  const hovered = hover?.points === points ? hover.index : null;
   const active = hovered ?? last;
   const fill = height === 'fill';
   const plotHeight = fill ? filled : chartHeight(width, height);
@@ -57,9 +54,9 @@ export const LineChart: React.FC<LineChartProps> = ({ points, height, minPad, ar
     const px = event.clientX - svgRef.current.getBoundingClientRect().left;
     const span = geometry.plotRight - geometry.plotLeft;
     const index = Math.round(((px - geometry.plotLeft) / span) * last);
-    setHovered(Number.isFinite(index) && index >= 0 && index <= last ? index : null);
+    setHover(Number.isFinite(index) && index >= 0 && index <= last ? { points, index } : null);
   };
-  const handlePointerLeave = (): void => setHovered(null);
+  const handlePointerLeave = (): void => setHover(null);
 
   const activePoint = points[active];
 

@@ -1,9 +1,9 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Caption } from '../common/Caption';
 import { Reveal } from '../common/Reveal';
 import { CompanyRow } from './CompanyRow';
-import { TableControls, type SectorOption } from './TableControls';
+import { TableControls } from './TableControls';
 import { TableHeader } from './TableHeader';
 
 import { useFlipReorder } from '../../hooks/useFlipReorder';
@@ -15,11 +15,7 @@ import { naturalAscending } from '../../lib/sort';
 import { TABLE_PREVIEW_ROWS } from '../../constants/config';
 
 import type { BoardCompany, BoardSort } from '../../types/board';
-
-interface ReleaseTableProps {
-  /** Every company on the board. */
-  companies: BoardCompany[];
-}
+import type { SectorOption } from './TableControls';
 
 /** Order the rows for the active sort. */
 function orderRows(rows: BoardCompany[], sort: BoardSort): BoardCompany[] {
@@ -41,6 +37,11 @@ function orderRows(rows: BoardCompany[], sort: BoardSort): BoardCompany[] {
   return [...rows].sort(compare[sort.key]);
 }
 
+interface ReleaseTableProps {
+  /** Every company on the board. */
+  companies: BoardCompany[];
+}
+
 /**
  * The company table, sorted and filtered locally and showing `TABLE_PREVIEW_ROWS` rows until expanded.
  * @param props - Every company on the board
@@ -48,6 +49,7 @@ function orderRows(rows: BoardCompany[], sort: BoardSort): BoardCompany[] {
  */
 export const ReleaseTable: React.FC<ReleaseTableProps> = ({ companies }) => {
   const sector = useFilterStore((s) => s.sector);
+  const setSector = useFilterStore((s) => s.setSector);
   const sort = useFilterStore((s) => s.sort);
   const search = useFilterStore((s) => s.search);
   const [expanded, setExpanded] = useState(false);
@@ -60,13 +62,19 @@ export const ReleaseTable: React.FC<ReleaseTableProps> = ({ companies }) => {
     return [...seen].map(([slug, label]) => ({ slug, label })).sort((a, b) => a.label.localeCompare(b.label));
   }, [companies]);
 
+  // A sector the board doesn't list (a stale or mistyped link) is ignored, then cleared from the store and the URL.
+  const sectorListed = sectors.some((option) => option.slug === sector);
+  useEffect(() => {
+    if (sector !== null && !sectorListed) setSector(null);
+  }, [sector, sectorListed, setSector]);
+
   const matching = useMemo(() => {
     const query = search.trim().toLowerCase();
     const rows = companies.filter(
-      (company) => (!sector || company.sector === sector) && (!query || company.name.toLowerCase().includes(query)),
+      (company) => (!sectorListed || company.sector === sector) && (!query || company.name.toLowerCase().includes(query)),
     );
     return orderRows(rows, sort);
-  }, [companies, sector, search, sort]);
+  }, [companies, sector, sectorListed, search, sort]);
 
   const shown = expanded ? matching : matching.slice(0, TABLE_PREVIEW_ROWS);
 
@@ -83,8 +91,7 @@ export const ReleaseTable: React.FC<ReleaseTableProps> = ({ companies }) => {
           ))}
           {shown.length === 0 && (
             <p className="border-b border-line px-5 py-4 text-[14px] text-ink-3 md:px-4">
-              {search || sector ? 'No company matches. ' : 'No boards were read this release. '}
-              {search && sector ? 'Clear the search or choose another sector.' : search ? 'Try another name.' : sector ? 'Choose another sector.' : ''}
+              No company matches. {sectorListed ? 'Clear the search or choose another sector.' : 'Try another name.'}
             </p>
           )}
         </div>

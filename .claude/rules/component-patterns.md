@@ -9,9 +9,9 @@ paths:
 ## File Structure
 
 1. Imports
-2. Props interface (with JSDoc on non-obvious props)
-3. Component (with JSDoc above)
-4. Helper functions
+2. Constants, helper functions, and subcomponents (each subcomponent's Props interface directly above it, unless it reuses the component's own)
+3. Props interface (with JSDoc on non-obvious props)
+4. Component (with JSDoc above)
 
 ## State Management
 

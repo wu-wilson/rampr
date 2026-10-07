@@ -12,7 +12,7 @@ export interface SectorTotal {
   open: number;
   /** Share relative to the largest sector (0..100), for bar geometry. */
   pct: number;
-  /** Signed 7-day change across the sector, or null while gated. */
+  /** Signed 7-day change across the sector, or null while gated or when no board in it has a change yet. */
   delta7d: number | null;
 }
 

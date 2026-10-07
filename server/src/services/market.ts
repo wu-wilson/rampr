@@ -29,7 +29,7 @@ interface SectorTotal {
 interface IndexPoint {
   /** Snapshot date (`YYYY-MM-DD`). */
   date: string;
-  /** `SUM(open_count)` across all companies on that date. */
+  /** Sum of each company's latest `open_count` on or before that date, so a company whose feed failed holds its last count. */
   totalOpen: number;
 }
 
@@ -40,7 +40,7 @@ interface MarketIndex {
   points: IndexPoint[];
 }
 
-/** One release's breadth: how many boards added postings versus removed them since the previous release. */
+/** One release's breadth: how many boards added postings versus removed them since each board's previous snapshot. */
 interface BreadthPoint {
   /** Snapshot date (`YYYY-MM-DD`). */
   date: string;
@@ -129,56 +129,55 @@ async function fetchMovers(direction: 'up' | 'down'): Promise<Mover[]> {
  * @returns The full `GET /api/market` response body
  */
 export async function getMarket(): Promise<MarketResponse> {
-  const [totalsResult, sectorsResult] = await Promise.all([
-    query(
-      `SELECT
-         (SELECT COUNT(*)::int FROM listings)                            AS total_open,
-         (SELECT COUNT(DISTINCT snapshot_date)::int FROM daily_snapshots) AS distinct_days,
-         to_char((SELECT MAX(snapshot_date) FROM daily_snapshots), 'YYYY-MM-DD') AS updated_at`,
-    ),
-    query(
-      `WITH live AS (
-         SELECT c.id, c.sector_slug, COUNT(l.id)::int AS open_now
-           FROM companies c
-           LEFT JOIN listings l ON l.company_id = c.id
-          GROUP BY c.id
-       ),
-       sector_open AS (
-         SELECT s.slug, s.label, s.sort_order, COALESCE(SUM(live.open_now), 0)::int AS open
-           FROM sectors s
-           LEFT JOIN live ON live.sector_slug = s.slug
-          GROUP BY s.slug, s.label, s.sort_order
-       ),
-       prior AS (
-         SELECT DISTINCT ON (company_id) company_id, open_count AS prior_open
-           FROM daily_snapshots
-          WHERE snapshot_date <= (SELECT MAX(snapshot_date) FROM daily_snapshots) - 7
-          ORDER BY company_id, snapshot_date DESC
-       ),
-       tracked AS (
-         SELECT company_id FROM daily_snapshots GROUP BY company_id HAVING COUNT(*) >= $1
-       ),
-       sector_change AS (
-         SELECT live.sector_slug, SUM(live.open_now - p.prior_open)::int AS delta
-           FROM prior p
-           JOIN tracked ON tracked.company_id = p.company_id
-           JOIN live ON live.id = p.company_id
-          GROUP BY live.sector_slug
-       )
-       SELECT
-         so.slug,
-         so.label,
-         so.open,
-         CASE WHEN MAX(so.open) OVER () > 0
-              THEN ROUND(so.open::numeric / MAX(so.open) OVER () * 100)::int
-              ELSE 0 END AS pct,
-         sc.delta
-       FROM sector_open so
-       LEFT JOIN sector_change sc ON sc.sector_slug = so.slug
-       ORDER BY so.open DESC, so.sort_order ASC, so.slug ASC`,
-      [GATING_DAYS],
-    ),
-  ]);
+  const totalsResult = await query(
+    `SELECT
+       (SELECT COUNT(*)::int FROM listings)                            AS total_open,
+       (SELECT COUNT(DISTINCT snapshot_date)::int FROM daily_snapshots) AS distinct_days,
+       to_char((SELECT MAX(snapshot_date) FROM daily_snapshots), 'YYYY-MM-DD') AS updated_at`,
+  );
+
+  const sectorsResult = await query(
+    `WITH live AS (
+       SELECT c.id, c.sector_slug, COUNT(l.id)::int AS open_now
+         FROM companies c
+         LEFT JOIN listings l ON l.company_id = c.id
+        GROUP BY c.id
+     ),
+     sector_open AS (
+       SELECT s.slug, s.label, s.sort_order, COALESCE(SUM(live.open_now), 0)::int AS open
+         FROM sectors s
+         LEFT JOIN live ON live.sector_slug = s.slug
+        GROUP BY s.slug, s.label, s.sort_order
+     ),
+     prior AS (
+       SELECT DISTINCT ON (company_id) company_id, open_count AS prior_open
+         FROM daily_snapshots
+        WHERE snapshot_date <= (SELECT MAX(snapshot_date) FROM daily_snapshots) - 7
+        ORDER BY company_id, snapshot_date DESC
+     ),
+     tracked AS (
+       SELECT company_id FROM daily_snapshots GROUP BY company_id HAVING COUNT(*) >= $1
+     ),
+     sector_change AS (
+       SELECT live.sector_slug, SUM(live.open_now - p.prior_open)::int AS delta
+         FROM prior p
+         JOIN tracked ON tracked.company_id = p.company_id
+         JOIN live ON live.id = p.company_id
+        GROUP BY live.sector_slug
+     )
+     SELECT
+       so.slug,
+       so.label,
+       so.open,
+       CASE WHEN MAX(so.open) OVER () > 0
+            THEN ROUND(so.open::numeric / MAX(so.open) OVER () * 100)::int
+            ELSE 0 END AS pct,
+       sc.delta
+     FROM sector_open so
+     LEFT JOIN sector_change sc ON sc.sector_slug = so.slug
+     ORDER BY so.open DESC, so.sort_order ASC, so.slug ASC`,
+    [GATING_DAYS],
+  );
   const totalsRow = totalsResult.rows[0];
   const distinctDays = Number(totalsRow.distinct_days);
   const gated = distinctDays < GATING_DAYS;
@@ -201,34 +200,46 @@ export async function getMarket(): Promise<MarketResponse> {
   const movers: Movers = { gated, heating: [], cooling: [] };
 
   if (!gated) {
-    const [indexResult, breadthResult, heating, cooling] = await Promise.all([
-      query(
-        `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, SUM(open_count)::int AS total_open
+    // Each company counts at its latest snapshot on or before the date, so a failed fetch or a poll still running
+    // holds its last count instead of dropping out of the total.
+    const indexResult = await query(
+      `WITH spans AS (
+         SELECT open_count, snapshot_date AS valid_from,
+                LEAD(snapshot_date) OVER (PARTITION BY company_id ORDER BY snapshot_date) AS valid_until
+           FROM daily_snapshots
+       ),
+       dates AS (
+         SELECT DISTINCT snapshot_date
            FROM daily_snapshots
           WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $1::int
-          GROUP BY snapshot_date
-          ORDER BY snapshot_date ASC`,
-        [TREND_WINDOW_DAYS],
-      ),
-      query(
-        `WITH stepped AS (
-           SELECT snapshot_date, open_count,
-                  LAG(open_count) OVER (PARTITION BY company_id ORDER BY snapshot_date) AS prev_count
-             FROM daily_snapshots
-         )
-         SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date,
-                COUNT(*) FILTER (WHERE open_count > prev_count)::int AS rising,
-                COUNT(*) FILTER (WHERE open_count < prev_count)::int AS falling
-           FROM stepped
-          WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $1::int
-          GROUP BY snapshot_date
-         HAVING COUNT(prev_count) > 0
-          ORDER BY snapshot_date ASC`,
-        [TREND_WINDOW_DAYS],
-      ),
-      fetchMovers('up'),
-      fetchMovers('down'),
-    ]);
+       )
+       SELECT to_char(d.snapshot_date, 'YYYY-MM-DD') AS date, SUM(s.open_count)::int AS total_open
+         FROM dates d
+         JOIN spans s ON s.valid_from <= d.snapshot_date AND (s.valid_until IS NULL OR s.valid_until > d.snapshot_date)
+        GROUP BY d.snapshot_date
+        ORDER BY d.snapshot_date ASC`,
+      [TREND_WINDOW_DAYS],
+    );
+
+    const breadthResult = await query(
+      `WITH stepped AS (
+         SELECT snapshot_date, open_count,
+                LAG(open_count) OVER (PARTITION BY company_id ORDER BY snapshot_date) AS prev_count
+           FROM daily_snapshots
+       )
+       SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date,
+              COUNT(*) FILTER (WHERE open_count > prev_count)::int AS rising,
+              COUNT(*) FILTER (WHERE open_count < prev_count)::int AS falling
+         FROM stepped
+        WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $1::int
+        GROUP BY snapshot_date
+       HAVING COUNT(prev_count) > 0
+        ORDER BY snapshot_date ASC`,
+      [TREND_WINDOW_DAYS],
+    );
+
+    const heating = await fetchMovers('up');
+    const cooling = await fetchMovers('down');
     index.points = indexResult.rows.map((row) => ({
       date: String(row.date),
       totalOpen: Number(row.total_open),

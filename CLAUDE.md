@@ -44,7 +44,7 @@ rampr is a public, read-only hiring board presented as a daily statistical relea
 
 ## Rules (path-scoped — loaded automatically when editing matching files)
 
-- `.claude/rules/code-style.md` — TypeScript, JSDoc, import ordering, naming, error handling. Loads for `client/**/*.{ts,tsx}`, `server/**/*.ts`, `cron-poller/**/*.ts`, and `cron-cleanup/**/*.ts`.
+- `.claude/rules/code-style.md` — TypeScript, JSDoc, import ordering, naming, error handling. Loads for `client/src/**/*.{ts,tsx}`, `server/**/*.ts`, `cron-poller/**/*.ts`, and `cron-cleanup/**/*.ts`.
 - `.claude/rules/component-patterns.md` — React file structure, state management, derived values. Loads for `client/src/**/*.{ts,tsx}`.
 - `.claude/rules/styling.md` — Theming, visual language, interactive states, animation. Loads for `client/src/**/*.{tsx,css}` and `client/tailwind.config.js`.
 - `.claude/rules/responsive.md` — Mobile-first breakpoints, the ultra-wide rail, viewport units, safe-area handling. Loads for `client/src/**/*.{tsx,css}`.

@@ -7,14 +7,15 @@ import { GATING_DAYS, SERIES_DAYS } from '../../constants/config';
 import type { SeriesExtremes } from '../../lib/series';
 import type { CompanyResponse } from '../../types/company';
 
-interface CompanyFactsProps {
-  data: CompanyResponse;
-  /** The series high and low, or null while the series is gated. */
-  extremes: SeriesExtremes | null;
+interface FactProps {
+  label: string;
+  value: React.ReactNode;
+  /** A small qualifier after the value. */
+  small?: string;
 }
 
 /** One cell of the facts row: a label over a value with an optional small qualifier. */
-const Fact: React.FC<{ label: string; value: React.ReactNode; small?: string }> = ({ label, value, small }) => (
+const Fact: React.FC<FactProps> = ({ label, value, small }) => (
   <div className="py-3.5 pl-5 pr-4 last:col-span-full sm:last:col-span-1 md:pl-0">
     <dt className="text-[12.5px] font-medium text-ink-3">{label}</dt>
     <dd className="mt-[3px] whitespace-nowrap text-[17px] font-medium tracking-[-0.015em]">
@@ -23,6 +24,12 @@ const Fact: React.FC<{ label: string; value: React.ReactNode; small?: string }> 
     </dd>
   </div>
 );
+
+interface CompanyFactsProps {
+  data: CompanyResponse;
+  /** The series high and low, or null while the series is gated. */
+  extremes: SeriesExtremes | null;
+}
 
 /**
  * The facts row under the company lead: overall and sector rank, sector share, and the series high and low.

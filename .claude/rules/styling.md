@@ -37,7 +37,7 @@ rampr reads as a daily statistical release: white paper, ink, hairlines, light h
 
 ## Interactive States
 
-- Every clickable element has a hover state via `transition-colors` at `DURATION.normal` on `EASING` (the shared `TRANSITION` style), and a visible focus ring (`:focus-visible` 2px ink outline, 2px offset). Row hovers use `bg-hover`, the width of the row's rules so the highlight never overhangs. Text links use the `.link` class (ink text, grey underline that darkens).
+- Every clickable element has a hover state via `transition-colors` at `DURATION.normal` on `EASING` (the shared `TRANSITION` style), and a visible focus ring (`:focus-visible` 2px ink outline, 2px offset, drawn inset on rows and drawer links that run to the screen edge so it can't be clipped). Row hovers use `bg-hover`, the width of the row's rules so the highlight never overhangs. Text links use the `.link` class (ink text, grey underline that darkens).
 
 ## Animation
 

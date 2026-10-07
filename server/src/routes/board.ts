@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import { BoardQuerySchema } from '../schemas/boardQuery';
 import { getBoard } from '../services/board';
+import { withSnapshot } from '../services/db';
 
 import type { BoardResponse } from '../services/board';
 
@@ -16,7 +17,7 @@ router.get('/board', async (req, res, next) => {
       return;
     }
 
-    const response: BoardResponse = await getBoard(parsed.data.limit);
+    const response: BoardResponse = await withSnapshot(() => getBoard(parsed.data.limit));
     res.json(response);
   } catch (err) {
     next(err);

@@ -1,8 +1,10 @@
-import { useLayoutEffect, useRef, type RefObject } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import { prefersReducedMotion } from '../lib/motion';
 
 import { DURATION, EASING } from '../constants/animations';
+
+import type { RefObject } from 'react';
 
 /** Delay (ms) before an entering row starts to fade in, so it lands after its neighbours move. */
 const ENTER_DELAY = 100;

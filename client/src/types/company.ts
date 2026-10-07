@@ -68,7 +68,7 @@ export interface Trajectory {
 export interface CompanyResponse {
   company: CompanyInfo;
   open: number;
-  /** Signed 7-day change in open roles, or null when gated or without a release that old. */
+  /** Signed 7-day change in open roles, or null while the company is gated. */
   delta7d: number | null;
   breakdowns: Breakdowns;
   trajectory: Trajectory;

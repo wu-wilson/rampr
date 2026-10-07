@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { fetchJson } from './fetchJson';
 import { cleanDepartment, inferRemoteType } from '../normalize';
+import { fetchJson } from './fetchJson';
 
 import type { Adapter, NormalizedListing } from './types';
 

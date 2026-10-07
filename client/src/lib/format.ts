@@ -59,11 +59,10 @@ export function formatDelta(delta: number): string {
 /**
  * Format a change as a signed one-decimal percent of the value it started from.
  * @param delta - The signed change
- * @param current - The value after the change; the base is `current − delta`, and a base at or below zero reads `0.0%`
+ * @param base - The value it started from; a base at or below zero reads `0.0%`
  * @returns A signed one-decimal percent (e.g. `+1.4%`, `−0.3%`, `0.0%`)
  */
-export function formatSignedPercent(delta: number, current: number): string {
-  const base = current - delta;
+export function formatSignedPercent(delta: number, base: number): string {
   if (base <= 0) return '0.0%';
   const pct = Math.abs((delta / base) * 100).toFixed(1);
   if (delta > 0) return `+${pct}%`;
@@ -81,7 +80,7 @@ export function formatDate(iso: string): string {
 }
 
 /**
- * Format an ISO date as month and day only, for axis ticks and table rows.
+ * Format an ISO date as month and day only, for axis ticks and the facts row.
  * @param iso - An ISO date string
  * @returns A short label (e.g. `Sep 21`)
  */

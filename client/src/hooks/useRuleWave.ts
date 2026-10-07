@@ -1,8 +1,10 @@
-import { useEffect, type RefObject } from 'react';
+import { useEffect } from 'react';
 
 import { prefersReducedMotion } from '../lib/motion';
 
 import { AMBIENT, EASING_SYMMETRIC } from '../constants/animations';
+
+import type { RefObject } from 'react';
 
 /**
  * Run the ledger wave down the hero's rules on a loop, skipped under reduced motion and while the tab is hidden.

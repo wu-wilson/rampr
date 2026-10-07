@@ -23,7 +23,7 @@ export const CompanyRow: React.FC<CompanyRowProps> = ({ company }) => (
   <Link
     to={`/company/${company.slug}`}
     data-key={company.slug}
-    className={`grid h-[46px] items-center gap-3.5 border-b border-line-2 bg-paper text-[14px] transition-colors last:border-line hover:bg-hover ${BOARD_COLUMNS}`}
+    className={`grid h-[46px] items-center gap-3.5 border-b border-line-2 bg-paper text-[14px] transition-colors last:border-line hover:bg-hover focus-visible:outline-offset-[-2px] ${BOARD_COLUMNS}`}
     style={TRANSITION}
   >
     <span className="text-right text-[13px] text-ink-3">{company.rank}</span>

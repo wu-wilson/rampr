@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Caption } from '../common/Caption';
 import { GatedPanel } from '../common/GatedPanel';
 import { LineChart } from '../common/LineChart';
-import { RangeTabs, type RangeTab } from '../common/RangeTabs';
+import { RangeTabs } from '../common/RangeTabs';
 
 import { formatCount, formatDate } from '../../lib/format';
 import { prefersReducedMotion } from '../../lib/motion';
@@ -12,6 +12,13 @@ import { DURATION, TRANSITION } from '../../constants/animations';
 
 import type { SeriesPoint } from '../../lib/series';
 import type { Trajectory } from '../../types/company';
+import type { RangeTab } from '../common/RangeTabs';
+
+/** Plot height (px) and the least vertical padding, in postings, around the line. */
+const HEIGHT = 280;
+const MIN_PAD = 8;
+/** The trailing windows offered, in releases labelled as days, shortest first with "all" after; unrelated to the gating threshold. */
+const WINDOWS = [14, 30];
 
 interface TrajectorySectionProps {
   /** The company name, for the accessible summary. */
@@ -20,12 +27,6 @@ interface TrajectorySectionProps {
   /** The trajectory as a plain series, oldest first. */
   series: SeriesPoint[];
 }
-
-/** Plot height (px) and the least vertical padding, in postings, around the line. */
-const HEIGHT = 280;
-const MIN_PAD = 8;
-/** The trailing windows offered, in releases labelled as days, shortest first with "all" after; unrelated to the gating threshold. */
-const WINDOWS = [14, 30];
 
 /**
  * The company chart with range tabs that crossfade between windows, or the building panel while gated.

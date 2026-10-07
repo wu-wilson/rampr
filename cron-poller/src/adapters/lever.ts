@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
+import { cleanDepartment, inferRemoteType } from '../normalize';
 import { fetchJson } from './fetchJson';
-import { cleanDepartment, inferRemoteType, type NativeRemoteFlag } from '../normalize';
 
+import type { NativeRemoteFlag } from '../normalize';
 import type { Adapter, NormalizedListing } from './types';
 
 /** Defensive schema for a single Lever posting (`mode=json`). */

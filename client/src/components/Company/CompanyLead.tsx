@@ -11,19 +11,15 @@ import { GATING_DAYS, SERIES_DAYS } from '../../constants/config';
 import type { SeriesExtremes } from '../../lib/series';
 import type { CompanyResponse } from '../../types/company';
 
-interface CompanyLeadProps {
-  data: CompanyResponse;
-  /** The series high and low, or null while the series is gated. */
-  extremes: SeriesExtremes | null;
-}
-
 /** The company's lead sentences: the seven-day move, whether it landed at a series high or low, then how many postings are remote. */
 const LeadSentence: React.FC<CompanyLeadProps> = ({ data, extremes }) => {
   const { open, delta7d, breakdowns } = data;
   const remote = breakdowns.workMix.remote.count;
-  // With nothing open there is nothing to split, so the remote clause drops out.
+  // With nothing open there is nothing to split, so the remote clause drops out; a lone posting reads as "it".
   const remoteClause =
-    open === 0 ? null : remote === 0 ? (
+    open === 0 ? null : open === 1 ? (
+      <>It is {remote === 1 ? '' : 'not '}listed as remote.</>
+    ) : remote === 0 ? (
       <>None are listed as remote.</>
     ) : (
       <>
@@ -34,8 +30,8 @@ const LeadSentence: React.FC<CompanyLeadProps> = ({ data, extremes }) => {
   if (delta7d === null) {
     return (
       <>
-        <Emphasis>{formatCount(open)}</Emphasis> open postings this release. {remoteClause}{' '}
-        {data.trajectory.gated ? `Changes appear once the series has ${GATING_DAYS} releases.` : 'No release seven days back to compare with yet.'}
+        <Emphasis>{formatCount(open)}</Emphasis> {open === 1 ? 'open posting' : 'open postings'} this release. {remoteClause}{' '}
+        Changes appear once the series has {GATING_DAYS} releases.
       </>
     );
   }
@@ -64,6 +60,12 @@ const LeadSentence: React.FC<CompanyLeadProps> = ({ data, extremes }) => {
   );
 };
 
+interface CompanyLeadProps {
+  data: CompanyResponse;
+  /** The series high and low, or null while the series is gated. */
+  extremes: SeriesExtremes | null;
+}
+
 /**
  * The company lead: the name and sentence beside the open-postings figure and its seven-day change.
  * @param props - The company payload and the series extremes
@@ -86,7 +88,7 @@ export const CompanyLead: React.FC<CompanyLeadProps> = ({ data, extremes }) => (
       </div>
       <div className="mt-2 text-[15px]">
         {data.delta7d === null ? (
-          <span className="text-ink-3">{data.trajectory.gated ? `changes at ${GATING_DAYS} releases` : 'no release that far back'}</span>
+          <span className="text-ink-3">changes at {GATING_DAYS} releases</span>
         ) : (
           <>
             <Change delta={data.delta7d} /> <span className="text-ink-3">over 7 days</span>

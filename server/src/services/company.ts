@@ -78,7 +78,7 @@ export interface CompanyResponse {
   company: CompanyProfile;
   /** Live open-role count (`COUNT(listings)`). */
   open: number;
-  /** Signed change vs. the snapshot on or before 7 days before the latest release; `null` when gated or no such snapshot exists. */
+  /** Signed change vs. the snapshot on or before 7 days before the latest release; `null` only while gated, since a company past the gate always has that snapshot. */
   delta7d: number | null;
   breakdowns: Breakdowns;
   trajectory: Trajectory;
@@ -87,6 +87,12 @@ export interface CompanyResponse {
 /** Map a raw `GROUP BY` breakdown row to a `BreakdownEntry`. */
 function toBreakdownEntry(row: Record<string, unknown>): BreakdownEntry {
   return { name: String(row.name), count: Number(row.count) };
+}
+
+/** Narrow the `ats_provider` column to an `AtsSource`; its check constraint allows nothing else, so any other value throws. */
+function toAtsSource(value: unknown): AtsSource {
+  if (value === 'greenhouse' || value === 'lever' || value === 'ashby') return value;
+  throw new Error(`Unknown ATS provider: ${String(value)}`);
 }
 
 /** Build a single work-mix slice as a share of the company's open roles. */
@@ -150,43 +156,44 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
   const daysTracked = Number(base.days_tracked);
   const gated = daysTracked < GATING_DAYS;
 
-  const [departmentsResult, locationsResult, workMixResult, trajectoryResult] = await Promise.all([
-    query(
-      `SELECT COALESCE(department, 'Unknown') AS name, COUNT(*)::int AS count
-         FROM listings
-        WHERE company_id = $1
-        GROUP BY COALESCE(department, 'Unknown')
-        ORDER BY count DESC, name ASC`,
-      [companyId],
-    ),
-    query(
-      `SELECT COALESCE(location, 'Unknown') AS name, COUNT(*)::int AS count
-         FROM listings
-        WHERE company_id = $1
-        GROUP BY COALESCE(location, 'Unknown')
-        ORDER BY count DESC, name ASC`,
-      [companyId],
-    ),
-    query(
-      `SELECT
-         COUNT(*) FILTER (WHERE remote_type = 'remote')::int  AS remote,
-         COUNT(*) FILTER (WHERE remote_type = 'hybrid')::int  AS hybrid,
-         COUNT(*) FILTER (WHERE remote_type = 'onsite')::int  AS onsite,
-         COUNT(*) FILTER (WHERE remote_type = 'unknown')::int AS unknown
+  const departmentsResult = await query(
+    `SELECT COALESCE(department, 'Unknown') AS name, COUNT(*)::int AS count
        FROM listings
-       WHERE company_id = $1`,
-      [companyId],
-    ),
-    gated
-      ? null
-      : query(
-          `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, open_count AS count
-             FROM daily_snapshots
-            WHERE company_id = $1 AND snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $2::int
-            ORDER BY snapshot_date ASC`,
-          [companyId, TREND_WINDOW_DAYS],
-        ),
-  ]);
+      WHERE company_id = $1
+      GROUP BY COALESCE(department, 'Unknown')
+      ORDER BY count DESC, name ASC`,
+    [companyId],
+  );
+
+  const locationsResult = await query(
+    `SELECT COALESCE(location, 'Unknown') AS name, COUNT(*)::int AS count
+       FROM listings
+      WHERE company_id = $1
+      GROUP BY COALESCE(location, 'Unknown')
+      ORDER BY count DESC, name ASC`,
+    [companyId],
+  );
+
+  const workMixResult = await query(
+    `SELECT
+       COUNT(*) FILTER (WHERE remote_type = 'remote')::int  AS remote,
+       COUNT(*) FILTER (WHERE remote_type = 'hybrid')::int  AS hybrid,
+       COUNT(*) FILTER (WHERE remote_type = 'onsite')::int  AS onsite,
+       COUNT(*) FILTER (WHERE remote_type = 'unknown')::int AS unknown
+     FROM listings
+     WHERE company_id = $1`,
+    [companyId],
+  );
+
+  const trajectoryResult = gated
+    ? null
+    : await query(
+        `SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, open_count AS count
+           FROM daily_snapshots
+          WHERE company_id = $1 AND snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $2::int
+          ORDER BY snapshot_date ASC`,
+        [companyId, TREND_WINDOW_DAYS],
+      );
 
   const mixRow = workMixResult.rows[0];
   const remote = Number(mixRow.remote);
@@ -216,8 +223,7 @@ export async function getCompany(slug: string): Promise<CompanyResponse | null> 
       sectorOpen: Number(base.sector_open),
       trackedSince: String(base.tracked_since),
       careersUrl: base.careers_url === null ? null : String(base.careers_url),
-      // `ats_provider` is DB-constrained to the provider enum, so the union narrowing is safe.
-      source: String(base.ats_provider) as AtsSource,
+      source: toAtsSource(base.ats_provider),
     },
     open,
     delta7d: changeSince(open, toNullableInt(base.prior_open), daysTracked),

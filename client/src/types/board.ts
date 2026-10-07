@@ -7,8 +7,8 @@ export interface BoardSort {
   ascending: boolean;
 }
 
-/** Signed market-wide changes over the trailing windows; each null while gated or without a prior release. */
-interface MarketChanges {
+/** One figure per trailing window; each null while gated or without a prior release. */
+interface WindowFigures {
   day1: number | null;
   day7: number | null;
   day30: number | null;
@@ -19,7 +19,10 @@ interface MarketChanges {
 export interface MarketSummary {
   totalOpen: number;
   companyCount: number;
-  changes: MarketChanges;
+  /** Signed market-wide change over each window. */
+  changes: WindowFigures;
+  /** The prior total each change is measured from, over the same boards, so its percentage is of what those boards had. */
+  changeBases: WindowFigures;
   /** Boards with open roles and at least `GATING_DAYS` releases whose count today equals or beats every release in the last 90 days, or null when gated. */
   atHigh90: number | null;
   /** Share of all open roles held by the ten largest boards, as an integer percent. */
@@ -36,7 +39,7 @@ export interface BoardCompany {
   /** Human-readable sector label, e.g. `Fintech`. */
   sectorLabel: string;
   open: number;
-  /** Signed 7-day change in open roles, or null when gated or without a release that old. */
+  /** Signed 7-day change in open roles, or null while the company is gated. */
   delta7d: number | null;
   /** Signed 30-day change in open roles, or null when gated or without a release that old. */
   delta30d: number | null;

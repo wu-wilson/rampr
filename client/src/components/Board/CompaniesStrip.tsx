@@ -4,8 +4,12 @@ import { formatCount } from '../../lib/format';
 
 import type { BoardCompany } from '../../types/board';
 
+interface CompanyMarkProps {
+  slug: string;
+}
+
 /** A company's mark from `public/marks/<slug>.png` in a fixed 22px box, kept empty if the file fails so the track never shifts. */
-const CompanyMark: React.FC<{ slug: string }> = ({ slug }) => {
+const CompanyMark: React.FC<CompanyMarkProps> = ({ slug }) => {
   const [failed, setFailed] = useState(false);
   return (
     <span className="block h-[22px] w-[22px] shrink-0">

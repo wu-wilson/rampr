@@ -1,10 +1,11 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { prefersReducedMotion } from '../lib/motion';
 
 import { AMBIENT, EASING } from '../constants/animations';
 
 import type { RevealPhase } from './useReveal';
+import type { RefObject } from 'react';
 
 /**
  * Draw a chart line left to right as its section first enters view.

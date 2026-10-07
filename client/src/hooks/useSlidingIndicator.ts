@@ -1,4 +1,6 @@
-import { useLayoutEffect, useState, type RefObject } from 'react';
+import { useLayoutEffect, useState } from 'react';
+
+import type { RefObject } from 'react';
 
 /** The indicator's unscaled width (px); `scaleX` stretches it to the active tab. */
 export const INDICATOR_BASE_WIDTH = 60;

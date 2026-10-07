@@ -1,6 +1,8 @@
-import { useLayoutEffect, type RefObject } from 'react';
+import { useLayoutEffect } from 'react';
 
 import { RULE_CLEARANCE, RULE_SPACING } from '../constants/config';
+
+import type { RefObject } from 'react';
 
 /** The smallest odd whole number at or above a height, so a block centres in a rule span on whole pixels. */
 function oddCeil(height: number): number {

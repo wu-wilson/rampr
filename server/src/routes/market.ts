@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import { withSnapshot } from '../services/db';
 import { getMarket } from '../services/market';
 
 import type { MarketResponse } from '../services/market';
@@ -8,7 +9,7 @@ const router = Router();
 
 router.get('/market', async (_req, res, next) => {
   try {
-    const response: MarketResponse = await getMarket();
+    const response: MarketResponse = await withSnapshot(() => getMarket());
     res.json(response);
   } catch (err) {
     next(err);

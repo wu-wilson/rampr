@@ -10,9 +10,9 @@ import { GITHUB_URL } from '../../constants/config';
  */
 export const Footer: React.FC = () => (
   <Rail>
-    <footer className="-mx-5 flex flex-col gap-2 border-t border-line px-5 py-6 text-[13px] text-ink-3 sm:flex-row sm:items-center sm:justify-between md:mx-0 md:px-0">
+    <footer className="-mx-5 flex flex-col items-start gap-2 border-t border-line px-5 py-6 text-[13px] text-ink-3 sm:flex-row sm:items-center sm:justify-between md:mx-0 md:px-0">
       <span>Rampr reads the public feeds of Greenhouse, Lever, and Ashby boards.</span>
-      <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="link font-medium">
+      <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="link -my-[7px] inline-flex h-[34px] items-center font-medium">
         Source on GitHub
       </a>
     </footer>

@@ -64,7 +64,7 @@ export const TableControls: React.FC<TableControlsProps> = ({ sectors }) => {
           value={sector ?? ''}
           onChange={(event) => setSector(event.target.value === '' ? null : event.target.value)}
           aria-label="Sector"
-          className="select-plain cursor-pointer border-0 bg-transparent pr-4 text-[13px] text-ink transition-colors hover:text-ink-2"
+          className="select-plain cursor-pointer self-stretch border-0 bg-transparent pr-4 text-[13px] text-ink transition-colors hover:text-ink-2"
           style={TRANSITION}
         >
           <option value="">All</option>
@@ -75,7 +75,10 @@ export const TableControls: React.FC<TableControlsProps> = ({ sectors }) => {
           ))}
         </select>
       </label>
-      <label className="inline-flex h-[34px] items-center gap-2 border-b border-line text-[13px] text-ink-2">
+      <label
+        className="inline-flex h-[34px] items-center gap-2 border-b border-line text-[13px] text-ink-2 transition-colors hover:border-line-3"
+        style={TRANSITION}
+      >
         <input
           ref={inputRef}
           type="search"

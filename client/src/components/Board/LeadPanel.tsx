@@ -10,19 +10,15 @@ import { GATING_DAYS } from '../../constants/config';
 
 import type { MarketSummary } from '../../types/board';
 
-interface LeadPanelProps {
-  market: MarketSummary;
-}
-
 /** Capitalize a word for the start of a sentence. */
 const capitalize = (word: string): string => word[0].toUpperCase() + word.slice(1);
 
-/** The four trailing windows the facts row reports, with their labels. */
-const WINDOWS: Array<{ key: keyof MarketSummary['changes']; label: string }> = [
-  { key: 'day1', label: '1 day' },
-  { key: 'day7', label: '7 days' },
-  { key: 'day30', label: '30 days' },
-  { key: 'day90', label: '90 days' },
+/** The four trailing windows the facts row reports, with their labels and lengths. */
+const WINDOWS: Array<{ key: keyof MarketSummary['changes']; label: string; days: number }> = [
+  { key: 'day1', label: '1 day', days: 1 },
+  { key: 'day7', label: '7 days', days: 7 },
+  { key: 'day30', label: '30 days', days: 30 },
+  { key: 'day90', label: '90 days', days: 90 },
 ];
 
 /** The lead sentences beneath the figure: the seven-day move, then how many boards sit at a series high and how concentrated the postings are. */
@@ -31,7 +27,7 @@ const LeadSentence: React.FC<LeadPanelProps> = ({ market }) => {
   if (delta === null) {
     return (
       <>
-        Counted every morning at {formatReleaseTimeUtc()}. Changes over 1, 7, 30, and 90 days appear once the series has {GATING_DAYS} releases.
+        Counted every morning at {formatReleaseTimeUtc()}. Changes over 1 and 7 days appear once the series has {GATING_DAYS} releases, and over 30 and 90 days once it runs that long.
       </>
     );
   }
@@ -57,6 +53,10 @@ const LeadSentence: React.FC<LeadPanelProps> = ({ market }) => {
   );
 };
 
+interface LeadPanelProps {
+  market: MarketSummary;
+}
+
 /**
  * The lead: the heading and figure, the sentences, and the facts row, as three blocks a taller panel spaces evenly.
  * @param props - The market summary
@@ -81,18 +81,21 @@ export const LeadPanel: React.FC<LeadPanelProps> = ({ market }) => (
     <dl className="mt-[30px] grid grid-cols-2 border-t border-line sm:grid-cols-4">
       {WINDOWS.map((range) => {
         const delta = market.changes[range.key];
+        const base = market.changeBases[range.key];
         return (
           <div key={range.key} className="pr-4 pt-3.5">
             <dt className="text-[12.5px] font-medium text-ink-3">{range.label}</dt>
             <dd className="mt-[3px] text-[20px] font-medium tracking-[-0.02em]">
               {delta === null ? (
                 <span className="inline-block text-[13px] font-normal leading-snug text-ink-3">
-                  {market.changes.day7 === null ? `at ${GATING_DAYS} releases` : 'no release that far back'}
+                  {range.days < GATING_DAYS ? `at ${GATING_DAYS} releases` : 'no release that far back'}
                 </span>
               ) : (
                 <>
                   <Change delta={delta} />{' '}
-                  <small className="text-[12.5px] font-medium tracking-normal text-ink-3">{formatSignedPercent(delta, market.totalOpen)}</small>
+                  {base !== null && (
+                    <small className="text-[12.5px] font-medium tracking-normal text-ink-3">{formatSignedPercent(delta, base)}</small>
+                  )}
                 </>
               )}
             </dd>

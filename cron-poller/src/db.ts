@@ -26,6 +26,12 @@ export interface CompanyRow {
   atsId: string;
 }
 
+/** Narrow the `ats_provider` column to an `AtsProvider`; its check constraint allows nothing else, so any other value throws. */
+function toAtsProvider(value: unknown): AtsProvider {
+  if (value === 'greenhouse' || value === 'lever' || value === 'ashby') return value;
+  throw new Error(`Unknown ATS provider: ${String(value)}`);
+}
+
 /**
  * Load every curated company, ordered by id for deterministic runs.
  * @returns The companies to poll
@@ -39,8 +45,7 @@ export async function loadCompanies(): Promise<CompanyRow[]> {
   return result.rows.map((row) => ({
     id: Number(row.id),
     name: String(row.name),
-    // `ats_provider` is DB-constrained to the provider enum, so the union narrowing is safe.
-    provider: String(row.ats_provider) as AtsProvider,
+    provider: toAtsProvider(row.ats_provider),
     atsId: String(row.ats_id),
   }));
 }
@@ -56,6 +61,13 @@ export async function reconcileCompany(
   listings: NormalizedListing[],
 ): Promise<void> {
   const client = await pool.connect();
+  // A checked-out client has no pool listener, so a dropped connection would otherwise crash the whole run; the next
+  // query fails instead, the company is counted as errored, and the broken client is discarded.
+  let broken = false;
+  const handleError = (): void => {
+    broken = true;
+  };
+  client.on('error', handleError);
   try {
     await client.query('BEGIN');
 
@@ -99,7 +111,8 @@ export async function reconcileCompany(
     }
     throw err;
   } finally {
-    client.release();
+    client.off('error', handleError);
+    client.release(broken);
   }
 }
 

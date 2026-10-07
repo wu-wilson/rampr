@@ -134,8 +134,8 @@
       linear-gradient(45deg, transparent 50%, rgb(var(--ink-2)) 50%),
       linear-gradient(135deg, rgb(var(--ink-2)) 50%, transparent 50%);
     background-position:
-      right 6px top 8px,
-      right 2px top 8px;
+      right 6px center,
+      right 2px center;
     background-size: 4px 4px;
     background-repeat: no-repeat;
   }
@@ -143,7 +143,7 @@
 
 @keyframes rampr-strip {
   to {
-    /* Half the track plus one gap: -50% alone stops half a gap short and the loop jumps. */
+    /* Half the track plus half a gap: -50% alone stops half a gap short and the loop jumps. */
     transform: translateX(calc(-50% - 1.25rem));
   }
 }

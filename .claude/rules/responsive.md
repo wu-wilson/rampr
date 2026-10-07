@@ -12,7 +12,7 @@ Mobile-first, with three Tailwind screens: `sm` **560px** (the facts rows go fro
 
 ## The rail and full-bleed regions
 
-- Content sits in a centred **1200px rail** (`Rail` = `max-w-rail mx-auto`, `rail` = `1200px`) with a gutter of `px-5` (20px) on phones and `md:px-6` (24px) above. The white paper extends past the rail with nothing marking its edges.
+- Content sits in a centred **1200px rail** (`Rail` = `max-w-rail mx-auto`, `rail` = `1200px`) with a gutter of 20px on phones and 24px from `md`, widened to the left or right safe-area inset when that is larger (a notched phone held sideways). The white paper extends past the rail with nothing marking its edges.
 - The hero band and its ledger rules run edge to edge at every width, including ultra-wide, because the masthead, main, and footer each centre their own `Rail` rather than sharing one wrapper. Never break out of a rail with `100vw` and a negative margin; it fights `overflow-x: hidden` and the scrollbar.
 - The companies strip sits inside the rail from `md` and runs edge to edge below it, fading out at its ends through its mask.
 - **Below `md` every hairline runs edge to edge** (tables, breakdown lists, Method rows, the facts row, the strip's rule, the footer's rule) by pulling the ruled element out by the 20px gutter (`-mx-5 md:mx-0`) while its text keeps the gutter (`px-5 md:px-0`, or `px-5 md:px-4` for table grids, whose 16px inset applies only inside the rail). Above `md` the rules stop at the rail.
@@ -35,8 +35,8 @@ Mobile-first, with three Tailwind screens: `sm` **560px** (the facts rows go fro
 ## Viewport
 
 - Never use `h-screen` / `min-h-screen` (`100vh`) — use `min-h-dvh` (dynamic viewport).
-- `index.html` viewport: `viewport-fit=cover` for notched devices.
-- Respect safe-area insets on top/bottom edges (`env(safe-area-inset-*)`); the paper fills the insets.
+- `index.html` viewport: `viewport-fit=cover` for notched devices, and `maximum-scale=1.0` so iOS doesn't zoom into the 13px table controls when they take focus.
+- Respect safe-area insets (`env(safe-area-inset-*)`): the app pads its top and bottom edges, and the rail's gutters and the phone drawer's links widen to the left and right insets; the paper fills the insets.
 - Never allow horizontal overflow — `overflow-x: hidden` on html, and the strip and hero band clip their own overflow.
 
 ## States

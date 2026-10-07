@@ -1,12 +1,12 @@
 import React from 'react';
 
+/** Rendered width and height (px). */
+const SIZE = 22;
+
 interface StepMarkProps {
   /** Extra classes for the svg (spacing, alignment). */
   className?: string;
 }
-
-/** Rendered width and height (px). */
-const SIZE = 22;
 
 /**
  * The Rampr mark: one step up, a single monoline stroke in `currentColor`.

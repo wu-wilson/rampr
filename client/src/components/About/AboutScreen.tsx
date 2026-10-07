@@ -54,7 +54,7 @@ export const AboutScreen: React.FC = () => {
         <>
           A change is simply the difference between two releases. Rampr shows it over 1, 7, 30, and 90 days, always as a
           signed figure. Changes appear once a series has <Emphasis>{GATING_DAYS} releases</Emphasis> behind it, enough for the comparison to mean
-          something.
+          something, and the 30- and 90-day ones once it runs that long.
         </>
       ),
     },
@@ -105,7 +105,7 @@ export const AboutScreen: React.FC = () => {
           {rows.map((row) => (
             <div
               key={row.key}
-              className="grid gap-1.5 border-t border-line-2 px-5 py-[18px] first:border-line last:border-b last:border-line sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-6 md:px-0"
+              className="grid gap-1.5 border-t border-line-2 px-5 py-[18px] first:border-line last:border-b last:border-b-line sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-6 md:px-0"
             >
               <div className="text-[14px] font-medium">{row.key}</div>
               <p className="max-w-[60ch] text-[15px] text-ink-2">{row.body}</p>

@@ -20,7 +20,7 @@ export const NotFound: React.FC<NotFoundProps> = ({
   body = 'That page is not part of the release. It may have moved, or never existed.',
 }) => (
   <EmptyState title={title} body={body}>
-    <Link to="/" className="link mt-2 text-[13px] font-medium">
+    <Link to="/" className="link mt-px inline-flex h-[34px] items-center text-[13px] font-medium">
       Back to the board
     </Link>
   </EmptyState>

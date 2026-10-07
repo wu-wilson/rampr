@@ -12,7 +12,7 @@ paths:
 ## TypeScript
 
 - Strict mode enabled everywhere. No `any` — use `unknown` with type narrowing. No `as` casts unless genuinely unavoidable. Parse every external ATS feed payload with Zod before use. Prefer `interface` for object shapes, `type` for unions and intersections.
-- Functional components: `const` arrow functions typed via a `{ComponentName}Props` interface defined directly above the component.
+- Functional components: `const` arrow functions typed via a `{ComponentName}Props` interface defined directly above the component. A subcomponent that takes its parent's props reuses the parent's interface rather than repeating it.
 - Named exports only — no default exports.
 
 ## Docstrings

@@ -1,7 +1,10 @@
-import { adapters, type NormalizedListing } from './adapters';
+import { adapters } from './adapters';
 import { delay } from './adapters/fetchJson';
 import { config } from './config';
-import { loadCompanies, reconcileCompany, type CompanyRow } from './db';
+import { loadCompanies, reconcileCompany } from './db';
+
+import type { NormalizedListing } from './adapters';
+import type { CompanyRow } from './db';
 
 /** Small delay before each feed request past the first batch, to stay polite to upstream hosts. */
 const POLITE_DELAY_MS = 250;

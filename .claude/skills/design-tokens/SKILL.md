@@ -58,7 +58,7 @@ A single step: `M3 17.5H10.5V6.5H21` in a 24 grid, stroke 2.2, round caps and jo
 
 ## Layout dimensions
 
-- Rail 1200px, gutter 20px (`px-5`) on phones and 24px (`md:px-6`) above. Masthead row 68px over a hairline; the hero band lays its first rule over it. Screens end 96px above the footer's rule.
+- Rail 1200px, gutter 20px on phones and 24px from `md`, or the side's safe-area inset when that is larger. Masthead row 68px over a hairline; the hero band lays its first rule over it. Screens end 96px above the footer's rule.
 - Ledger rules every **32px** (`RULE_SPACING`) from the top of the hero band, which pads 32px and is sized to whole rule gaps. Panel edges sit at least **8px** (`RULE_CLEARANCE`) from a rule: side by side the panels share one height, and stacked (31px apart) each grows to `32k + 1`px so every edge sits halfway between two rules. A panel only grows, its extra going to the chart's plot or between the lead's blocks.
 - Hero panel padding is even on all four sides: 40px for the lead from `lg`, 24px otherwise, with the vertical values trimmed by the half-leading of the first and last lines.
 - Table rows 46px (company table), 42px (sector and movers tables), 36px (daily table), 38px (breakdowns); headers 38px on two hairlines. Section spacing `pt-14` (56px).
@@ -81,4 +81,4 @@ The section rise (500ms) and the companies strip loop (150s) are CSS in `index.c
 
 ## Interaction
 
-Every clickable element gets a hover colour at `DURATION.normal`, a visible focus ring (`outline: 2px solid rgb(var(--ink)); outline-offset: 2px` via `:focus-visible`), and no other change. Row hovers use `bg-hover`. Text links use `.link`.
+Every clickable element gets a hover colour at `DURATION.normal`, a visible focus ring (`outline: 2px solid rgb(var(--ink)); outline-offset: 2px` via `:focus-visible`, inset to `-2px` on edge-to-edge rows), and no other change. Row hovers use `bg-hover`. Text links use `.link`.

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useRef } from 'react';
 
-import { useReveal, type RevealPhase } from '../../hooks/useReveal';
+import { useReveal } from '../../hooks/useReveal';
+
+import type { RevealPhase } from '../../hooks/useReveal';
 
 /** The enclosing section's reveal phase, so a chart inside can draw as the section enters. */
 const RevealContext = createContext<RevealPhase>('static');

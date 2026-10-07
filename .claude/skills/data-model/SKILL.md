@@ -19,11 +19,11 @@ No views, no aggregate tables. Everything below is derived at query time.
 - **Open now** (per company) = `COUNT(*) FROM listings WHERE company_id = $1`. Never the latest snapshot — the count and the breakdowns must come from the same rows.
 - **Breakdowns** = `GROUP BY department | location | remote_type` over that company's `listings`.
 - **Work mix** (company) = shares of remote / hybrid / onsite over open roles; `unknown` is the residual, shown as "Not stated".
-- **7-day change** (`delta7d`) = `open_now − open_count` from the **most recent snapshot on or before 7 days before the latest release** (tolerates a missed poll); `null` while the company has fewer than 14 snapshots or no such snapshot exists. **30-day change** (`delta30d`) is the same against 30 days before the latest release. Every window counts back from `MAX(snapshot_date)`, never the calendar day, so nothing shifts before the morning poll.
-- **Market changes** (1 / 7 / 30 / 90 days) = the sum of `open_now − prior` over every company whose own change is live (14 snapshots and a snapshot that old), so a board added mid-window never reads as growth; `null` while globally gated or when no company qualifies. **Sector 7-day changes** use the same rule within a sector.
+- **7-day change** (`delta7d`) = `open_now − open_count` from the **most recent snapshot on or before 7 days before the latest release** (tolerates a missed poll); `null` while the company has fewer than 14 snapshots (past that, a snapshot 7 days back always exists). **30-day change** (`delta30d`) is the same against 30 days before the latest release, and is also `null` until a snapshot that far back exists. Every window counts back from `MAX(snapshot_date)`, never the calendar day, so nothing shifts before the morning poll.
+- **Market changes** (1 / 7 / 30 / 90 days) = the sum of `open_now − prior` over every company whose own change is live (14 snapshots and a snapshot that old), so a board added mid-window never reads as growth; `null` while globally gated or when no company qualifies. `changeBases` holds the same companies' summed prior counts, the base each change's percentage is taken from. **Sector 7-day changes** use the same rule within a sector.
 - **At a 90-day high** = count of companies (with ≥14 snapshots and open roles) whose `open_now` ≥ `MAX(open_count)` over the last 90 days. **Top-ten share** = sum of the ten largest `open_now` over the total, integer percent.
 - **Release number** = `MAX(snapshot_date) − MIN(tracked_since) + 1`; `null` before the first poll.
-- **Market index point** (per day) = `SUM(open_count)` across companies for that `snapshot_date`.
+- **Market index point** (per day) = the sum of each company's latest `open_count` on or before that `snapshot_date`, so a company whose feed failed that morning, or that the poll hasn't reached yet, holds its last count rather than dropping out of the total.
 - **Breadth point** (per day) = count of companies whose `open_count` rose from their previous snapshot (`LAG` per company) and count that fell. A date where no company has a previous snapshot is left out of the series.
 - **Sector rank / share** (company page) = `ROW_NUMBER` by `open_now` within the sector, the sector's company count, and the sector's summed `open_now` (the client divides for the share).
 - **Movers** = per-company 7d `delta`, top N positive = heating, top N negative = cooling, each with its sector label. A company must have ≥14 of its own daily snapshots to appear.
@@ -47,6 +47,7 @@ All read-only JSON under `/api`. Money-free; counts are integers. `updatedAt` = 
 {
   "market":  { "totalOpen": 8317, "companyCount": 100,
                "changes": { "day1": 38, "day7": 215, "day30": null, "day90": null }, // each null when gated / no prior
+               "changeBases": { "day1": 8279, "day7": 8102, "day30": null, "day90": null }, // the prior total each change is measured from
                "atHigh90": 14, "topTenShare": 38 },                                 // atHigh90 null when gated
   "companies": [
     { "rank": 1, "slug": "stripe", "name": "Stripe", "sector": "fintech",
@@ -66,7 +67,7 @@ All read-only JSON under `/api`. Money-free; counts are integers. `updatedAt` = 
                "careersUrl": "https://boards.greenhouse.io/databricks", "source": "greenhouse" },
                // careersUrl is null when the company has no board link
   "open": 288,
-  "delta7d": 24,                                                                // null when gated / no prior
+  "delta7d": 24,                                                                // null while gated
   "breakdowns": {
     "departments": [ { "name": "Engineering", "count": 141 } ],
     "locations":   [ { "name": "San Francisco", "count": 96 } ],

@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import { CompanyParamsSchema } from '../schemas/companyParams';
 import { getCompany } from '../services/company';
+import { withSnapshot } from '../services/db';
 
 import type { CompanyResponse } from '../services/company';
 
@@ -15,7 +16,7 @@ router.get('/companies/:slug', async (req, res, next) => {
       return;
     }
 
-    const response: CompanyResponse | null = await getCompany(parsed.data.slug);
+    const response: CompanyResponse | null = await withSnapshot(() => getCompany(parsed.data.slug));
     if (response === null) {
       console.warn(`Company not found: ${parsed.data.slug}`);
       res.status(404).json({ error: 'Company not found' });
