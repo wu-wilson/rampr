@@ -201,23 +201,24 @@ export async function getMarket(): Promise<MarketResponse> {
 
   if (!gated) {
     // Each company counts at its latest snapshot on or before the date, so a failed fetch or a poll still running
-    // holds its last count instead of dropping out of the total.
+    // holds its last count instead of dropping out of the total. Each snapshot adds its step from the company's
+    // previous one (a first adds its whole count), so a running sum of the steps by date is that total. The window
+    // is cut after the sum, so a count from before it still carries in.
     const indexResult = await query(
-      `WITH spans AS (
-         SELECT open_count, snapshot_date AS valid_from,
-                LEAD(snapshot_date) OVER (PARTITION BY company_id ORDER BY snapshot_date) AS valid_until
+      `WITH steps AS (
+         SELECT snapshot_date,
+                open_count - COALESCE(LAG(open_count) OVER (PARTITION BY company_id ORDER BY snapshot_date), 0) AS step
            FROM daily_snapshots
        ),
-       dates AS (
-         SELECT DISTINCT snapshot_date
-           FROM daily_snapshots
-          WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $1::int
+       running AS (
+         SELECT snapshot_date, SUM(SUM(step)) OVER (ORDER BY snapshot_date) AS total_open
+           FROM steps
+          GROUP BY snapshot_date
        )
-       SELECT to_char(d.snapshot_date, 'YYYY-MM-DD') AS date, SUM(s.open_count)::int AS total_open
-         FROM dates d
-         JOIN spans s ON s.valid_from <= d.snapshot_date AND (s.valid_until IS NULL OR s.valid_until > d.snapshot_date)
-        GROUP BY d.snapshot_date
-        ORDER BY d.snapshot_date ASC`,
+       SELECT to_char(snapshot_date, 'YYYY-MM-DD') AS date, total_open::int AS total_open
+         FROM running
+        WHERE snapshot_date > (SELECT MAX(snapshot_date) FROM daily_snapshots) - $1::int
+        ORDER BY snapshot_date ASC`,
       [TREND_WINDOW_DAYS],
     );
 
