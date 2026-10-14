@@ -18,7 +18,7 @@ const CONNECTION_ERROR_CODES = new Set([
 ]);
 
 /** Error thrown by `query` and `withSnapshot` when Postgres is unreachable; carries a 503 + `isPublic` so the tail handler degrades gracefully instead of leaking a 500. */
-class DatabaseUnavailableError extends Error {
+export class DatabaseUnavailableError extends Error {
   readonly status = 503;
   readonly isPublic = true;
 

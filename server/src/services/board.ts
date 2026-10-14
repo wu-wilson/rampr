@@ -50,7 +50,7 @@ interface BoardCompany {
 }
 
 /** Response body for `GET /api/board`. */
-export interface BoardResponse {
+interface BoardResponse {
   market: BoardMarket;
   companies: BoardCompany[];
   /** `MAX(snapshot_date)` as `YYYY-MM-DD`, or `null` before the first poll. */

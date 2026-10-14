@@ -74,7 +74,7 @@ interface Trajectory {
 }
 
 /** Response body for `GET /api/companies/:slug`. */
-export interface CompanyResponse {
+interface CompanyResponse {
   company: CompanyProfile;
   /** Live open-role count (`COUNT(listings)`). */
   open: number;

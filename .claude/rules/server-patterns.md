@@ -11,7 +11,14 @@ paths:
 - Validate every input with Zod before business logic — the `limit` query param on `/api/board` and the `:slug` on company detail.
 - SQL/business logic in `server/src/services/` (`db.ts` owns the pool + query helpers), not in handlers.
 - A route whose figures come from more than one query runs its service inside `withSnapshot` (`db.ts`), one read-only repeatable-read transaction, so a poll committing mid-request can't make a headline disagree with its breakdowns.
+- Every route reads through `readThrough` (`services/cache.ts`), keyed on its validated input (`meta`, `market`, `board:<limit>`, `company:<slug>`), never the raw URL, so a request can't add entries of its own.
 - Single tail error-handling middleware in `middleware/errorHandler.ts`.
+
+## Caching
+
+- A successful read is kept in memory for `config.cacheTtlSeconds` (300, `0` turns caching off) and sent `public, max-age=<seconds left>`, so a browser copy never outlives the server's. Every other `/api` response is `no-store` (`middleware/noStore.ts`).
+- An expired entry is rebuilt on the next request, and simultaneous requests share that rebuild. An expired copy is served only while Postgres is unreachable (`DatabaseUnavailableError`), only if it is under 15 minutes old, and then as `no-store`.
+- Only successful bodies are stored, never `null` results (an unknown company) or errors. The store holds at most 500 entries and 8 MB, skips any body over 256 KB, and evicts the least recently used.
 
 ## API semantics
 
@@ -32,10 +39,10 @@ paths:
 
 - Parameterized SQL queries (`$1`, `$2`) — never string-concatenate input.
 - The `pg` pool (`max: 10`), release in `finally` blocks.
-- Graceful degradation: if Postgres is unreachable, every read endpoint returns **503** rather than throwing an opaque 500. Railway's health check hits `/`, which needs no database.
+- Graceful degradation: if Postgres is unreachable, every read endpoint returns **503** rather than throwing an opaque 500, unless a recent cached copy can stand in. Railway's health check hits `/`, which needs no database.
 - All date math is **UTC**: the poller's "today" becomes the snapshot date, and reads and retention count back from `MAX(snapshot_date)`.
 
 ## Environment
 
-- Env vars read once at startup into a typed `config` object (`PORT`, `DATABASE_URL`, `ALLOWED_ORIGINS`, `READ_RATE_LIMIT_PER_HOUR`). A missing `DATABASE_URL` warns before falling back to the local default, so a misconfigured deploy never reads as an unreachable server.
+- Env vars read once at startup into a typed `config` object (`PORT`, `DATABASE_URL`, `ALLOWED_ORIGINS`, `READ_RATE_LIMIT_PER_HOUR`, `CACHE_TTL_SECONDS`). A missing `DATABASE_URL` warns before falling back to the local default, so a misconfigured deploy never reads as an unreachable server.
 - Log request outcome on each request. Never log full payloads, connection strings, or headers.

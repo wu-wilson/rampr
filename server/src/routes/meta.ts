@@ -1,15 +1,14 @@
 import { Router } from 'express';
 
+import { readThrough } from '../services/cache';
 import { getMeta } from '../services/meta';
-
-import type { MetaResponse } from '../services/meta';
 
 const router = Router();
 
 router.get('/meta', async (_req, res, next) => {
   try {
-    const response: MetaResponse = await getMeta();
-    res.json(response);
+    const cached = await readThrough('meta', getMeta);
+    res.set('Cache-Control', cached.cacheControl).type('json').send(cached.body);
   } catch (err) {
     next(err);
   }

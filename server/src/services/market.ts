@@ -73,7 +73,7 @@ interface Movers {
 }
 
 /** Response body for `GET /api/market`. */
-export interface MarketResponse {
+interface MarketResponse {
   totals: MarketTotals;
   sectors: SectorTotal[];
   index: MarketIndex;

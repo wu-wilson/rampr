@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-/** Parse a positive-integer environment value, falling back when it is unset or malformed. */
-function parseIntEnv(value: string | undefined, fallback: number): number {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+/** Parse a whole-number environment value of at least `min`, falling back when it is unset, blank, or malformed. */
+function parseIntEnv(value: string | undefined, fallback: number, min = 1): number {
+  const parsed = value?.trim() ? Number(value) : NaN;
+  return Number.isInteger(parsed) && parsed >= min ? parsed : fallback;
 }
 
 /** The local database the packages fall back to, so a fresh clone runs with no env file. */
@@ -24,4 +24,5 @@ export const config = {
   databaseUrl: databaseUrl(),
   readRateLimitPerHour: parseIntEnv(process.env.READ_RATE_LIMIT_PER_HOUR, 600),
   allowedOrigins: process.env.ALLOWED_ORIGINS || '*',
+  cacheTtlSeconds: parseIntEnv(process.env.CACHE_TTL_SECONDS, 300, 0),
 } as const;

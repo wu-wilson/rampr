@@ -116,9 +116,10 @@ Every variable ships with a working default — `./launch.sh` runs on a fresh cl
 | Variable                   | Default                             | Description                                                         |
 | -------------------------- | ----------------------------------- | ------------------------------------------------------------------- |
 | `PORT`                     | `3001`                              | API listen port. Auto-injected by Railway in production.            |
-| `DATABASE_URL`             | `postgresql://localhost:5432/rampr` | Postgres connection, warned about when unset. Read endpoints return 503 if unreachable. |
+| `DATABASE_URL`             | `postgresql://localhost:5432/rampr` | Postgres connection, warned about when unset. Read endpoints return 503 if unreachable, or a cached copy under 15 minutes old. |
 | `ALLOWED_ORIGINS`          | `*`                                 | Comma-separated CORS allowlist. Set to `https://rampr.dev` in prod. |
 | `READ_RATE_LIMIT_PER_HOUR` | `600`                               | Read requests/hr/IP across the GET endpoints.                       |
+| `CACHE_TTL_SECONDS`        | `300`                               | Seconds a successful read is cached in memory and in browsers. `0` turns caching off. |
 
 #### Cron Poller (`cron-poller/`)
 

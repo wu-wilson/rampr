@@ -8,7 +8,7 @@ interface SourceCounts {
 }
 
 /** Response body for `GET /api/meta`. */
-export interface MetaResponse {
+interface MetaResponse {
   /** `MAX(snapshot_date)` as `YYYY-MM-DD`, or `null` before the first poll (client day-zero). */
   updatedAt: string | null;
   /** The latest release's number (days since the earliest `tracked_since`, plus one), or `null` before the first poll. */

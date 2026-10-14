@@ -1,10 +1,9 @@
 import { Router } from 'express';
 
 import { CompanyParamsSchema } from '../schemas/companyParams';
+import { readThrough } from '../services/cache';
 import { getCompany } from '../services/company';
 import { withSnapshot } from '../services/db';
-
-import type { CompanyResponse } from '../services/company';
 
 const router = Router();
 
@@ -16,14 +15,15 @@ router.get('/companies/:slug', async (req, res, next) => {
       return;
     }
 
-    const response: CompanyResponse | null = await withSnapshot(() => getCompany(parsed.data.slug));
-    if (response === null) {
-      console.warn(`Company not found: ${parsed.data.slug}`);
+    const { slug } = parsed.data;
+    const cached = await readThrough(`company:${slug}`, () => withSnapshot(() => getCompany(slug)));
+    if (cached === null) {
+      console.warn(`Company not found: ${slug}`);
       res.status(404).json({ error: 'Company not found' });
       return;
     }
 
-    res.json(response);
+    res.set('Cache-Control', cached.cacheControl).type('json').send(cached.body);
   } catch (err) {
     next(err);
   }

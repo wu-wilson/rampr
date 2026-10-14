@@ -2,9 +2,8 @@ import { Router } from 'express';
 
 import { BoardQuerySchema } from '../schemas/boardQuery';
 import { getBoard } from '../services/board';
+import { readThrough } from '../services/cache';
 import { withSnapshot } from '../services/db';
-
-import type { BoardResponse } from '../services/board';
 
 const router = Router();
 
@@ -17,8 +16,9 @@ router.get('/board', async (req, res, next) => {
       return;
     }
 
-    const response: BoardResponse = await withSnapshot(() => getBoard(parsed.data.limit));
-    res.json(response);
+    const { limit } = parsed.data;
+    const cached = await readThrough(`board:${limit}`, () => withSnapshot(() => getBoard(limit)));
+    res.set('Cache-Control', cached.cacheControl).type('json').send(cached.body);
   } catch (err) {
     next(err);
   }

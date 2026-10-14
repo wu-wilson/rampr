@@ -3,6 +3,7 @@ import express from 'express';
 import { config } from './config';
 import { createCorsMiddleware } from './middleware/cors';
 import { errorHandler } from './middleware/errorHandler';
+import { noStore } from './middleware/noStore';
 import { readLimiter } from './middleware/rateLimiter';
 import { requestLogger } from './middleware/requestLogger';
 import { boardRouter } from './routes/board';
@@ -26,7 +27,8 @@ app.get('/', (_req, res) => {
   res.json({ status: 'ok', service: 'rampr-api' });
 });
 
-// Routes (read-only — per-IP rate limited).
+// Routes (read-only — per-IP rate limited). Every API response is no-store unless a cached read sets its own header.
+app.use('/api', noStore);
 app.use('/api', readLimiter);
 app.use('/api', boardRouter);
 app.use('/api', companyRouter);
